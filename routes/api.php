@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/', \App\Http\Controllers\Api\ActionController::class);
-Route::get('/', function (){ echo "Привет, работаю. OK! "; });
+Route::get('/', function (){ echo "Привет, работаю. OK!  "; });
