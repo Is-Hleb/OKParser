@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Web\IndexController;
+use App\Models\JobInfo;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +15,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
-use Illuminate\Support\Facades\Route;
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::group(['middleware' => 'auth'], function(){
+    Route::get('/', IndexController::class)->name('home');
+    Route::get('/job/delete/{job}', function(int $job) {
+        JobInfo::destroy($job);
+        return redirect()->route('home');
+    })->name('job.delete');
+});

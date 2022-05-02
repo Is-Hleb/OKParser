@@ -2,22 +2,35 @@
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    {{ __('You are logged in!') }}
-                </div>
-            </div>
-        </div>
-    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">status</th>
+                <th scope="col">output</th>
+                <th scope="col">exception</th>
+                <th scope="col">action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($jobs as $job)
+                <tr>
+                    <th>{{ $job->id }}</th>
+                    <th>{{ $job->status }}</th>
+                    <th class="overflow-auto"">
+                        <pre>
+                        @php(print_r($job->output))
+                        </pre>
+                    </th>
+                    <th>
+                        @php(print_r($job->exception))
+                    </th>
+                    <th>
+                        <a href="{{ route('job.delete', $job->id) }}" class="btn btn-danger">Delete</a>
+                    </th>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 @endsection
