@@ -15,7 +15,6 @@ class ActionController extends Controller
 
     public function __invoke(ApiRequest $request)
     {
-
         switch ($request->type) {
             case ApiRequest::REGISTER_JOB:
                 return $this->registerJob();
