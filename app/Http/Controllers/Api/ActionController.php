@@ -27,7 +27,6 @@ class ActionController extends Controller
         ], success: false);
     }
 
-
     private function getJobInfo() {
         $jobInfo = JobInfo::findOrFail($this->request->get('id'));
         return $this->response([
