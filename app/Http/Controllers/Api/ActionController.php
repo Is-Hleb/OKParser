@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiRequest;
 use App\Jobs\OkParserApi;
-use App\Models\FailedJob;
-use App\Models\Job;
 use App\Models\JobInfo;
-use App\Models\JobOutput;
 use App\Http\Resources\JobInfoResource;
 
 class ActionController extends Controller
@@ -33,7 +30,6 @@ class ActionController extends Controller
 
 
     private function getJobInfo() {
-        $input = $this->request->input();
         $jobInfo = JobInfo::findOrFail($this->request->get('id'));
         return $this->response([
             'job' => new JobInfoResource($jobInfo)
