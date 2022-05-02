@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
 
 Route::get('/', function () {
     for($i = 1; $i <= 6; $i++) {
-        echo "<h$i>Привет Дашуля :)</h$i>";
+        echo "<h$i>Привет Дашубля :)</h$i>";
     }
 });
 
