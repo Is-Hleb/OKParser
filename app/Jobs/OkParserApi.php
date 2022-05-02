@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Job;
-use App\Models\JobOutput;
+use App\Models\JobInfo;
 use App\Services\OKApi;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,15 +16,18 @@ class OkParserApi implements ShouldQueue
 
     private array $signature;
     private string $method;
-
+    private OkApi $service;
+    private JobInfo $jobInfo;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(string $action, array $signature, public OKApi $service)
+    public function __construct(string $action, array $signature, JobInfo $jobInfo)
     {
+        $this->jobInfo = $jobInfo;
+        $this->service = new OKApi();
         $this->signature = $signature;
         $this->method = $action;
     }
@@ -37,14 +39,19 @@ class OkParserApi implements ShouldQueue
      */
     public function handle()
     {
+        try {
+            $this->jobInfo->status = JobInfo::RUNNING;
+            $this->jobInfo->save();
 
-        $output = JobOutput::create(['job_id' => $this->job->getJobId()]);
+            $method = $this->method;
+            $result = $this->service->$method(...$this->signature);
 
-        $method = $this->method;
-        $result = $this->service->$method(...$this->signature);
-
-        $output->result = $result;
-
-        $output->save();
+            $this->jobInfo->output = $result;
+            $this->jobInfo->status = JobInfo::FINISHED;
+            $this->jobInfo->save();
+        } catch (\Exception $e) {
+            $this->jobInfo->status = JobInfo::FAILED;
+            $this->jobInfo->exception = $e->getTrace();
+        }
     }
 }

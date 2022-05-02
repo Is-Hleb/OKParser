@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\JobInfo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,11 +14,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('job_outputs', function (Blueprint $table) {
+        Schema::create('job_infos', function (Blueprint $table) {
             $table->id();
-            $table->json('result')->nullable();
-            $table->json('trace')->nullable();
-            $table->integer('job_id');
+            $table->string('status')->default(JobInfo::WAITING);
+            $table->json('output')->nullable();
+            $table->json('exception')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('job_outputs');
+        Schema::dropIfExists('job_infos');
     }
 };

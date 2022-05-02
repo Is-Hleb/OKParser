@@ -7,8 +7,9 @@ use App\Http\Requests\ApiRequest;
 use App\Jobs\OkParserApi;
 use App\Models\FailedJob;
 use App\Models\Job;
+use App\Models\JobInfo;
 use App\Models\JobOutput;
-use App\Services\OKApi;
+use App\Http\Resources\JobInfoResource;
 
 class ActionController extends Controller
 {
@@ -33,38 +34,13 @@ class ActionController extends Controller
 
     private function getJobInfo() {
         $input = $this->request->input();
-        $job = Job::find($input['id']);
-        $result = JobOutput::where('job_id', $input['id'])->first();
-
-        $answer = [];
-
-        if(!$job) {
-            if(!isset($input['uuid'])) {
-                return $this->response(data: [
-                    'message' => "Job is failed, for more info send UUID"
-                ], success: false);
-            }
-            $uuid = $input['uuid'];
-            $job = FailedJob::where('uuid', $uuid)->first();
-
-            if($result) {
-                $answer['result'] = $result->result;
-            }
-
-            return $this->response(array_merge([
-                'job' => $job,
-            ], $answer));
-        }
-
+        $jobInfo = JobInfo::findOrFail($this->request->get('id'));
         return $this->response([
-            'job' => $job->load('result'),
-        ], [
-            'job_id' => $job->id,
-            'job_uuid' => $job->payload['uuid']
+            'job' => new JobInfoResource($jobInfo)
         ]);
     }
 
-    private function response(array $data, array $mustBeSaved = [], bool $success = true): \Illuminate\Http\JsonResponse
+    private function response(mixed $data, array $mustBeSaved = [], bool $success = true): \Illuminate\Http\JsonResponse
     {
         return response()->json([
             'success' => $success,
@@ -83,14 +59,16 @@ class ActionController extends Controller
             return $key !== 'job' && $key != 'action';
         }, ARRAY_FILTER_USE_KEY);
 
-        $jobId = custom_dispatch((new OkParserApi($input['action'], $data, new OKApi())));
-        $job = Job::find($jobId);
+        $jobInfo = new JobInfo([
+            'status' => JobInfo::WAITING
+        ]);
+        $jobInfo->save();
 
+        custom_dispatch((new OkParserApi($input['action'], $data, $jobInfo)));
+    
+        $jobInfo = JobInfo::find($jobInfo->id);
         return $this->response([
-            'job' => $job,
-        ], [
-            'job_id' => $jobId,
-            'job_uuid' => $job->payload['uuid']
+            'job' => new JobInfoResource($jobInfo)
         ]);
     }
 
