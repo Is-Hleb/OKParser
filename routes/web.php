@@ -16,7 +16,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 
 Route::get('/', function () {
-    echo "Привет Дашуля :)";
+    for($i = 1; $i <= 6; $i--) {
+        echo "<h$i>Привет Дашуля :)</h$i>";
+    }
 });
 
 //Route::get('/', function (\App\Services\OKApi $service) {
