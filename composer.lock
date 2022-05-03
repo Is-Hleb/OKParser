@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7d6e63ae721a93987c3615635b683ea1",
+    "content-hash": "f3ae1eeb01cfca00b41e0969fa32b6be",
     "packages": [
         {
             "name": "brick/math",
@@ -3181,6 +3181,70 @@
             "time": "2022-04-19T19:43:36+00:00"
         },
         {
+            "name": "roach-php/laravel",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/roach-php/laravel.git",
+                "reference": "4e7405ec295f9560c975b911175e62aa630f35ea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/roach-php/laravel/zipball/4e7405ec295f9560c975b911175e62aa630f35ea",
+                "reference": "4e7405ec295f9560c975b911175e62aa630f35ea",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^9.0",
+                "php": "^8.0",
+                "roach-php/core": "^1.0",
+                "spatie/laravel-package-tools": "^1.11"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.15",
+                "ergebnis/php-cs-fixer-config": "^3.0",
+                "orchestra/testbench": "^7.0",
+                "phpunit/phpunit": "^9.5",
+                "roave/security-advisories": "dev-latest",
+                "spatie/phpunit-snapshot-assertions": "^4.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "RoachPHP\\Laravel\\RoachServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RoachPHP\\Laravel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kai Sassnowski",
+                    "email": "me@kai-sassnowski.com"
+                }
+            ],
+            "description": "Laravel adapter for roach-php/core",
+            "support": {
+                "issues": "https://github.com/roach-php/laravel/issues",
+                "source": "https://github.com/roach-php/laravel/tree/1.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ksassnowski",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-04-19T19:52:48+00:00"
+        },
+        {
             "name": "sebastian/version",
             "version": "3.0.2",
             "source": {
@@ -3232,6 +3296,65 @@
                 }
             ],
             "time": "2020-09-28T06:39:44+00:00"
+        },
+        {
+            "name": "spatie/laravel-package-tools",
+            "version": "1.11.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-package-tools.git",
+                "reference": "baeb3df0ebb3a541394fdaf8cbe6115bf4034a59"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/baeb3df0ebb3a541394fdaf8cbe6115bf4034a59",
+                "reference": "baeb3df0ebb3a541394fdaf8cbe6115bf4034a59",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^7.0|^8.0|^9.0",
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4",
+                "orchestra/testbench": "^5.0|^6.23|^7.0",
+                "phpunit/phpunit": "^9.4",
+                "spatie/test-time": "^1.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\LaravelPackageTools\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Tools for creating Laravel packages",
+            "homepage": "https://github.com/spatie/laravel-package-tools",
+            "keywords": [
+                "laravel-package-tools",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-package-tools/issues",
+                "source": "https://github.com/spatie/laravel-package-tools/tree/1.11.3"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-03-15T20:01:36+00:00"
         },
         {
             "name": "spatie/robots-txt",
