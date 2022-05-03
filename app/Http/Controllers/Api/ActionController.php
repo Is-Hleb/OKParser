@@ -34,16 +34,6 @@ class ActionController extends Controller
         ]);
     }
 
-    private function response(mixed $data, array $mustBeSaved = [], bool $success = true): \Illuminate\Http\JsonResponse
-    {
-        return response()->json([
-            'success' => $success,
-            'data' => $data,
-            'request' => $this->request->input(),
-            'mustBeSaved' => $mustBeSaved
-        ]);
-    }
-
     private function registerJob(): \Illuminate\Http\JsonResponse
     {
         $request = $this->request;
@@ -63,6 +53,16 @@ class ActionController extends Controller
         $jobInfo = JobInfo::find($jobInfo->id);
         return $this->response([
             'job' => new JobInfoResource($jobInfo)
+        ]);
+    }
+
+    private function response(mixed $data, array $mustBeSaved = [], bool $success = true): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'success' => $success,
+            'data' => $data,
+            'request' => $this->request->input(),
+            'mustBeSaved' => $mustBeSaved
         ]);
     }
 
