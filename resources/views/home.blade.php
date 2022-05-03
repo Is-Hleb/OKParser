@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <table class="table table-bordered">
-        <thead>
+        <thead class="thead-dark">
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">status</th>
@@ -15,18 +15,16 @@
         <tbody>
             @foreach ($jobs as $job)
                 <tr>
-                    <th>{{ $job->id }}</th>
+                    <th scope="row" class="fw-bold d-flex justify-content-center">{{ $job->id }}</th>
                     <th>{{ $job->status }}</th>
                     <th class="overflow-auto"">
-                        <pre>
-                        @php(print_r($job->output))
-                        </pre>
+                        @php(dump($job->output))
                     </th>
                     <th>
-                        @php(print_r($job->exception))
+                        @php(dump($job->exception))
                     </th>
-                    <th>
-                        <a href="{{ route('job.delete', $job->id) }}" class="btn btn-danger">Delete</a>
+                    <th class="d-flex justify-content-center">
+                        <a href="{{ route('job.delete', $job->id) }}" class="btn btn-danger my-auto">Delete</a>
                     </th>
                 </tr>
             @endforeach

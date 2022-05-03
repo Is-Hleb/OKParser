@@ -22,7 +22,7 @@ Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 Route::group(['middleware' => 'auth'], function(){
     Route::get('/', IndexController::class)->name('home');
     Route::get('/job/delete/{job}', function(int $job) {
-        JobInfo::destroy($job);
+        JobInfo::destroy($job); 
         return redirect()->route('home');
     })->name('job.delete');
 });
