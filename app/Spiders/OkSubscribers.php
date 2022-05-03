@@ -57,7 +57,7 @@ class OkSubscribers extends BasicSpider
         $nextUrl = self::getInitialUrl($this->context['user_id'], $this->page);
 
         yield $this->item( $result );
-        if (!emptyArray($result)) {
+        if (!empty($result)) {
             yield $this->request(
                 'GET',
                 $nextUrl,
