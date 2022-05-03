@@ -50,7 +50,7 @@ class ActionController extends Controller
         ]);
         $jobInfo->save();
 
-        custom_dispatch((new OkParserApi($input['action'], $data, $jobInfo)));
+        dispatch((new OkParserApi($input['action'], $data, $jobInfo)));
     
         $jobInfo = JobInfo::find($jobInfo->id);
         return $this->response([
