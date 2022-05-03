@@ -10,8 +10,9 @@ use App\Http\Resources\JobInfoResource;
 
 class ActionController extends Controller
 {
-
-    public function __construct(private ApiRequest $request) {}
+    public function __construct(private ApiRequest $request)
+    {
+    }
 
     public function __invoke(ApiRequest $request)
     {
@@ -27,7 +28,8 @@ class ActionController extends Controller
         ], success: false);
     }
 
-    private function getJobInfo() {
+    private function getJobInfo()
+    {
         $jobInfo = JobInfo::findOrFail($this->request->get('id'));
         return $this->response([
             'job' => new JobInfoResource($jobInfo)
@@ -65,5 +67,4 @@ class ActionController extends Controller
             'mustBeSaved' => $mustBeSaved
         ]);
     }
-
 }
