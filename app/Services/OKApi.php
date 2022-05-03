@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-
-use App\Jobs\OkParserApi;
 use Illuminate\Validation\Rule;
 use JetBrains\PhpStorm\ArrayShape;
-use Pusher\Pusher;
+use RoachPHP\Roach;
+use App\Spiders\OkSubscribers;
+use RoachPHP\Spider\Configuration\Overrides;
 
 /**
  * ContactForm is the model behind the contact form.
@@ -38,7 +38,8 @@ class OKApi
         'getUserInfo',
         'getPost',
         'getComments',
-        'getLikes'
+        'getLikes',
+        'getSubscribersIds'
     ];
 
     #[ArrayShape(['getFollowers' => "string[]", 'getUserInfo' => "string[]", 'getPost' => "array", 'getComments' => "array", 'getLikes' => "array"])] public static function validationRules(): array
@@ -71,6 +72,9 @@ class OKApi
                     'required',
                     Rule::in(self::TYPES)
                 ]
+            ],
+            'getSubscribersIds' => [
+                'user_id' => 'required'
             ]
         ];
     }
@@ -80,8 +84,14 @@ class OKApi
     private string $key = "tkn1o2oL049LyxGPHFOHvrJdviNOd2ez5mOrgnmNJRLVv9Jnu5qQaQlA9PSFX6MnGDDKn";
     private string $secret = "702d0e9c2f9e89189efd3a87d95901a0";
 
-    public function subscribers() {
-
+    public function getSubscribersIds($user_id) 
+    {
+        $url = OkSubscribers::getInitialUrl($user_id, 1);
+        return Roach::collectSpider(
+            OkSubscribers::class,
+            new Overrides([$url]),
+            context: ['user_id' => $user_id]
+        );
     }
 
     public function rules(): array
