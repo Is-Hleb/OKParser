@@ -11,7 +11,7 @@ class SpiderController extends Controller
 {
     public function __invoke()
     {
-        $user_id = 514677397371;
+        $user_id = 555364431688;
         $url = OkSubscribers::getInitialUrl($user_id, 1);
 
         $output = Roach::collectSpider(
@@ -19,6 +19,10 @@ class SpiderController extends Controller
             new Overrides([$url]),
             context: ['user_id' => $user_id]
         );
-        dd($output);
+        $result = [];
+        foreach($output as $data) {
+            $result = array_merge($result, $data->all());
+        }
+        return $result;
     }
 }

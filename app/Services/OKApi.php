@@ -87,11 +87,16 @@ class OKApi
     public function getSubscribersIds($user_id) 
     {
         $url = OkSubscribers::getInitialUrl($user_id, 1);
-        return Roach::collectSpider(
+        $output = Roach::collectSpider(
             OkSubscribers::class,
             new Overrides([$url]),
             context: ['user_id' => $user_id]
         );
+        $result = [];
+        foreach($output as $data) {
+            $result = array_merge($result, $data->all());
+        }
+        return $result;
     }
 
     public function rules(): array
