@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth'], function(){
 
 
 Route::get('/test', function() {
-    $output = DB::connection('bot')->select("SELECT * FROM vk_task");
-    dd($output);
+    $ids = ['449119794952', '449126995027'];
+    $output = DB::connection('parser')->table('users')->whereIn('social_id', $ids)->get();
+    dd($output->toArray());
 });
