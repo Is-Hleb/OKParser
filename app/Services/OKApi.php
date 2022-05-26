@@ -6,6 +6,7 @@ use Illuminate\Validation\Rule;
 use JetBrains\PhpStorm\ArrayShape;
 use RoachPHP\Roach;
 use App\Spiders\OkSubscribers;
+use Illuminate\Support\Facades\DB;
 use RoachPHP\Spider\Configuration\Overrides;
 
 /**
@@ -139,6 +140,10 @@ class OKApi
 
     public function getUserInfo(array|int $ids): bool|array
     {
+        $users = DB::connection('parser')->table('users')->whereIn('social_id', $ids)->get();
+        if($users) {
+            return $users->toArray();
+        }
         if (is_array($ids)) {
             $ids = implode(',', $ids);
         }
