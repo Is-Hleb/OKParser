@@ -56,7 +56,8 @@ class Kernel extends ConsoleKernel
                 $task->status_task = $info->status;
                 $task->save();
             }
-        });
+        })->everyFiveMinutes();
+        
     }
 
     /**
