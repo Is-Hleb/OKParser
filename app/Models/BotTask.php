@@ -16,6 +16,6 @@ class BotTask extends Model
 
     public static function getQeuueTasks()
     {
-        return self::where('user_id', 'OK')->where('status', '')->get();
+        return self::where('user_id', 'OK')->where('answer', '')->get();
     }
 }

@@ -39,6 +39,7 @@ Artisan::command('make:admin', function() {
 Artisan::command('test', function() {
     $tasks = BotTask::getQeuueTasks();
     foreach($tasks as $task) {
+        dump($task->answer);
         $request = $task->dataT;
         $request = json_decode($request, JSON_OBJECT_AS_ARRAY);
 
@@ -51,7 +52,7 @@ Artisan::command('test', function() {
         ]);
         $jobInfo->save();
 
-        dispatch((new OkParserApi($request['action'], $data, $jobInfo)));
+        // dispatch((new OkParserApi($request['action'], $data, $jobInfo)));
     
         $jobInfo = JobInfo::find($jobInfo->id);
 
@@ -61,6 +62,6 @@ Artisan::command('test', function() {
             'job' => 'get',
             'id' => $jobInfo->id
         ]);
-        $task->save();
+        // $task->save();
     }
 });
