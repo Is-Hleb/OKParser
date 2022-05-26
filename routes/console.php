@@ -23,7 +23,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('make:admin', function() {
+Artisan::command('make:admin', function () {
     User::create([
         'name' => "Vika",
         'password' => Hash::make("U__asd123F"),
@@ -36,32 +36,13 @@ Artisan::command('make:admin', function() {
     ]);
 });
 
-Artisan::command('test', function() {
-    $tasks = BotTask::getQeuueTasks();
-    foreach($tasks as $task) {
-        dump($task->answer);
-        $request = $task->dataT;
-        $request = json_decode($request, JSON_OBJECT_AS_ARRAY);
-
-        $data = array_filter($request, function ($key) {
-            return $key !== 'job' && $key != 'action';
-        }, ARRAY_FILTER_USE_KEY);
-
-        $jobInfo = new JobInfo([
-            'status' => JobInfo::WAITING
-        ]);
-        $jobInfo->save();
-
-        // dispatch((new OkParserApi($request['action'], $data, $jobInfo)));
-    
-        $jobInfo = JobInfo::find($jobInfo->id);
-
-        $task->status_task = $jobInfo->status;
-        info("Set answer");
-        $task->answer = json_encode([
-            'job' => 'get',
-            'id' => $jobInfo->id
-        ]);
-        // $task->save();
+Artisan::command('test', function () {
+    $tasks = BotTask::getWaiting();
+    foreach ($tasks as $task) {
+        $payload = json_decode($task->answer);
+        $id = $payload->id;
+        $info = JobInfo::find($id);
+        $task->status_task = $info->status;
+        $task->save();
     }
 });
