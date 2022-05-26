@@ -42,7 +42,7 @@ class OKApi
         'getSubscribersIds'
     ];
 
-    #[ArrayShape(['getFollowers' => "string[]", 'getUserInfo' => "string[]", 'getPost' => "array", 'getComments' => "array", 'getLikes' => "array"])] public static function validationRules(): array
+    public static function validationRules(): array
     {
         return [
             'getFollowers' => [

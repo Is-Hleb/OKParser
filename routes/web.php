@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\SpiderController;
 use App\Http\Controllers\Web\IndexController;
 use App\Models\JobInfo;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +29,10 @@ Route::group(['middleware' => 'auth'], function(){
         JobInfo::destroy($job); 
         return redirect()->route('home');
     })->name('job.delete');
+});
+
+
+Route::get('/test', function() {
+    $output = DB::connection('bot')->select("SELECT * FROM vk_task");
+    dd($output);
 });
