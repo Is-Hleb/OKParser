@@ -46,6 +46,17 @@ class Kernel extends ConsoleKernel
                 $task->save();
             }
         })->everyMinute();
+
+        $schedule->call(function() {
+            $tasks = BotTask::getWaiting();
+            foreach ($tasks as $task) {
+                $payload = json_decode($task->answer);
+                $id = $payload->id;
+                $info = JobInfo::find($id);
+                $task->status_task = $info->status;
+                $task->save();
+            }
+        });
     }
 
     /**

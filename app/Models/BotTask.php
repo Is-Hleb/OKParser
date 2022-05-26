@@ -18,4 +18,8 @@ class BotTask extends Model
     {
         return self::where('user_id', 'OK')->where('answer', '')->get();
     }
+
+    public static function getWaiting() {
+        return self::where('user_id', 'OK')->where('status_task', JobInfo::WAITING)->get();
+    }
 }
