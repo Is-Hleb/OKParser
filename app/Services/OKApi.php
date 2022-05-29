@@ -98,14 +98,18 @@ class OKApi
 
     public function relogin($page, $url) : Page {
         
-        $page->goto('https://ok.ru');
-        sleep(1);
+        $page->goto('https://ok.ru', [
+            "waitUntil" => 'networkidle0',
+        ]);
+
         $page->type('#field_email', $this->user->login);
         $page->type('#field_password', $this->user->password);
 
         $page->click('input[type="submit"]');
 
-        $page->waitForNavigation();
+        $page->waitForNavigation([
+            "waitUntil" => 'networkidle0',
+        ]);
         $dom = new DOM;
         $dom->loadStr($page->content());
         $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
@@ -117,7 +121,9 @@ class OKApi
             $page = $this->relogin($page, $url);
         }
 
-        $page->goto($url);
+        $page->goto($url, [
+            "waitUntil" => 'networkidle0',
+        ]);
 
         $coo = json_encode($page->_client->send('Network.getAllCookies'));
         
@@ -180,7 +186,9 @@ class OKApi
         } else {
             $cookies = json_decode($this->user->cookies, JSON_OBJECT_AS_ARRAY);
             $page->setCookie(...$cookies['cookies']);
-            $page->goto($url);
+            $page->goto($url, [
+                "waitUntil" => 'networkidle0',
+            ]);
 
             $dom = new DOM;
             $dom->loadStr($page->content());
