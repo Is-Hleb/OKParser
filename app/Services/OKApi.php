@@ -133,7 +133,7 @@ class OKApi
     }
 
     public function setAnotherUser() {
-        if(!OkUser::where('blocked', false)->count() === 0) {
+        if(OkUser::where('blocked', false)->count() === 0) {
             throw new Exception("All users are blocked");
         }
         $this->user = OkUser::where('blocked', false)->first();
