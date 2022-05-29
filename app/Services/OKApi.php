@@ -221,6 +221,7 @@ class OKApi
         ini_set('max_execution_time', 0);
         do {
             $posts = [];
+            file_put_contents(storage_path('logs/') . "output$iterations.html", $page->content());
             $dom->loadStr($page->content());
 
             $postsHtml = $dom->find('.feed-w');
