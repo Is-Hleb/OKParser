@@ -7,6 +7,7 @@ use App\Models\OkUser;
 use Illuminate\Validation\Rule;
 use RoachPHP\Roach;
 use App\Spiders\OkSubscribers;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use RoachPHP\Spider\Configuration\Overrides;
 use PHPHtmlParser\Dom;
@@ -126,7 +127,10 @@ class OKApi
     }
 
     public function setAnotherUser() {
-        $this->user = OkUser::inRandomOrder()->first();
+        if(!OkUser::where('blocked', false)->exists()) {
+            throw new Exception("All users are blocked");
+        }
+        $this->user = OkUser::where('blocked', false)->inRandomOrder()->first();
     }
 
     public function __construct()
