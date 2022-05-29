@@ -126,7 +126,7 @@ class OKApi
     }
 
     public function setAnotherUser() {
-        $this->user = OkUser::where('blocked', false)->inRandomOrder()->first();
+        $this->user = OkUser::inRandomOrder()->first();
     }
 
     public function __construct()
