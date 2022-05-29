@@ -112,6 +112,7 @@ class OKApi
         ]);
         $dom = new DOM;
         $dom->loadStr($page->content());
+        file_put_contents(storage_path('logs/') . "outputRelogin.html", $page->content());
         $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
 
         if($captchFlag) {
