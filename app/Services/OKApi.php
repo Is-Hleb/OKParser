@@ -136,7 +136,7 @@ class OKApi
         if(!OkUser::where('blocked', false)->count() === 0) {
             throw new Exception("All users are blocked");
         }
-        $this->user = OkUser::where('blocked', false)->get()->first();
+        $this->user = OkUser::where('blocked', false)->first();
     }
 
     public function __construct()
