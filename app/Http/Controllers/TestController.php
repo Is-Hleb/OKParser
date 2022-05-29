@@ -18,14 +18,18 @@ class TestController extends Controller
 
     public function relogin($page, $url) : Page {
         
-        $page->goto('https://ok.ru');
-        sleep(1);
+        $page->goto('https://ok.ru', [
+            "waitUntil" => 'networkidle0',
+        ]);
+
         $page->type('#field_email', $this->user->login);
         $page->type('#field_password', $this->user->password);
 
         $page->click('input[type="submit"]');
 
-        $page->waitForNavigation();
+        $page->waitForNavigation([
+            "waitUntil" => 'networkidle0',
+        ]);
         $dom = new DOM;
         $dom->loadStr($page->content());
         $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
@@ -37,7 +41,9 @@ class TestController extends Controller
             $page = $this->relogin($page, $url);
         }
 
-        $page->goto($url);
+        $page->goto($url, [
+            "waitUntil" => 'networkidle0',
+        ]);
 
         $coo = json_encode($page->_client->send('Network.getAllCookies'));
         
@@ -47,10 +53,12 @@ class TestController extends Controller
     }
 
     public function setAnotherUser() {
-        // dump(OkUser::where('blocked', false)->get());
-        // dump(OkUser::where('blocked', false)->inRandomOrder()->first());
-        $this->user = OkUser::inRandomOrder()->first();
+        if(OkUser::where('blocked', false)->count() === 0) {
+            throw new Exception("All users are blocked");
+        }
+        $this->user = OkUser::where('blocked', false)->first();
     }
+
 
     public function __invoke()
     {
@@ -61,7 +69,7 @@ class TestController extends Controller
             'executable_path' => config('puppeter.node_path'),
         ]);
         $browser = $puppeteer->launch([
-            'headless' => false
+            // 'headless' => false
         ]);
 
 
