@@ -47,6 +47,8 @@ class TestController extends Controller
     }
 
     public function setAnotherUser() {
+        dump(OkUser::where('blocked', false)->get());
+        dump(OkUser::where('blocked', false)->inRandomOrder()->first());
         $this->user = OkUser::where('blocked', false)->inRandomOrder()->first();
     }
 
