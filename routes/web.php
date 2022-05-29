@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\SpiderController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\Web\IndexController;
 use App\Models\JobInfo;
-use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,8 +32,4 @@ Route::group(['middleware' => 'auth'], function(){
 });
 
 
-Route::get('/test', function() {
-    $ids = ['449119794952', '449126995027'];
-    $output = DB::connection('parser')->table('users')->whereIn('social_id', $ids)->get();
-    dd($output->toArray());
-});
+Route::get('/test', TestController::class);

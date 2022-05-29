@@ -1,0 +1,40 @@
+{
+    "entities": {
+        "users": [
+            {
+                "uid": "377097626553",
+                "gender": "female",
+                "pic50x50": "https://i.mycdn.me/image?id=580737737913&t=32&plc=API&aid=512000717557&tkn=*fUtBkccmdfCASLkGDBjsDgURtD4",
+                "last_name": "Штучко",
+                "first_name": "Елена",
+                "pic128x128": "https://i.mycdn.me/image?id=580737737913&t=34&plc=API&aid=512000717557&tkn=*WSGAQG336IiPA0KtTpzxFLh-B_o",
+                "pic640x480": "https://i.mycdn.me/image?id=580737737913&t=0&plc=API&aid=512000717557&tkn=*mRWNGKe47x60TIIHR6LPfcd16Eg"
+            }
+        ],
+        "user_albums": [
+            {
+                "aid": "519339628473",
+                "title": "Разное",
+                "album_type": "user",
+                "description": ""
+            }
+        ]
+    },
+    "discussion": {
+        "attrs": {
+            "flags": "c,l,unsb"
+        },
+        "title": "Разное",
+        "message": "Альбом",
+        "liked_it": false,
+        "object_id": "519339628473",
+        "owner_uid": "377097626553",
+        "like_count": 0,
+        "object_type": "USER_ALBUM",
+        "creation_date": "2013-09-25 11:58:44",
+        "last_activity_date": "1970-01-01 02:59:59",
+        "new_comments_count": 0,
+        "total_comments_count": 0,
+        "last_user_access_date": "1970-01-01 02:59:59"
+    }
+}

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\BotTask;
 use App\Jobs\OkParserApi;
 use App\Models\JobInfo;
+use App\Models\OkUser;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,4 +47,55 @@ Artisan::command('test', function () {
         $task->status_task = $info->status;
         $task->save();
     }
+});
+
+
+Artisan::command('csv', function () {
+    $ids = DB::connection('parser')->select("select social_id from `users` WHERE `city` <> '' LIMIT 1000");
+    
+    foreach($ids as $id) {
+        $idss[] = $id->social_id;
+    }
+    
+    $request = [
+        'action' => 'getUserInfo',
+        'ids' => $idss
+    ];
+    
+    $data = array_filter($request, function ($key) {
+        return $key !== 'job' && $key != 'action';
+    }, ARRAY_FILTER_USE_KEY);
+
+    $jobInfo = new JobInfo([
+        'status' => JobInfo::WAITING
+    ]);
+    $jobInfo->save();
+
+    OkParserApi::dispatchSync($request['action'], $data, $jobInfo);
+
+    $jobInfo = JobInfo::find($jobInfo->id);
+
+    $output = $jobInfo->output;
+    $content = [];
+    foreach($output as $obj) {
+        $tmp = [];
+        foreach($obj as $key => $value) {
+            $tmp[] = $value;
+        }
+        $content[] = $tmp;
+    }
+
+    $fp = fopen('output.csv', 'r+');
+    foreach ($content as $item) {
+        fputcsv($fp, $item);
+    }
+
+    
+    dump($output);
+});
+
+
+Artisan::command('token', function() {
+    echo OkUser::count();
+    
 });
