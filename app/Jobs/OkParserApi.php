@@ -48,11 +48,11 @@ class OkParserApi implements ShouldQueue
 
             $this->jobInfo->output = $result;
             $this->jobInfo->status = JobInfo::FINISHED;
-            $this->jobInfo->save();
         } catch (\Exception $e) {
             $this->jobInfo->status = JobInfo::FAILED;
             $this->jobInfo->exception = $e->getTrace();
             $this->jobInfo->output = $e->getMessage();
+        } finally {
             $this->jobInfo->save();
         }
     }
