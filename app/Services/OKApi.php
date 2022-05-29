@@ -142,7 +142,7 @@ class OKApi
     public function __construct()
     {
         $okToken = ApiToken::inRandomOrder()->first();
-        $this->user = OkUser::inRandomOrder()->first();
+        $this->user = OkUser::where('blocked', false)->get()->first();
 
         $this->appKey = $okToken->app_key;
         $this->key = $okToken->key;
