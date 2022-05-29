@@ -197,6 +197,10 @@ class OKApi
             if($flag) {
                 $page = $this->relogin($page, $url);
             }
+            $flag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
+            if($flag) {
+                $page = $this->relogin($page, $url);
+            }
         }
 
         $page->evaluate(JsFunction::createWithBody("
