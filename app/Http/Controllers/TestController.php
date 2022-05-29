@@ -31,6 +31,7 @@ class TestController extends Controller
             "waitUntil" => 'networkidle0',
         ]);
         $dom = new DOM;
+        echo $page->content();
         $dom->loadStr($page->content());
         $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
 
