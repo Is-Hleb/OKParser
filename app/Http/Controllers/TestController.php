@@ -59,7 +59,7 @@ class TestController extends Controller
             'executable_path' => config('puppeter.node_path'),
         ]);
         $browser = $puppeteer->launch([
-            'headless' => false
+            // 'headless' => false
         ]);
 
 
