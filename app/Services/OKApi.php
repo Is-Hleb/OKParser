@@ -127,10 +127,10 @@ class OKApi
     }
 
     public function setAnotherUser() {
-        if(!OkUser::where('blocked', false)->exists()) {
+        if(!OkUser::where('blocked', false)->count() === 0) {
             throw new Exception("All users are blocked");
         }
-        $this->user = OkUser::where('blocked', false)->inRandomOrder()->first();
+        $this->user = OkUser::where('blocked', false)->first();
     }
 
     public function __construct()
