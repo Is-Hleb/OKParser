@@ -31,7 +31,7 @@ class TestController extends Controller
             "waitUntil" => 'networkidle0',
         ]);
         $dom = new DOM;
-        echo $page->content();
+        
         $dom->loadStr($page->content());
         $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
 
@@ -70,7 +70,7 @@ class TestController extends Controller
             'executable_path' => config('puppeter.node_path'),
         ]);
         $browser = $puppeteer->launch([
-            // 'headless' => false
+            'headless' => false
         ]);
 
 
