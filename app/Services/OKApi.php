@@ -44,7 +44,7 @@ class OKApi
         'getPostsByUser',
         'getGroupFollowers',
         'getUserInfo',
-        'getPostinfoById',
+        'getPostInfoById',
         'getPostComments',
         'getPostLikes',
         'getSubscribersIds'
