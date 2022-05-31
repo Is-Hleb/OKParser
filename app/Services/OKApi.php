@@ -301,10 +301,6 @@ class OKApi
 
     public function getUserInfo(array|int $ids): bool|array
     {
-        $users = DB::connection('parser')->table('users')->whereIn('social_id', $ids)->get();
-        if ($users) {
-            return $users->toArray();
-        }
         if (is_array($ids)) {
             $ids = implode(',', $ids);
         }
