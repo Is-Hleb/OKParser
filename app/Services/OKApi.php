@@ -117,7 +117,7 @@ class OKApi
                 'executable_path' => config('puppeter.node_path'),
         ]);
         $this->browser = $this->puppeteer->launch([
-            'headless' => false
+            // 'headless' => false
         ]);
         $url = "http://ok.ru/profile/$user_id/$mode";
 
@@ -200,7 +200,7 @@ class OKApi
             'executable_path' => config('puppeter.node_path'),
         ]);
         $this->browser = $this->puppeteer->launch([
-            'headless' => false
+            // 'headless' => false
         ]);
         $page = $this->browser->newPage();
         if (!$this->user->cookies) {
@@ -264,7 +264,7 @@ class OKApi
             'executable_path' => config('puppeter.node_path'),
         ]);
         $this->browser = $this->puppeteer->launch([
-            'headless' => false
+            // 'headless' => false
         ]);
         $page = $this->browser->newPage();
         if (!$this->user->cookies) {
