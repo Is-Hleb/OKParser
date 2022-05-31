@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\ApiToken;
 use App\Models\OkUser;
-use Illuminate\Validation\Rule;
 use RoachPHP\Roach;
 use App\Spiders\OkSubscribers;
 use Exception;
@@ -44,7 +43,7 @@ class OKApi
         'getPostInfoById',
         'getPostComments',
         'getPostLikes',
-        'getSubscribersIds', 
+        'getSubscribersIds',
         'getPostsByGroup'
     ];
 
@@ -70,6 +69,7 @@ class OKApi
             ],
             'getPostLikes' => [
                 'id' => 'required',
+                'limit' => 'required'
             ],
             'getUserSubscribersIds' => [
                 'user_id' => 'required'
@@ -90,8 +90,9 @@ class OKApi
     private string $secret = "702d0e9c2f9e89189efd3a87d95901a0";
     private OkUser $user;
 
-    public function relogin($page, $url) : Page {
-        do  {
+    public function relogin($page, $url) : Page
+    {
+        do {
             $page->goto('https://ok.ru', [
                 "waitUntil" => 'networkidle0',
             ]);
@@ -109,12 +110,12 @@ class OKApi
             $dom->loadStr($page->content());
             $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
 
-            if($captchFlag) {
+            if ($captchFlag) {
                 $this->user->blocked = true;
                 $this->user->save();
                 $this->setAnotherUser();
             }
-        } while($captchFlag);
+        } while ($captchFlag);
         $page->goto($url, [
             "waitUntil" => 'networkidle0',
         ]);
@@ -126,8 +127,9 @@ class OKApi
         return $page;
     }
 
-    public function setAnotherUser() {
-        if(OkUser::where('blocked', false)->count() === 0) {
+    public function setAnotherUser()
+    {
+        if (OkUser::where('blocked', false)->count() === 0) {
             throw new Exception("All users are blocked");
         }
         $this->user = OkUser::where('blocked', false)->first();
@@ -188,10 +190,10 @@ class OKApi
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
             $mustLogin = $dom->find('div.close-button__akasx', 0);
-            if($mustLogin) {
+            if ($mustLogin) {
                 $page = $this->relogin($page, $url);
             }
-            if($flag) {
+            if ($flag) {
                 $page = $this->relogin($page, $url);
             }
         }
@@ -223,14 +225,14 @@ class OKApi
             $loadMore = $dom->find('a.js-show-more.link-show-more', 0);
             $loadMoreContainer = $dom->find('div.loader-container', 0);
 
-            if($loadMore && !$loadMoreContainer) {
+            if ($loadMore && !$loadMoreContainer) {
                 $page->click('a.js-show-more.link-show-more');
             }
             $postsHtml = $dom->find('.feed-w');
-            foreach($postsHtml as $postHtml) {
+            foreach ($postsHtml as $postHtml) {
                 $jsInfo = $postHtml->find('.feed_cnt', 0);
                 $info = explode(',', $jsInfo->getAttribute('data-l'));
-                if(sizeof($info) === 4) {
+                if (sizeof($info) === 4) {
                     $info = [
                         'topicId' => $info[1],
                         'groupId' => $info[3]
@@ -238,11 +240,11 @@ class OKApi
                     $posts[$info['topicId']] = $info['topicId'];
                 }
             }
-            if($iterations++ > $limit) {
+            if ($iterations++ > $limit) {
                 break;
             }
             sleep(2);
-        } while(sizeof($posts) < $limit);
+        } while (sizeof($posts) < $limit);
 
         $browser->close();
         return array_values($posts);
@@ -269,11 +271,11 @@ class OKApi
             $dom = new DOM;
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
-            if($flag) {
+            if ($flag) {
                 $page = $this->relogin($page, $url);
             }
             $flag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
-            if($flag) {
+            if ($flag) {
                 $page = $this->relogin($page, $url);
             }
         }
@@ -305,23 +307,25 @@ class OKApi
             $dom->loadStr($page->content());
 
             $postsHtml = $dom->find('.feed-w');
-            foreach($postsHtml as $postHtml) {
+            foreach ($postsHtml as $postHtml) {
                 $jsInfo = $postHtml->find('.feed_cnt', 0);
                 $info = explode(',', $jsInfo->getAttribute('data-l'));
-                if(sizeof($info) === 4) {
+                if (sizeof($info) === 4) {
                     $info = [
                         'ownerUserId' => $info[1],
                         'topicId' => $info[3]
                     ];
-                    if(strlen($info['ownerUserId']) !== 12) continue;
+                    if (strlen($info['ownerUserId']) !== 12) {
+                        continue;
+                    }
                     $posts[$info['topicId']] = $info['topicId'];
                 }
             }
-            if($iterations++ > $limit) {
+            if ($iterations++ > $limit) {
                 break;
             }
             sleep(2);
-        } while(sizeof($posts) < $limit);
+        } while (sizeof($posts) < $limit);
         $browser->close();
 
         return array_values($posts);
@@ -401,7 +405,7 @@ class OKApi
                 'access_token' => $this->key
             ];
             $result = $this->request($params);
-            if(!empty($result)) {
+            if (!empty($result)) {
                 $output[] = $result;
             }
         }
@@ -444,10 +448,11 @@ class OKApi
         return $output;
     }
 
-    public function getPostLikes($id, $anchor = ""): bool|array
+    public function getPostLikes($id, $limit): bool|array
     {
         foreach (self::TYPES as $type) {
             $anpr = "";
+            $anchor = "";
 
             if ($anchor != "") {
                 $anpr = "anchor=" . $anchor;
@@ -471,10 +476,50 @@ class OKApi
             if ($anchor != "") {
                 $params = array_merge(array('anchor' => $anchor), $params);
             }
-            $output[] = $this->request($params);
-        }
+            $answer = $this->request($params);
+            if (array_key_exists('error_msg', $answer) || !array_key_exists('users', $answer)) {
+                continue;
+            } else {
+                $output = $answer['users'];
+                $anchor = $answer['anchor'];
+                while (sizeof($output) < $limit) {
+                    
+                    $anpr = "";
 
-        return $output;
+                    if ($anchor != "") {
+                        $anpr = "anchor=" . $anchor;
+                    }
+
+                    $method = "discussions.getDiscussionLikes";
+
+                    $md5 = md5("{$anpr}application_key={$this->appKey}count=100discussionId={$id}discussionType={$type}format=jsonmethod={$method}{$this->secret}");
+
+                    $params = [
+                        'application_key' => $this->appKey,
+                        'count' => 100,
+                        'discussionId' => $id,
+                        'discussionType' => $type,
+                        'format' => 'json',
+                        'method' => $method,
+                        'sig' => $md5,
+                        'access_token' => $this->key
+                    ];
+
+                    if ($anchor != "") {
+                        $params = array_merge(array('anchor' => $anchor), $params);
+                    }
+                    $answer = $this->request($params);
+                    if(!array_key_exists('error_msg', $answer) && !empty($answer) && isset($answer['users'])) {
+                        $output = array_merge($output, $answer['users']);
+                        $anchor = $answer['anchor'];
+                    } else {
+                        return $output;
+                    }
+                }
+                return $output;
+            }
+        }
+        return [];
     }
 
     protected function request(array $params): bool|array
