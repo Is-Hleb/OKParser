@@ -454,10 +454,6 @@ class OKApi
             $anpr = "";
             $anchor = "";
 
-            if ($anchor != "") {
-                $anpr = "anchor=" . $anchor;
-            }
-
             $method = "discussions.getDiscussionLikes";
 
             $md5 = md5("{$anpr}application_key={$this->appKey}count=100discussionId={$id}discussionType={$type}format=jsonmethod={$method}{$this->secret}");
@@ -473,9 +469,6 @@ class OKApi
                 'access_token' => $this->key
             ];
 
-            if ($anchor != "") {
-                $params = array_merge(array('anchor' => $anchor), $params);
-            }
             $answer = $this->request($params);
             if (array_key_exists('error_msg', $answer) || !array_key_exists('users', $answer)) {
                 continue;
@@ -484,11 +477,7 @@ class OKApi
                 $anchor = $answer['anchor'];
                 while (sizeof($output) < $limit) {
                     
-                    $anpr = "";
-
-                    if ($anchor != "") {
-                        $anpr = "anchor=" . $anchor;
-                    }
+                    $anpr = "anchor=" . $anchor;
 
                     $method = "discussions.getDiscussionLikes";
 
@@ -505,11 +494,10 @@ class OKApi
                         'access_token' => $this->key
                     ];
 
-                    if ($anchor != "") {
-                        $params = array_merge(array('anchor' => $anchor), $params);
-                    }
+                    $params = array_merge(array('anchor' => $anchor), $params);
+                    
                     $answer = $this->request($params);
-                    if(!array_key_exists('error_msg', $answer) && !empty($answer) && isset($answer['users'])) {
+                    if(!empty($answer) && !array_key_exists('error_msg', $answer) && isset($answer['users'])) {
                         $output = array_merge($output, $answer['users']);
                         $anchor = $answer['anchor'];
                     } else {
