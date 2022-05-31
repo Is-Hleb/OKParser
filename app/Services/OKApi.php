@@ -67,17 +67,9 @@ class OKApi
             ],
             'getPostComments' => [
                 'id' => 'required',
-                'type' => [
-                    'required',
-                    Rule::in(self::TYPES)
-                ]
             ],
             'getPostLikes' => [
                 'id' => 'required',
-                'type' => [
-                    'required',
-                    Rule::in(self::TYPES)
-                ]
             ],
             'getUserSubscribersIds' => [
                 'user_id' => 'required'
@@ -428,55 +420,61 @@ class OKApi
         return $this->getPostInfoById($id);
     }
 
-    public function getPostComments($id, $type, $offset = 0): bool|array
+    public function getPostComments($id, $offset = 0): bool|array
     {
-        $method = "discussions.getDiscussionComments";
+        foreach (self::TYPES as $type) {
+            $method = "discussions.getDiscussionComments";
 
-        $md5 = md5("application_key={$this->appKey}count=1000entityId={$id}entityType={$type}format=jsonmethod={$method}offset={$offset}{$this->secret}");
+            $md5 = md5("application_key={$this->appKey}count=1000entityId={$id}entityType={$type}format=jsonmethod={$method}offset={$offset}{$this->secret}");
 
-        $params = [
-            'application_key' => $this->appKey,
-            'count' => 1000,
-            'entityId' => $id,
-            'entityType' => $type,
-            'format' => 'json',
-            'method' => $method,
-            'offset' => $offset,
-            'sig' => $md5,
-            'access_token' => $this->key
-        ];
+            $params = [
+                'application_key' => $this->appKey,
+                'count' => 1000,
+                'entityId' => $id,
+                'entityType' => $type,
+                'format' => 'json',
+                'method' => $method,
+                'offset' => $offset,
+                'sig' => $md5,
+                'access_token' => $this->key
+            ];
+            $output[] = $this->request($params);
+        }
 
-        return $this->request($params);
+        return $output;
     }
 
-    public function getPostLikes($id, $type, $anchor = ""): bool|array
+    public function getPostLikes($id, $anchor = ""): bool|array
     {
-        $anpr = "";
+        foreach (self::TYPES as $type) {
+            $anpr = "";
 
-        if ($anchor != "") {
-            $anpr = "anchor=" . $anchor;
+            if ($anchor != "") {
+                $anpr = "anchor=" . $anchor;
+            }
+
+            $method = "discussions.getDiscussionLikes";
+
+            $md5 = md5("{$anpr}application_key={$this->appKey}count=100discussionId={$id}discussionType={$type}format=jsonmethod={$method}{$this->secret}");
+
+            $params = [
+                'application_key' => $this->appKey,
+                'count' => 100,
+                'discussionId' => $id,
+                'discussionType' => $type,
+                'format' => 'json',
+                'method' => $method,
+                'sig' => $md5,
+                'access_token' => $this->key
+            ];
+
+            if ($anchor != "") {
+                $params = array_merge(array('anchor' => $anchor), $params);
+            }
+            $output[] = $this->request($params);
         }
 
-        $method = "discussions.getDiscussionLikes";
-
-        $md5 = md5("{$anpr}application_key={$this->appKey}count=100discussionId={$id}discussionType={$type}format=jsonmethod={$method}{$this->secret}");
-
-        $params = [
-            'application_key' => $this->appKey,
-            'count' => 100,
-            'discussionId' => $id,
-            'discussionType' => $type,
-            'format' => 'json',
-            'method' => $method,
-            'sig' => $md5,
-            'access_token' => $this->key
-        ];
-
-        if ($anchor != "") {
-            $params = array_merge(array('anchor' => $anchor), $params);
-        }
-
-        return $this->request($params);
+        return $output;
     }
 
     protected function request(array $params): bool|array
