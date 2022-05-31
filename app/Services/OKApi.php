@@ -15,9 +15,6 @@ use Nesk\Puphpeteer\Puppeteer;
 use Nesk\Puphpeteer\Resources\Page;
 use Nesk\Rialto\Data\JsFunction;
 
-/**
- * ContactForm is the model behind the contact form.
- */
 class OKApi
 {
     private const BASE_URL = "https://api.ok.ru/fb.do?";
@@ -47,12 +44,17 @@ class OKApi
         'getPostInfoById',
         'getPostComments',
         'getPostLikes',
-        'getSubscribersIds'
+        'getSubscribersIds', 
+        'getPostsByGroup'
     ];
 
     public static function validationRules(): array
     {
         return [
+            'getPostsByGroup' => [
+                'url' => 'required',
+                'limit' => 'required'
+            ],
             'getGroupFollowers' => [
                 'id' => 'required',
                 'anchor'
@@ -97,31 +99,30 @@ class OKApi
     private OkUser $user;
 
     public function relogin($page, $url) : Page {
-        
-        $page->goto('https://ok.ru', [
-            "waitUntil" => 'networkidle0',
-        ]);
+        do  {
+            $page->goto('https://ok.ru', [
+                "waitUntil" => 'networkidle0',
+            ]);
 
-        $page->type('#field_email', $this->user->login);
-        $page->type('#field_password', $this->user->password);
+            $page->type('#field_email', $this->user->login);
+            $page->type('#field_password', $this->user->password);
 
-        $page->click('input[type="submit"]');
+            $page->click('input[type="submit"]');
 
-        $page->waitForNavigation([
-            "waitUntil" => 'networkidle0',
-        ]);
-        $dom = new DOM;
-        $dom->loadStr($page->content());
-        file_put_contents(storage_path('logs/') . "outputRelogin.html", $page->content());
-        $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
+            $page->waitForNavigation([
+                "waitUntil" => 'networkidle0',
+            ]);
+            $dom = new DOM;
+            
+            $dom->loadStr($page->content());
+            $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
 
-        if($captchFlag) {
-            $this->user->blocked = true;
-            $this->user->save();
-            $this->setAnotherUser();
-            $page = $this->relogin($page, $url);
-        }
-
+            if($captchFlag) {
+                $this->user->blocked = true;
+                $this->user->save();
+                $this->setAnotherUser();
+            }
+        } while($captchFlag);
         $page->goto($url, [
             "waitUntil" => 'networkidle0',
         ]);
@@ -171,6 +172,88 @@ class OKApi
             // name, email, subject and body are required
             [['id'], 'required'],
         ];
+    }
+
+    public function getPostsByGroup($url, $limit)
+    {
+        $puppeteer = new Puppeteer([
+            'executable_path' => config('puppeter.node_path'),
+        ]);
+        $browser = $puppeteer->launch([
+            // 'headless' => false
+        ]);
+
+
+        $page = $browser->newPage();
+        if (!$this->user->cookies) {
+            $page = $this->relogin($page, $url);
+        } else {
+            $cookies = json_decode($this->user->cookies, JSON_OBJECT_AS_ARRAY);
+            $page->setCookie(...$cookies['cookies']);
+            $page->goto($url);
+
+            $dom = new DOM;
+            $dom->loadStr($page->content());
+            $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
+            $mustLogin = $dom->find('div.close-button__akasx', 0);
+            if($mustLogin) {
+                $page = $this->relogin($page, $url);
+            }
+            if($flag) {
+                $page = $this->relogin($page, $url);
+            }
+        }
+
+        $page->evaluate(JsFunction::createWithBody("
+        async function subscribe() {
+            let response = await await new Promise(resolve => {
+                    const distance = 100; // should be less than or equal to window.innerHeight
+                    const delay = 100;
+                    const timer = setInterval(() => {
+                    document.scrollingElement.scrollBy(0, distance);
+                    if (document.scrollingElement.scrollTop + window.innerHeight >= document.								scrollingElement.scrollHeight) {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                    }, delay);
+                    });
+            await subscribe();
+        }
+          subscribe();
+        "));
+        
+        $dom = new Dom;
+        $iterations = 0;
+        ini_set('max_execution_time', 0);
+        do {
+            $posts = [];
+            $dom->loadStr($page->content());
+            $loadMore = $dom->find('a.js-show-more.link-show-more', 0);
+            $loadMoreContainer = $dom->find('div.loader-container', 0);
+
+            if($loadMore && !$loadMoreContainer) {
+                $page->click('a.js-show-more.link-show-more');
+            }
+            $postsHtml = $dom->find('.feed-w');
+            foreach($postsHtml as $postHtml) {
+                $jsInfo = $postHtml->find('.feed_cnt', 0);
+                $info = explode(',', $jsInfo->getAttribute('data-l'));
+                if(sizeof($info) === 4) {
+                    $info = [
+                        'topicId' => $info[1],
+                        'groupId' => $info[3]
+                    ];
+                    $posts[$info['topicId']] = $info['topicId'];
+                }
+            }
+            if($iterations++ > $limit) {
+                break;
+            }
+            sleep(2);
+        } while(sizeof($posts) < $limit);
+
+        $browser->close();
+        return array_values($posts);
     }
 
     public function getPostsByUser($url, $limit)
