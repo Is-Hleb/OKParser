@@ -18,34 +18,23 @@ class OKApi
 {
     private const BASE_URL = "https://api.ok.ru/fb.do?";
     public const TYPES = [
-        'CHAT',
-        'CITY_NEWS',
-        'GROUP_MOVIE',
-        'GROUP_PHOTO',
-        'GROUP_PRODUCT',
-        'GROUP_TOPIC',
-        'HAPPENING_TOPIC',
-        'MOVIE',
-        'OFFER',
-        'PRESENT',
-        'SCHOOL_FORUM',
-        'SHARE',
-        'USER_ALBUM',
-        'USER_FORUM',
-        'USER_PHOTO',
-        'USER_PRODUCT',
+        'CHAT','CITY_NEWS','GROUP_MOVIE', 'GROUP_PHOTO',
+        'GROUP_PRODUCT','GROUP_TOPIC','HAPPENING_TOPIC',
+        'MOVIE','OFFER','PRESENT','SCHOOL_FORUM','SHARE',
+        'USER_ALBUM','USER_FORUM','USER_PHOTO','USER_PRODUCT',
         'USER_STATUS',
     ];
     public const ACTIONS = [
-        'getPostsByUser',
-        'getGroupFollowers',
-        'getUserInfo',
-        'getPostInfoById',
-        'getPostComments',
-        'getPostLikes',
-        'getSubscribersIds',
-        'getPostsByGroup'
+        'getPostsByUser','getGroupFollowers',
+        'getUserInfo','getPostInfoById','getPostComments',
+        'getPostLikes','getSubscribersIds', 'getPostsByGroup'
     ];
+
+    public int $id;
+    private string $appKey;
+    private string $key;
+    private string $secret;
+    private OkUser $user;
 
     public static function validationRules(): array
     {
@@ -82,57 +71,6 @@ class OKApi
                 'limit' => 'required'
             ]
         ];
-    }
-
-    public int $id;
-    private string $appKey = "CGPDPPJGDIHBABABA";
-    private string $key = "tkn1o2oL049LyxGPHFOHvrJdviNOd2ez5mOrgnmNJRLVv9Jnu5qQaQlA9PSFX6MnGDDKn";
-    private string $secret = "702d0e9c2f9e89189efd3a87d95901a0";
-    private OkUser $user;
-
-    public function relogin($page, $url) : Page
-    {
-        do {
-            $page->goto('https://ok.ru', [
-                "waitUntil" => 'networkidle0',
-            ]);
-
-            $page->type('#field_email', $this->user->login);
-            $page->type('#field_password', $this->user->password);
-
-            $page->click('input[type="submit"]');
-
-            $page->waitForNavigation([
-                "waitUntil" => 'networkidle0',
-            ]);
-            $dom = new DOM;
-            
-            $dom->loadStr($page->content());
-            $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
-
-            if ($captchFlag) {
-                $this->user->blocked = true;
-                $this->user->save();
-                $this->setAnotherUser();
-            }
-        } while ($captchFlag);
-        $page->goto($url, [
-            "waitUntil" => 'networkidle0',
-        ]);
-
-        $coo = json_encode($page->_client->send('Network.getAllCookies'));
-        
-        $this->user->cookies = $coo;
-        $this->user->save();
-        return $page;
-    }
-
-    public function setAnotherUser()
-    {
-        if (OkUser::where('blocked', false)->count() === 0) {
-            throw new Exception("All users are blocked");
-        }
-        $this->user = OkUser::where('blocked', false)->first();
     }
 
     public function __construct()
@@ -510,7 +448,52 @@ class OKApi
         return [];
     }
 
-    protected function request(array $params): bool|array
+    private function relogin($page, $url) : Page
+    {
+        do {
+            $page->goto('https://ok.ru', [
+                "waitUntil" => 'networkidle0',
+            ]);
+
+            $page->type('#field_email', $this->user->login);
+            $page->type('#field_password', $this->user->password);
+
+            $page->click('input[type="submit"]');
+
+            $page->waitForNavigation([
+                "waitUntil" => 'networkidle0',
+            ]);
+            $dom = new DOM;
+            
+            $dom->loadStr($page->content());
+            $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
+
+            if ($captchFlag) {
+                $this->user->blocked = true;
+                $this->user->save();
+                $this->setAnotherUser();
+            }
+        } while ($captchFlag);
+        $page->goto($url, [
+            "waitUntil" => 'networkidle0',
+        ]);
+
+        $coo = json_encode($page->_client->send('Network.getAllCookies'));
+        
+        $this->user->cookies = $coo;
+        $this->user->save();
+        return $page;
+    }
+
+    private function setAnotherUser()
+    {
+        if (OkUser::where('blocked', false)->count() === 0) {
+            throw new Exception("All users are blocked");
+        }
+        $this->user = OkUser::where('blocked', false)->first();
+    }
+
+    private function request(array $params): bool|array
     {
         $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
             'http' => array(
