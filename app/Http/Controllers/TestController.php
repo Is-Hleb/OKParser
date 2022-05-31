@@ -13,35 +13,34 @@ class TestController extends Controller
     protected OkUser $user;
     public function __construct()
     {
-        $this->user = OkUser::find(5);
+        $this->user = OkUser::where('blocked', false)->first();
     }
 
     public function relogin($page, $url) : Page {
-        
-        $page->goto('https://ok.ru', [
-            "waitUntil" => 'networkidle0',
-        ]);
+        do  {
+            $page->goto('https://ok.ru', [
+                "waitUntil" => 'networkidle0',
+            ]);
 
-        $page->type('#field_email', $this->user->login);
-        $page->type('#field_password', $this->user->password);
+            $page->type('#field_email', $this->user->login);
+            $page->type('#field_password', $this->user->password);
 
-        $page->click('input[type="submit"]');
+            $page->click('input[type="submit"]');
 
-        $page->waitForNavigation([
-            "waitUntil" => 'networkidle0',
-        ]);
-        $dom = new DOM;
-        
-        $dom->loadStr($page->content());
-        $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
+            $page->waitForNavigation([
+                "waitUntil" => 'networkidle0',
+            ]);
+            $dom = new DOM;
+            
+            $dom->loadStr($page->content());
+            $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
 
-        if($captchFlag) {
-            $this->user->blocked = true;
-            $this->user->save();
-            $this->setAnotherUser();
-            $page = $this->relogin($page, $url);
-        }
-
+            if($captchFlag) {
+                $this->user->blocked = true;
+                $this->user->save();
+                $this->setAnotherUser();
+            }
+        } while($captchFlag);
         $page->goto($url, [
             "waitUntil" => 'networkidle0',
         ]);
@@ -64,7 +63,7 @@ class TestController extends Controller
     public function __invoke()
     {
         $postsCount = 10;
-        $url = "https://ok.ru/profile/571774735285";
+        $url = "https://ok.ru/ok";
         
         $puppeteer = new Puppeteer([
             'executable_path' => config('puppeter.node_path'),
@@ -85,6 +84,10 @@ class TestController extends Controller
             $dom = new DOM;
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
+            $mustLogin = $dom->find('div.close-button__akasx', 0);
+            if($mustLogin) {
+                $page = $this->relogin($page, $url);
+            }
             if($flag) {
                 $page = $this->relogin($page, $url);
             }
@@ -114,18 +117,23 @@ class TestController extends Controller
         do {
             $posts = [];
             $dom->loadStr($page->content());
+            $loadMore = $dom->find('a.js-show-more.link-show-more', 0);
+            $loadMoreContainer = $dom->find('div.loader-container', 0);
 
+            if($loadMore && !$loadMoreContainer) {
+                $page->click('a.js-show-more.link-show-more');
+            }
             $postsHtml = $dom->find('.feed-w');
             foreach($postsHtml as $postHtml) {
                 $jsInfo = $postHtml->find('.feed_cnt', 0);
                 $info = explode(',', $jsInfo->getAttribute('data-l'));
+                dump($info);
                 if(sizeof($info) === 4) {
                     $info = [
-                        'ownerUserId' => $info[1],
-                        'topicId' => $info[3]
+                        'topicId' => $info[1],
+                        'groupId' => $info[3]
                     ];
-                    if(strlen($info['ownerUserId']) !== 12) continue;
-                    $posts[$info['ownerUserId']][] = $info['topicId'];
+                    $posts[$info['topicId']] = $info['topicId'];
                 }
             }
             if($iterations++ > $postsCount) {
