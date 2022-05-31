@@ -5,19 +5,47 @@ namespace App\Http\Controllers;
 use App\Models\OkUser;
 use PHPHtmlParser\Dom;
 use Nesk\Puphpeteer\Puppeteer;
+use Nesk\Puphpeteer\Resources\Browser;
 use Nesk\Puphpeteer\Resources\Page;
 use Nesk\Rialto\Data\JsFunction;
 
 class TestController extends Controller
 {
     protected OkUser $user;
+    private JsFunction $sutoscrollFunction;
+    private Puppeteer $puppeteer;
+    private Browser $browser;
+
     public function __construct()
     {
+        $this->puppeteer = new Puppeteer([
+            'executable_path' => config('puppeter.node_path'),
+        ]);
+        $this->browser = $this->puppeteer->launch([
+            'headless' => false
+        ]);
         $this->user = OkUser::where('blocked', false)->first();
+        $this->sutoscrollFunction = JsFunction::createWithBody("
+        async function subscribe() {
+            let response = await await new Promise(resolve => {
+                    const distance = 100; // should be less than or equal to window.innerHeight
+                    const delay = 100;
+                    const timer = setInterval(() => {
+                    document.scrollingElement.scrollBy(0, distance);
+                    if (document.scrollingElement.scrollTop + window.innerHeight >= document.								scrollingElement.scrollHeight) {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                    }, delay);
+                    });
+            await subscribe();
+        }
+          subscribe();
+        ");
     }
 
     public function relogin($page, $url) : Page {
-        do  {
+        do {
             $page->goto('https://ok.ru', [
                 "waitUntil" => 'networkidle0',
             ]);
@@ -62,18 +90,13 @@ class TestController extends Controller
 
     public function __invoke()
     {
-        $postsCount = 10;
+        $limit = 10;
         $url = "https://ok.ru/ok";
-        
-        $puppeteer = new Puppeteer([
-            'executable_path' => config('puppeter.node_path'),
-        ]);
-        $browser = $puppeteer->launch([
-            'headless' => false
-        ]);
+        $user_id = "203475530776";
+        $url = "http://ok.ru/profile/$user_id/groups";
+    
 
-
-        $page = $browser->newPage();
+        $page = $this->browser->newPage();
         if (!$this->user->cookies) {
             $page = $this->relogin($page, $url);
         } else {
@@ -84,65 +107,37 @@ class TestController extends Controller
             $dom = new DOM;
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
-            $mustLogin = $dom->find('div.close-button__akasx', 0);
-            if($mustLogin) {
-                $page = $this->relogin($page, $url);
-            }
             if($flag) {
                 $page = $this->relogin($page, $url);
             }
         }
 
-        $page->evaluate(JsFunction::createWithBody("
-        async function subscribe() {
-            let response = await await new Promise(resolve => {
-                    const distance = 100; // should be less than or equal to window.innerHeight
-                    const delay = 100;
-                    const timer = setInterval(() => {
-                    document.scrollingElement.scrollBy(0, distance);
-                    if (document.scrollingElement.scrollTop + window.innerHeight >= document.								scrollingElement.scrollHeight) {
-                        clearInterval(timer);
-                        resolve();
-                    }
-                    }, delay);
-                    });
-            await subscribe();
-        }
-          subscribe();
-        "));
+        $page->evaluate($this->sutoscrollFunction);
         
         $dom = new Dom;
         $iterations = 0;
+        $output = [];
         ini_set('max_execution_time', 0);
         do {
-            $posts = [];
             $dom->loadStr($page->content());
-            $loadMore = $dom->find('a.js-show-more.link-show-more', 0);
-            $loadMoreContainer = $dom->find('div.loader-container', 0);
-
-            if($loadMore && !$loadMoreContainer) {
-                $page->click('a.js-show-more.link-show-more');
-            }
-            $postsHtml = $dom->find('.feed-w');
+            
+            $postsHtml = $dom->find('.ugrid_i');
             foreach($postsHtml as $postHtml) {
-                $jsInfo = $postHtml->find('.feed_cnt', 0);
-                $info = explode(',', $jsInfo->getAttribute('data-l'));
-                dump($info);
-                if(sizeof($info) === 4) {
-                    $info = [
-                        'topicId' => $info[1],
-                        'groupId' => $info[3]
-                    ];
-                    $posts[$info['topicId']] = $info['topicId'];
+                $jsInfo = $postHtml->find('.user-grid-card_img', 0);
+                $url = $jsInfo->getAttribute('href');
+                $user_id = explode('/', $url);
+                $user_id = end($user_id);
+                if (is_numeric($user_id)) {
+                    $output[] = $user_id;
                 }
             }
-            if($iterations++ > $postsCount) {
+            if($iterations++ > $limit) {
                 break;
             }
             sleep(2);
-        } while(sizeof($posts) < $postsCount);
+        } while(sizeof($output) < $limit);
 
-        $browser->close();
-        dump($posts);        
+        $this->browser->close();
+        dump($output);        
     }
 }

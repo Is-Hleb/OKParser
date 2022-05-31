@@ -4,13 +4,11 @@ namespace App\Services;
 
 use App\Models\ApiToken;
 use App\Models\OkUser;
-use RoachPHP\Roach;
-use App\Spiders\OkSubscribers;
 use Exception;
-use Illuminate\Support\Facades\DB;
-use RoachPHP\Spider\Configuration\Overrides;
+use Illuminate\Validation\Rule;
 use PHPHtmlParser\Dom;
 use Nesk\Puphpeteer\Puppeteer;
+use Nesk\Puphpeteer\Resources\Browser;
 use Nesk\Puphpeteer\Resources\Page;
 use Nesk\Rialto\Data\JsFunction;
 
@@ -27,7 +25,7 @@ class OKApi
     public const ACTIONS = [
         'getPostsByUser','getGroupFollowers',
         'getUserInfo','getPostInfoById','getPostComments',
-        'getPostLikes','getSubscribersIds', 'getPostsByGroup'
+        'getPostLikes','getUserAuditory', 'getPostsByGroup'
     ];
 
     public int $id;
@@ -35,6 +33,9 @@ class OKApi
     private string $key;
     private string $secret;
     private OkUser $user;
+    private JsFunction $sutoscrollFunction;
+    private Puppeteer $puppeteer;
+    private Browser $browser;
 
     public static function validationRules(): array
     {
@@ -60,8 +61,14 @@ class OKApi
                 'id' => 'required',
                 'limit' => 'required'
             ],
-            'getUserSubscribersIds' => [
-                'user_id' => 'required'
+            'getUserAuditory' => [
+                'user_id' => 'required',
+                'limit' => 'required',
+                'mode' => ['required', Rule::in([
+                    'subscribers',
+                    'friends',
+                    'groups'
+                ])]
             ],
             'getPostInfoById' => [
                 'id' => 'required'
@@ -81,21 +88,102 @@ class OKApi
         $this->appKey = $okToken->app_key;
         $this->key = $okToken->key;
         $this->secret = $okToken->secret;
+        $this->init();
     }
 
-    public function getUserSubscribersIds($user_id)
-    {
-        $url = OkSubscribers::getInitialUrl($user_id, 1);
-        $output = Roach::collectSpider(
-            OkSubscribers::class,
-            new Overrides([$url]),
-            context: ['user_id' => $user_id]
-        );
-        $result = [];
-        foreach ($output as $data) {
-            $result = array_merge($result, $data->all());
+    private function init() {
+        $this->sutoscrollFunction = JsFunction::createWithBody("
+        async function subscribe() {
+            let response = await await new Promise(resolve => {
+                    const distance = 100; // should be less than or equal to window.innerHeight
+                    const delay = 100;
+                    const timer = setInterval(() => {
+                    document.scrollingElement.scrollBy(0, distance);
+                    if (document.scrollingElement.scrollTop + window.innerHeight >= document.								scrollingElement.scrollHeight) {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                    }, delay);
+                    });
+            await subscribe();
         }
-        return $result;
+          subscribe();
+        ");
+    }
+
+    public function getUserAuditory($user_id, $limit, $mode)
+    {
+        $this->puppeteer = new Puppeteer([
+                'executable_path' => config('puppeter.node_path'),
+        ]);
+        $this->browser = $this->puppeteer->launch([
+            'headless' => false
+        ]);
+        $url = "http://ok.ru/profile/$user_id/$mode";
+
+        $page = $this->browser->newPage();
+        if (!$this->user->cookies) {
+            $page = $this->relogin($page, $url);
+        } else {
+            $cookies = json_decode($this->user->cookies, JSON_OBJECT_AS_ARRAY);
+            $page->setCookie(...$cookies['cookies']);
+            $page->goto($url);
+
+            $dom = new DOM;
+            $dom->loadStr($page->content());
+            $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
+            if($flag) {
+                $page = $this->relogin($page, $url);
+            }
+        }
+
+        $page->evaluate($this->sutoscrollFunction);
+        
+        $dom = new Dom;
+        $iterations = 0;
+        $output = [];
+        ini_set('max_execution_time', 0);
+        if($mode == 'groups') {
+            do {
+                $dom->loadStr($page->content());
+            
+                $postsHtml = $dom->find('.ugrid_i.show-on-hover.group-detailed-card');
+                foreach ($postsHtml as $postHtml) {
+                    $output[] = $postHtml->getAttribute('data-group-id');
+                }
+                if ($iterations++ > $limit) {
+                    break;
+                }
+                sleep(2);
+            } while (sizeof($output) < $limit);
+        } else {
+            do {
+                $dom->loadStr($page->content());
+            
+                $postsHtml = $dom->find('.ugrid_i');
+                foreach ($postsHtml as $postHtml) {
+                    if ($mode === 'friends') {
+                        $jsInfo = $postHtml->find('.photo', 0)->find('a', 0);
+                        $url = $jsInfo->getAttribute('href');
+                    } else {
+                        $jsInfo = $postHtml->find('.user-grid-card_img', 0);
+                        $url = $jsInfo->getAttribute('href');
+                    }
+                    $user_id = explode('/', $url);
+                    $user_id = end($user_id);
+                    if (is_numeric($user_id)) {
+                        $output[] = $user_id;
+                    }
+                }
+                if ($iterations++ > $limit) {
+                    break;
+                }
+                sleep(2);
+            } while (sizeof($output) < $limit);
+        }
+
+        $this->browser->close();
+        return $output;
     }
 
     public function rules(): array
@@ -108,15 +196,13 @@ class OKApi
 
     public function getPostsByGroup($url, $limit)
     {
-        $puppeteer = new Puppeteer([
+        $this->puppeteer = new Puppeteer([
             'executable_path' => config('puppeter.node_path'),
         ]);
-        $browser = $puppeteer->launch([
-            // 'headless' => false
+        $this->browser = $this->puppeteer->launch([
+            'headless' => false
         ]);
-
-
-        $page = $browser->newPage();
+        $page = $this->browser->newPage();
         if (!$this->user->cookies) {
             $page = $this->relogin($page, $url);
         } else {
@@ -136,23 +222,7 @@ class OKApi
             }
         }
 
-        $page->evaluate(JsFunction::createWithBody("
-        async function subscribe() {
-            let response = await await new Promise(resolve => {
-                    const distance = 100; // should be less than or equal to window.innerHeight
-                    const delay = 100;
-                    const timer = setInterval(() => {
-                    document.scrollingElement.scrollBy(0, distance);
-                    if (document.scrollingElement.scrollTop + window.innerHeight >= document.								scrollingElement.scrollHeight) {
-                        clearInterval(timer);
-                        resolve();
-                    }
-                    }, delay);
-                    });
-            await subscribe();
-        }
-          subscribe();
-        "));
+        $page->evaluate($this->sutoscrollFunction);
         
         $dom = new Dom;
         $iterations = 0;
@@ -184,19 +254,19 @@ class OKApi
             sleep(2);
         } while (sizeof($posts) < $limit);
 
-        $browser->close();
+        $this->browser->close();
         return array_values($posts);
     }
 
     public function getPostsByUser($url, $limit)
     {
-        $puppeteer = new Puppeteer([
+        $this->puppeteer = new Puppeteer([
             'executable_path' => config('puppeter.node_path'),
         ]);
-        $browser = $puppeteer->launch();
-
-
-        $page = $browser->newPage();
+        $this->browser = $this->puppeteer->launch([
+            'headless' => false
+        ]);
+        $page = $this->browser->newPage();
         if (!$this->user->cookies) {
             $page = $this->relogin($page, $url);
         } else {
@@ -218,23 +288,7 @@ class OKApi
             }
         }
 
-        $page->evaluate(JsFunction::createWithBody("
-        async function subscribe() {
-            let response = await await new Promise(resolve => {
-                    const distance = 100; // should be less than or equal to window.innerHeight
-                    const delay = 100;
-                    const timer = setInterval(() => {
-                    document.scrollingElement.scrollBy(0, distance);
-                    if (document.scrollingElement.scrollTop + window.innerHeight >= document.								scrollingElement.scrollHeight) {
-                        clearInterval(timer);
-                        resolve();
-                    }
-                    }, delay);
-                    });
-            await subscribe();
-        }
-          subscribe();
-        "));
+        $page->evaluate($this->sutoscrollFunction);
         
         $dom = new Dom;
         $iterations = 0;
@@ -264,7 +318,7 @@ class OKApi
             }
             sleep(2);
         } while (sizeof($posts) < $limit);
-        $browser->close();
+        $this->browser->close();
 
         return array_values($posts);
     }
