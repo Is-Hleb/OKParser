@@ -113,6 +113,7 @@ class OKApi
 
     public function getUserAuditory($user_id, $limit, $mode)
     {
+        $limitExist = $limit === -1;
         $this->puppeteer = new Puppeteer([
                 'executable_path' => config('puppeter.node_path'),
         ]);
@@ -144,19 +145,29 @@ class OKApi
         $output = [];
         ini_set('max_execution_time', 0);
         if($mode == 'groups') {
+            $lastArraySize = 0;
+            $equalArrayCount = 0;
             do {
                 $dom->loadStr($page->content());
             
                 $postsHtml = $dom->find('.ugrid_i.show-on-hover.group-detailed-card');
                 foreach ($postsHtml as $postHtml) {
-                    $output[] = $postHtml->getAttribute('data-group-id');
+                    $group_id = $postHtml->getAttribute('data-group-id');
+                    $output[$group_id] = $postHtml->getAttribute('data-group-id');
                 }
-                if ($iterations++ > $limit) {
+                if ($iterations++ > $limit && $limitExist) {
                     break;
                 }
                 sleep(2);
-            } while (sizeof($output) < $limit);
+                $equalArrayCount += $lastArraySize == sizeof($output);
+                $lastArraySize = sizeof($output);
+                if($equalArrayCount > 5) {
+                    break;
+                }
+            } while (sizeof($output) < $limit && $limitExist);
         } else {
+            $lastArraySize = 0;
+            $equalArrayCount = 0;
             do {
                 $dom->loadStr($page->content());
             
@@ -172,18 +183,23 @@ class OKApi
                     $user_id = explode('/', $url);
                     $user_id = end($user_id);
                     if (is_numeric($user_id)) {
-                        $output[] = $user_id;
+                        $output[$user_id] = $user_id;
                     }
                 }
-                if ($iterations++ > $limit) {
+                if ($iterations++ > $limit && $limitExist) {
                     break;
                 }
                 sleep(2);
-            } while (sizeof($output) < $limit);
+                $equalArrayCount += $lastArraySize == sizeof($output);
+                $lastArraySize = sizeof($output);
+                if($equalArrayCount > 5) {
+                    break;
+                }
+            } while (sizeof($output) < $limit && $limitExist);
         }
 
         $this->browser->close();
-        return $output;
+        return array_values($output);
     }
 
     public function rules(): array
