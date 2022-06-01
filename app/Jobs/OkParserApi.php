@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 class OkParserApi implements ShouldQueue
 {
@@ -30,6 +31,14 @@ class OkParserApi implements ShouldQueue
         $this->service = new OKApi();
         $this->signature = $signature;
         $this->method = $action;
+    }
+
+    public function failed(Throwable $e)
+    {
+        $this->jobInfo->status = JobInfo::FAILED;
+        $this->jobInfo->exception = $e->getTrace();
+        $this->jobInfo->output = $e->getMessage();
+        $this->jobInfo->save();
     }
 
     /**
