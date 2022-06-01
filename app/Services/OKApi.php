@@ -193,6 +193,7 @@ class OKApi
                 $equalArrayCount += $lastArraySize == sizeof($output);
                 $lastArraySize = sizeof($output);
                 if($equalArrayCount > 5) {
+                    echo "LIMIT IS BIGGER";
                     break;
                 }
             } while (sizeof($output) < $limit && $limitExist);
