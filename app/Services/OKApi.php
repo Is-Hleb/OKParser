@@ -113,7 +113,7 @@ class OKApi
 
     public function getUserAuditory($user_id, $limit, $mode)
     {
-        $limitExist = $limit === -1;
+        $limitExist = $limit != "-1";
         $this->puppeteer = new Puppeteer([
                 'executable_path' => config('puppeter.node_path'),
         ]);
@@ -121,7 +121,7 @@ class OKApi
             // 'headless' => false
         ]);
         $url = "http://ok.ru/profile/$user_id/$mode";
-
+        dump($url);
         $page = $this->browser->newPage();
         if (!$this->user->cookies) {
             $page = $this->relogin($page, $url);
@@ -164,7 +164,7 @@ class OKApi
                 if($equalArrayCount > 5) {
                     break;
                 }
-            } while (sizeof($output) < $limit && $limitExist);
+            } while (!$limitExist || sizeof($output) < $limit);
         } else {
             $lastArraySize = 0;
             $equalArrayCount = 0;
@@ -187,16 +187,17 @@ class OKApi
                     }
                 }
                 if ($iterations++ > $limit && $limitExist) {
+                    dump("BREAKET ON ITERATIONS");
                     break;
                 }
                 sleep(2);
                 $equalArrayCount += $lastArraySize == sizeof($output);
                 $lastArraySize = sizeof($output);
                 if($equalArrayCount > 5) {
-                    echo "LIMIT IS BIGGER";
+                    dump("BREAKET ON ARRAY");
                     break;
                 }
-            } while (sizeof($output) < $limit && $limitExist);
+            } while (!$limitExist || sizeof($output) < $limit);
         }
 
         $this->browser->close();
