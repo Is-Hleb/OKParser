@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use App\Models\BotTask;
 use App\Jobs\OkParserApi;
+use App\Models\CronTaskinfo;
 use App\Models\JobInfo;
 use App\Models\OkUser;
 use Illuminate\Support\Facades\DB;
@@ -39,14 +40,35 @@ Artisan::command('make:admin', function () {
 });
 
 Artisan::command('test', function () {
-    $tasks = BotTask::getWaiting();
-    foreach ($tasks as $task) {
-        $payload = json_decode($task->answer);
-        $id = $payload->id;
-        $info = JobInfo::find($id);
-        $task->status_task = $info->status;
-        $task->save();
-    }
+    $cronTasks = CronTaskinfo::where('status', JobInfo::WAITING)->get();
+            foreach ($cronTasks as $cronTask) {
+                if ($cronTask->jobInfo->status === JobInfo::WAITING) {
+                    OkParserApi::dispatch($cronTask->method, $cronTask->signature, $cronTask->jobInfo);
+                }
+                $jobInfo = $cronTask->jobInfo()->first();
+                if ($jobInfo->status === JobInfo::FINISHED) {
+                    $jobOutput = $jobInfo->output;
+                    $cronOutput = $cronTask->output;
+                    $time = now()->format('d.m.y h:m');
+                    
+                    $array[$time] = $jobOutput;
+                    if (!$cronTask->output) {
+                        $cronTask->output = $array;
+                    } else {
+                        $cronTask->output = array_merge($cronOutput, [
+                            $time => $jobOutput
+                        ]);
+                    }
+                
+
+                    $jobInfo = new JobInfo([
+                    'status' => JobInfo::WAITING
+                ]);
+                    $jobInfo->save();
+                    $cronTask->job_info_id = $jobInfo->id;
+                    $cronTask->save();
+                }
+            }
 });
 
 

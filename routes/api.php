@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\ActionController;
+use App\Http\Controllers\Api\CronController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,4 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/', \App\Http\Controllers\Api\ActionController::class);
+Route::post('/', ActionController::class);
+Route::post('/cron', CronController::class);

@@ -76,6 +76,10 @@ class OKApi
             'getPostsByUser' => [
                 'url' => 'required',
                 'limit' => 'required'
+            ], 
+            'getPostUserActivity' => [
+                'urls' => "required", 
+                'withEducation'
             ]
         ];
     }
@@ -202,6 +206,49 @@ class OKApi
 
         $this->browser->close();
         return array_values($output);
+    }
+
+    public function getUserEducation($id)
+    {
+        $url = "https://ok.ru/profile/$id/about";
+        $page = $this->browser->newPage();
+        if (!$this->user->cookies) {
+            $page = $this->relogin($page, $url);
+        } else {
+            $cookies = json_decode($this->user->cookies, JSON_OBJECT_AS_ARRAY);
+            $page->setCookie(...$cookies['cookies']);
+            $page->goto($url, [
+                    "waitUntil" => 'networkidle0',
+                ]);
+    
+            $dom = new DOM;
+            $dom->loadStr($page->content());
+            $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
+            if ($flag) {
+                $page = $this->relogin($page, $url);
+            }
+            $flag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
+            if ($flag) {
+                $page = $this->relogin($page, $url);
+            }
+        }
+            
+        $dom = new Dom;
+        ini_set('max_execution_time', 0);
+        $dom->loadStr($page->content());
+        $infs = $dom->find('div.user-profile_i');
+        $edu = [];
+        foreach($infs as $info) {
+            if(
+                $info->find('.svg-ic.svg-ico_globe_16.tico_img', 0) 
+                || $info->find('.svg-ic.svg-ico_education_16.tico_img', 0)
+            ) {
+                $div = $info->find('div.user-profile_i_value', 0);
+                $span = $div->find('span', 0);
+                $edu[] = $span->text();
+            }
+        }
+        return $edu;
     }
 
     public function rules(): array
@@ -341,6 +388,102 @@ class OKApi
         return array_values($posts);
     }
 
+    public function getPostUserActivity(string|array $urls, $withEducation = false)
+    {
+        $this->puppeteer = new Puppeteer([
+            'executable_path' => config('puppeter.node_path'),
+        ]);
+        $this->browser = $this->puppeteer->launch([
+           //  'headless' => false
+        ]);
+        if(is_string($urls)) {
+            $urls = [$urls];
+        }
+        // return $urls;
+        $output = [];
+        foreach ($urls as $url) {
+            $postInfo = $this->getPostInfoByUrl($url);
+
+            $postId = $postInfo[0]['discussion']['object_id'];
+            $comments = $this->getPostComments($postId, -1);
+        
+            $users = [];
+            $userIds = [];
+            $userAddictionsInfo = [];
+            foreach ($comments as $comment) {
+                $userId = $comment['author_id'];
+                $userIds[] = $userId;
+                if (sizeof($userIds) >= 99) {
+                    $userAddictionsInfo = array_merge($userAddictionsInfo, $this->getUserInfo($userIds));
+                    $userIds = [];
+                }
+                $users[$userId . 'comment'.$postId] = [
+                        'postId' => $postId,
+                        'activityType' => 'comment',
+                        'profileId' => $userId,
+                        'profileUrl' => "https://ok.ru/profile/$userId",
+                        'commentText' => $comment['text']
+                ];
+            }
+
+            $likes = $this->getPostLikes($postId, -1);
+        
+            foreach ($likes as $like) {
+                $userId = $like['uid'];
+                $userIds[] = $userId;
+                if (sizeof($userIds) >= 99) {
+                    $userAddictionsInfo = array_merge($userAddictionsInfo, $this->getUserInfo($userIds));
+                    $userIds = [];
+                }
+                $users[$userId . 'like' . $postId] = [
+                    'postId' => $postId,
+                    'activityType' => 'like',
+                    'profileId' => $userId,
+                    'profileUrl' => "https://ok.ru/profile/$userId",
+                    'commentText' => ''
+                ];
+            }
+
+            if (sizeof($userIds) > 0) {
+                $userAddictionsInfo = array_merge($userAddictionsInfo, $this->getUserInfo($userIds));
+                $userIds = [];
+            }
+        
+            foreach ($userAddictionsInfo as $userInfo) {
+                $userId = $userInfo['uid'];
+                $edu = [];
+                if ($withEducation) {
+                    $edu = $this->getUserEducation($userId);
+                }
+                $sex = $userInfo['gender'] == 'male' ? "Мужчина" : "Женщина";
+                if (isset($users[$userId . 'like' . $postId])) {
+                    $users[$userId . 'like' . $postId] = array_merge($users[$userId . 'like' . $postId], [
+                            'education' => implode(',', $edu),
+                            'gender' => $sex,
+                            'age' => $userInfo['age'] ?? '',
+                            'location' => implode(',', array_values($userInfo['location']))
+                    ]);
+                }
+                if (isset($users[$userId . 'comment' . $postId])) {
+                    $users[$userId . 'comment' . $postId] = array_merge($users[$userId . 'comment' . $postId], [
+                        'education' => implode(',', $edu),
+                        'gender' => $sex,
+                        'age' => $userInfo['age'] ?? '',
+                        'location' => implode(',', array_values($userInfo['location']))
+                    ]);
+                }
+            }
+            $output = array_merge($output, array_values($users));
+        }
+        $file = fopen(public_path() . 'output.csv', 'w');
+        $data = array_values($output);
+        foreach($data as $datum) {
+            fputcsv($file, $datum);
+        }
+        fclose($file);
+        return $output;
+    }
+
     public function getGroupFollowers($id, $anchor = ""): bool|array
     {
         $anpr = ""; //anchor
@@ -422,16 +565,16 @@ class OKApi
     public function getPostInfoByUrl($url): array|bool
     {
         $array = explode('/', $url);
-        foreach ($array as $key => $item) {
-            if (in_array($item, ['topic', 'album'])) {
-                $id = $array[$key + 1];
-            }
-        }
+        $id = end($array);
         return $this->getPostInfoById($id);
     }
 
-    public function getPostComments($id, $offset = 0): bool|array
+    public function getPostComments($id, $limit): bool|array
     {
+        $offset = 0;
+        $answer = [];
+        $limitExist = $limit != -1;
+        $comments = [];
         foreach (self::TYPES as $type) {
             $method = "discussions.getDiscussionComments";
 
@@ -448,14 +591,42 @@ class OKApi
                 'sig' => $md5,
                 'access_token' => $this->key
             ];
-            $output[] = $this->request($params);
-        }
+            $answer = $this->request($params);
+            if (isset($answer['commentss']) && sizeof($answer['commentss']) > 0) {
+                $comments = $answer['commentss'];
+                while (!$limitExist || sizeof($comments) < $limit) {
+                    $offset += sizeof($comments);
+                    $method = "discussions.getDiscussionComments";
 
-        return $output;
+                    $md5 = md5("application_key={$this->appKey}count=1000entityId={$id}entityType={$type}format=jsonmethod={$method}offset={$offset}{$this->secret}");
+        
+                    $params = [
+                        'application_key' => $this->appKey,
+                        'count' => 1000,
+                        'entityId' => $id,
+                        'entityType' => $type,
+                        'format' => 'json',
+                        'method' => $method,
+                        'offset' => $offset,
+                        'sig' => $md5,
+                        'access_token' => $this->key
+                    ];
+                    $answer = $this->request($params);
+                    if (sizeof($answer['commentss']) === 0) {
+                        break;
+                    }
+                    $comments = array_merge($comments, $answer['commentss']);
+                }
+                return $comments;
+            }
+        }
+        
+        return [];
     }
 
     public function getPostLikes($id, $limit): bool|array
     {
+        $limitExist = $limit != -1;
         foreach (self::TYPES as $type) {
             $anpr = "";
             $anchor = "";
@@ -480,9 +651,8 @@ class OKApi
                 continue;
             } else {
                 $output = $answer['users'];
-                $anchor = $answer['anchor'];
-                while (sizeof($output) < $limit) {
-                    
+                while (!$limitExist || sizeof($output) < $limit) {
+                    $anchor = $answer['anchor'];
                     $anpr = "anchor=" . $anchor;
 
                     $method = "discussions.getDiscussionLikes";
@@ -497,15 +667,20 @@ class OKApi
                         'format' => 'json',
                         'method' => $method,
                         'sig' => $md5,
-                        'access_token' => $this->key
+                        'access_token' => $this->key,
+                        'anchor' => $anchor
                     ];
-
-                    $params = array_merge(array('anchor' => $anchor), $params);
+                    // dump($md5);
+                    // $params = array_merge(array('anchor' => $anchor), $params);
                     
                     $answer = $this->request($params);
-                    if(!empty($answer) && !array_key_exists('error_msg', $answer) && isset($answer['users'])) {
+                    
+                    if (!empty($answer) && !array_key_exists('error_msg', $answer) && isset($answer['users'])) {
                         $output = array_merge($output, $answer['users']);
                         $anchor = $answer['anchor'];
+                        if (empty($answer['users'])) {
+                            return $output;
+                        }
                     } else {
                         return $output;
                     }
