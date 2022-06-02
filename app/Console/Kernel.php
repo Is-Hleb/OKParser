@@ -7,6 +7,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Models\JobInfo;
 use App\Jobs\OkParserApi;
+use App\Models\CronTaskinfo;
 
 class Kernel extends ConsoleKernel
 {
@@ -23,7 +24,9 @@ class Kernel extends ConsoleKernel
             foreach ($tasks as $task) {
                 $request = $task->dataT;
                 $request = json_decode($request, JSON_OBJECT_AS_ARRAY);
-
+                if (!$request) {
+                    continue;
+                }
                 $data = array_filter($request, function ($key) {
                     return $key !== 'job' && $key != 'action';
                 }, ARRAY_FILTER_USE_KEY);
@@ -47,7 +50,7 @@ class Kernel extends ConsoleKernel
             }
         })->everyMinute();
 
-        $schedule->call(function() {
+        $schedule->call(function () {
             $tasks = BotTask::getWaiting();
             foreach ($tasks as $task) {
                 $payload = json_decode($task->answer);
@@ -58,6 +61,36 @@ class Kernel extends ConsoleKernel
             }
         })->everyFiveMinutes();
         
+        $schedule->call(function () {
+            $cronTasks = CronTaskinfo::where('status', JobInfo::WAITING)->get();
+            foreach ($cronTasks as $cronTask) {
+                if ($cronTask->jobInfo->status === JobInfo::WAITING) {
+                    OkParserApi::dispatch($cronTask->method, $cronTask->signature, $cronTask->jobInfo);
+                }
+                $jobInfo = $cronTask->jobInfo()->first();
+                if ($jobInfo->status === JobInfo::FINISHED) {
+                    $jobOutput = $jobInfo->output;
+                    $cronOutput = $cronTask->output;
+                    if (!$cronTask->output) {
+                        $cronTask->output = [
+                            now()->format('d.m.y h:m') => $jobOutput
+                        ];
+                    } else {
+                        $cronTask->output = array_merge($cronOutput, [
+                            now()->format('d.m.y h:m') => $jobOutput
+                        ]);
+                    }
+                
+
+                    $jobInfo = new JobInfo([
+                    'status' => JobInfo::WAITING
+                ]);
+                    $jobInfo->save();
+                    $cronTask->job_info_id = $jobInfo->id;
+                    $cronTask->save();
+                }
+            }
+        })->everyMinute();
     }
 
     /**
