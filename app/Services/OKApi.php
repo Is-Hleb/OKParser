@@ -156,6 +156,7 @@ class OKApi
                 ]);
                 dump("FLAG2");
             }
+            file_put_contents(storage_path('logs/') . 'output.html', $page->content());
         }
 
         $page->evaluate($this->sutoscrollFunction);
