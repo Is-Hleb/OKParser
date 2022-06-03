@@ -88,6 +88,7 @@ class OKApi
     {
         $okToken = ApiToken::inRandomOrder()->first();
         $this->setAnotherUser();
+        // $this->user = OkUser::find(4);
 
         $this->appKey = $okToken->app_key;
         $this->key = $okToken->key;
@@ -719,6 +720,7 @@ class OKApi
         ]);
 
         $dom = new DOM;
+        $dom->loadStr($page->content());
         $flag = $dom->find('a.nav-side_i.__ac', 0);
         if(!$flag) {
             $page->goto($url, [
