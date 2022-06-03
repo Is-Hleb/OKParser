@@ -122,7 +122,7 @@ class OKApi
                 'executable_path' => config('puppeter.node_path'),
         ]);
         $this->browser = $this->puppeteer->launch([
-            // 'headless' => false
+            'headless' => false
         ]);
         $url = "http://ok.ru/profile/$user_id/$mode";
         dump($url);
@@ -695,7 +695,6 @@ class OKApi
     {
         do {
             $page->goto('https://ok.ru');
-
             $page->type('#field_email', $this->user->login);
             $page->type('#field_password', $this->user->password);
 
@@ -718,6 +717,14 @@ class OKApi
         $page->goto($url, [
             "waitUntil" => 'networkidle0',
         ]);
+
+        $dom = new DOM;
+        $flag = $dom->find('a.nav-side_i.__ac', 0);
+        if($flag) {
+            $page->goto($url, [
+                "waitUntil" => 'networkidle0',
+            ]);
+        }
 
         $coo = json_encode($page->_client->send('Network.getAllCookies'));
         
