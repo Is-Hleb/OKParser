@@ -712,7 +712,7 @@ class OKApi
     private function relogin($page, $url) : Page
     {
         do {
-            $page->goto('https://ok.ru', [
+            $page->goto('https://ok.ru/dk?st.cmd=anonymMain', [
                 "waitUntil" => 'networkidle0',
             ]);
             $page->type('#field_email', $this->user->login);
