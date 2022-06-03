@@ -143,6 +143,7 @@ class OKApi
             }
             $flag1 = $dom->find('a#buttonCancel', 0);
             $flag = $dom->find('a.nav-side_i.__ac', 0);
+            dump("START CHECKING FALGS");
             if($flag1) {
                 $page->click('a#buttonCancel');
                 $page->goto($url, [
