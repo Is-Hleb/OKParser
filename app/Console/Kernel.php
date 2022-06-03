@@ -90,7 +90,7 @@ class Kernel extends ConsoleKernel
                     $cronTask->save();
                 }
             }
-        })->everyMinute();
+        })->daily();
     }
 
     /**
