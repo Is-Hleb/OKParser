@@ -138,7 +138,8 @@ class OKApi
             $dom = new DOM;
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
-            if($flag) {
+            $blockedPage = $dom->find('$hook_Block_FriendSubscribersPageMRB', 0);
+            if($flag || $blockedPage) {
                 $page = $this->relogin($page, $url);
             }
             $flag1 = $dom->find('a#buttonCancel', 0);
@@ -724,9 +725,9 @@ class OKApi
             
             $dom->loadStr($page->content());
             $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
-            $blockedPage = $dom->find('$hook_Block_FriendSubscribersPageMRB', 0);
+            
 
-            if ($captchFlag || $blockedPage) {
+            if ($captchFlag) {
                 $this->user->blocked = true;
                 $this->user->save();
                 $this->setAnotherUser();
