@@ -88,7 +88,7 @@ class OKApi
     {
         $okToken = ApiToken::inRandomOrder()->first();
         $this->setAnotherUser();
-        // $this->user = OkUser::find(4);
+        // $this->user = OkUser::find(9);
 
         $this->appKey = $okToken->app_key;
         $this->key = $okToken->key;
@@ -711,7 +711,6 @@ class OKApi
 
     private function relogin($page, $url) : Page
     {
-        $this->setAnotherUser();
         do {
             $page->goto('https://ok.ru');
             $page->type('#field_email', $this->user->login);
@@ -727,13 +726,16 @@ class OKApi
             $dom->loadStr($page->content());
             $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
             $blockedFlag = $dom->find('#hook_Block_AnonymUnblockConfirmPhone', 0);
+            $someBlock = $dom->find('.hookBlock', 0);
 
-            if ($captchFlag || $blockedFlag) {
+            dump("ACTIVE BLOCK CHECK");
+            if ($captchFlag || $blockedFlag || $someBlock) {
+                dump("THIS USER IS BLOCKED");
                 $this->user->blocked = true;
                 $this->user->save();
                 $this->setAnotherUser();
             }
-        } while ($captchFlag);
+        } while ($captchFlag || $blockedFlag || $someBlock);
         $page->goto($url, [
             "waitUntil" => 'networkidle0',
         ]);
