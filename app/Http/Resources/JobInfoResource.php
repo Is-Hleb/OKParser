@@ -19,6 +19,7 @@ class JobInfoResource extends JsonResource
             'id' => $this->id,
             'status' => $this->status,
             $this->mergeWhen($this->status === JobInfo::FAILED, [
+                'output' => $this->output,
                 'exception' => $this->exception
             ]),
             $this->mergeWhen($this->status === JobInfo::FINISHED, [
