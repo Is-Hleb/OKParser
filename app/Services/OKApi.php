@@ -694,9 +694,7 @@ class OKApi
     private function relogin($page, $url) : Page
     {
         do {
-            $page->goto('https://ok.ru', [
-                "waitUntil" => 'networkidle0',
-            ]);
+            $page->goto('https://ok.ru');
 
             $page->type('#field_email', $this->user->login);
             $page->type('#field_password', $this->user->password);
