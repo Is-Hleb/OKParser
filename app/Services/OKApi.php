@@ -141,21 +141,22 @@ class OKApi
             if($flag) {
                 $page = $this->relogin($page, $url);
             }
+            $flag1 = $dom->find('a#buttonCancel', 0);
+            $flag = $dom->find('a.nav-side_i.__ac', 0);
+            if($flag1) {
+                $page->click('a#buttonCancel');
+                $page->goto($url, [
+                    "waitUntil" => 'networkidle0',
+                ]);
+                dump("FLAG1");
+            } elseif ($flag) {
+                $page->goto($url, [
+                    "waitUntil" => 'networkidle0',
+                ]);
+                dump("FLAG2");
+            }
         }
-        $dom = new DOM;
-        $dom->loadStr($page->content());
-        $flag1 = $dom->find('a.modal_buttons_no.lp', 0);
-        $flag = $dom->find('a.nav-side_i.__ac', 0);
-        if($flag1) {
-            $page->click('a#buttonCancel');
-            $page->goto($url, [
-                "waitUntil" => 'networkidle0',
-            ]);
-        } elseif ($flag) {
-            $page->goto($url, [
-                "waitUntil" => 'networkidle0',
-            ]);
-        }
+
         $page->evaluate($this->sutoscrollFunction);
         
         $dom = new Dom;
