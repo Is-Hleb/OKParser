@@ -150,7 +150,7 @@ class OKApi
                     "waitUntil" => 'networkidle0',
                 ]);
                 dump("FLAG1");
-            } elseif ($flag) {
+            } elseif (!$flag) {
                 $page->goto($url, [
                     "waitUntil" => 'networkidle0',
                 ]);
@@ -724,8 +724,9 @@ class OKApi
             
             $dom->loadStr($page->content());
             $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
+            $blockedPage = $dom->find('$hook_Block_FriendSubscribersPageMRB', 0);
 
-            if ($captchFlag) {
+            if ($captchFlag || $blockedPage) {
                 $this->user->blocked = true;
                 $this->user->save();
                 $this->setAnotherUser();
