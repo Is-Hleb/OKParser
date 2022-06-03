@@ -122,7 +122,7 @@ class OKApi
                 'executable_path' => config('puppeter.node_path'),
         ]);
         $this->browser = $this->puppeteer->launch([
-            'headless' => false
+            // 'headless' => false
         ]);
         $url = "http://ok.ru/profile/$user_id/$mode";
         dump($url);
