@@ -729,16 +729,15 @@ class OKApi
             $dom->loadStr($page->content());
             $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
             $blockedFlag = $dom->find('#hook_Block_AnonymUnblockConfirmPhone', 0);
-            $someBlock = $dom->find('.hookBlock', 0);
 
             dump("ACTIVE BLOCK CHECK");
-            if ($captchFlag || $blockedFlag || $someBlock) {
+            if ($captchFlag || $blockedFlag) {
                 dump("THIS USER IS BLOCKED");
                 $this->user->blocked = true;
                 $this->user->save();
                 $this->setAnotherUser();
             }
-        } while ($captchFlag || $blockedFlag || $someBlock);
+        } while ($captchFlag || $blockedFlag);
         $page->goto($url, [
             "waitUntil" => 'networkidle0',
         ]);
