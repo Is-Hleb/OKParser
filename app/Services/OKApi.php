@@ -138,7 +138,7 @@ class OKApi
             $dom = new DOM;
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
-            $blockedPage = $dom->find('#hook_Block_FriendSubscribersPageMRB', 0);
+            $blockedPage = $dom->find('.hookBlock', 0);
             if($flag || $blockedPage) {
                 $page = $this->relogin($page, $url);
             }
@@ -711,6 +711,7 @@ class OKApi
 
     private function relogin($page, $url) : Page
     {
+        $this->setAnotherUser();
         do {
             $page->goto('https://ok.ru');
             $page->type('#field_email', $this->user->login);
