@@ -720,7 +720,7 @@ class OKApi
 
         $dom = new DOM;
         $flag = $dom->find('a.nav-side_i.__ac', 0);
-        if($flag) {
+        if(!$flag) {
             $page->goto($url, [
                 "waitUntil" => 'networkidle0',
             ]);
