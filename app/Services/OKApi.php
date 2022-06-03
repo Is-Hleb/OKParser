@@ -715,6 +715,7 @@ class OKApi
             $page->goto('https://ok.ru/dk?st.cmd=anonymMain', [
                 "waitUntil" => 'networkidle0',
             ]);
+            $page->click('filter_i.js-login-nav.js-login-login');
             $page->type('#field_email', $this->user->login);
             $page->type('#field_password', $this->user->password);
 
