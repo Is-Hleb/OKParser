@@ -141,6 +141,12 @@ class OKApi
             if($flag) {
                 $page = $this->relogin($page, $url);
             }
+            $flag = $dom->find('a.nav-side_i.__ac', 0);
+            if(!$flag) {
+                $page->goto($url, [
+                    "waitUntil" => 'networkidle0',
+                ]);
+            }
         }
 
         $page->evaluate($this->sutoscrollFunction);
