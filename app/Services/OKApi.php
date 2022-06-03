@@ -726,9 +726,9 @@ class OKApi
             
             $dom->loadStr($page->content());
             $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
-            
+            $blockedFlag = $dom->find('#hook_Block_AnonymUnblockConfirmPhone', 0);
 
-            if ($captchFlag) {
+            if ($captchFlag || $blockedFlag) {
                 $this->user->blocked = true;
                 $this->user->save();
                 $this->setAnotherUser();
