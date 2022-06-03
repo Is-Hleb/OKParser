@@ -712,10 +712,20 @@ class OKApi
     private function relogin($page, $url) : Page
     {
         do {
-            $page->goto('https://ok.ru/dk?st.cmd=anonymMain', [
-                "waitUntil" => 'networkidle0',
-            ]);
-            $page->click('#anonymPageContent > div > div.anon-main-design21_central-panel > div.clearfix.js-tab-login-form.anon-main-design21_tab-login > div > div.tab-filter-with-body > div:nth-child(1) > div > a.js-login-login');
+            do {
+                $page->goto('https://ok.ru/dk?st.cmd=anonymMain', [
+                    "waitUntil" => 'networkidle0',
+                ]);
+                $dom = new DOM;
+                $dom->loadStr($page->content());
+                $link = $dom->find('#anonymPageContent > div > div.anon-main-design21_central-panel > div.clearfix.js-tab-login-form.anon-main-design21_tab-login > div > div.tab-filter-with-body > div:nth-child(1) > div > a.js-login-login', 0);
+                if ($link) {
+                    $page->click('#anonymPageContent > div > div.anon-main-design21_central-panel > div.clearfix.js-tab-login-form.anon-main-design21_tab-login > div > div.tab-filter-with-body > div:nth-child(1) > div > a.js-login-login');
+                }
+                $email_field = $dom->find('#field_email', 0);
+                $password_field = $dom->find('#field_password', 0);
+            } while(!$email_field && !$password_field);
+            
             $page->type('#field_email', $this->user->login);
             $page->type('#field_password', $this->user->password);
 
