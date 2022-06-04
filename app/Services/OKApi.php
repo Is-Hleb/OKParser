@@ -143,8 +143,8 @@ class OKApi
 
             $output = $this->request($params);
             $this->setRandomToken();
-        } while(isset($output['error_code']) && $output['error_coce'] == 102);
-        if(isset($output['error_code']) && $output['error_coce'] == 455) {
+        } while(isset($output['error_code']) && $output['error_code'] == 102);
+        if(isset($output['error_code']) && $output['error_code'] == 455) {
             return [];
         }
         return $output;
