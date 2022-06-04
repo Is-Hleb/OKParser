@@ -88,15 +88,20 @@ class OKApi
         ];
     }
 
-    public function __construct()
-    {
+    private function setRandomToken() {
         $okToken = ApiToken::inRandomOrder()->first();
-        $this->setAnotherUser();
-        // $this->user = OkUser::find(9);
-
         $this->appKey = $okToken->app_key;
         $this->key = $okToken->key;
         $this->secret = $okToken->secret;
+    }
+
+    public function __construct()
+    {
+        $this->setRandomToken();
+        $this->setAnotherUser();
+        // $this->user = OkUser::find(9);
+
+        
         $this->init();
     }
 
@@ -122,21 +127,27 @@ class OKApi
 
     public function getFriendsByApi($user_id) 
     {
+        do {
+            $method = "friends.get";
 
-        $method = "friends.get";
+            $md5 = md5("application_key=" . $this->appKey . "fid=" . $user_id . "format=jsonmethod=" . $method .$this->secret);
 
-        $md5 = md5("application_key=" . $this->appKey . "fid=" . $user_id . "format=jsonmethod=" . $method .$this->secret);
+            $params = [
+                'application_key' => $this->appKey,
+                'fid' => $user_id,
+                'format' => 'json',
+                'method' => $method,
+                'sig' => $md5,
+                'access_token' => $this->key,
+            ];
 
-        $params = [
-            'application_key' => $this->appKey,
-            'fid' => $user_id,
-            'format' => 'json',
-            'method' => $method,
-            'sig' => $md5,
-            'access_token' => $this->key,
-        ];
-
-        return $this->request($params);
+            $output = $this->request($params);
+            $this->setRandomToken();
+        } while(isset($output['error_code']) && $output['error_coce'] == 102);
+        if(isset($output['error_code']) && $output['error_coce'] == 455) {
+            return [];
+        }
+        return $output;
     }
 
     public function getUserAuditory($user_id, $limit, $mode)
