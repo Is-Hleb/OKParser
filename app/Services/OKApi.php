@@ -20,12 +20,13 @@ class OKApi
         'GROUP_PRODUCT','GROUP_TOPIC','HAPPENING_TOPIC',
         'MOVIE','OFFER','PRESENT','SCHOOL_FORUM','SHARE',
         'USER_ALBUM','USER_FORUM','USER_PHOTO','USER_PRODUCT',
-        'USER_STATUS',
+        'USER_STATUS'
     ];
     public const ACTIONS = [
         'getPostsByUser','getGroupFollowers',
         'getUserInfo','getPostInfoById','getPostComments',
-        'getPostLikes','getUserAuditory', 'getPostsByGroup'
+        'getPostLikes','getUserAuditory', 'getPostsByGroup',
+        'getFriendsByApi'
     ];
 
     public int $id;
@@ -40,6 +41,9 @@ class OKApi
     public static function validationRules(): array
     {
         return [
+            'getFriendsByApi' => [
+                'user_id' => 'required'
+            ],
             'getPostsByGroup' => [
                 'url' => 'required',
                 'limit' => 'required'
@@ -116,6 +120,25 @@ class OKApi
         ");
     }
 
+    public function getFriendsByApi($user_id) 
+    {
+
+        $method = "friends.get";
+
+        $md5 = md5("application_key=" . $this->appKey . "fid=" . $user_id . "format=jsonmethod=" . $method .$this->secret);
+
+        $params = [
+            'application_key' => $this->appKey,
+            'fid' => $user_id,
+            'format' => 'json',
+            'method' => $method,
+            'sig' => $md5,
+            'access_token' => $this->key,
+        ];
+
+        return $this->request($params);
+    }
+
     public function getUserAuditory($user_id, $limit, $mode)
     {
         $limitExist = $limit != "-1";
@@ -159,6 +182,8 @@ class OKApi
             }
             file_put_contents(storage_path('logs/') . 'output.html', $page->content());
         }
+
+
 
         $page->evaluate($this->sutoscrollFunction);
         
