@@ -66,8 +66,9 @@ https://dm3nz_ya_ru:3d360c117a@213.166.89.39:30016";
         foreach($array as $item) {
             $item = explode("https://", $item);
             $item = $item[1];
-            $temp = explode('@', $item);
-            $ip = $item[1];
+            $temp = explode("@", $item);
+            $ip = $temp[1];
+            dump($ip);
             $user_password = explode(':', $temp[0]);
             $user = $user_password[0];
             $password = $user_password[1];
