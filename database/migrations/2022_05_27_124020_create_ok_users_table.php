@@ -53,7 +53,7 @@ class CreateOkUsersTable extends Migration
             '6283899413293:bCk7cT',
             '6283876171010:krP8qm'
         ];
-        $content = explode("\n", file_get_contents("users.txt"));
+        $content = explode("\n", file_get_contents(__DIR__ . "/users.txt"));
         foreach($content as $data) {
             $arr = explode(":", $data);
             $users[] = $arr[0] . ":" . $arr[1];
