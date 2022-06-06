@@ -60,6 +60,7 @@ class OKApi
             ],
             'getPostComments' => [
                 'id' => 'required',
+                'limit',
             ],
             'getPostLikes' => [
                 'id' => 'required',
