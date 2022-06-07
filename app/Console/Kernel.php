@@ -59,7 +59,7 @@ class Kernel extends ConsoleKernel
                 $task->status_task = $info->status;
                 $task->save();
             }
-        })->everyFiveMinutes();
+        })->everyMinute();
         
         $schedule->call(function () {
             $cronTasks = CronTaskinfo::where('status', JobInfo::WAITING)->get();
@@ -95,7 +95,7 @@ class Kernel extends ConsoleKernel
                     $cronTask->save();
                 }
             }
-        })->everyMinute();
+        })->hourly();
     }
 
     /**
