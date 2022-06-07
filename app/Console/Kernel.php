@@ -80,11 +80,16 @@ class Kernel extends ConsoleKernel
                             now()->format('d.m.y h:m') => $jobOutput
                         ]);
                     }
-                
-
                     $jobInfo = new JobInfo([
-                    'status' => JobInfo::WAITING
-                ]);
+                        'status' => JobInfo::WAITING
+                    ]);
+                    $jobInfo->save();
+                    $cronTask->job_info_id = $jobInfo->id;
+                    $cronTask->save();
+                } elseif($jobInfo->status === JobInfo::FAILED) {
+                    $jobInfo = new JobInfo([
+                        'status' => JobInfo::WAITING
+                    ]);
                     $jobInfo->save();
                     $cronTask->job_info_id = $jobInfo->id;
                     $cronTask->save();
