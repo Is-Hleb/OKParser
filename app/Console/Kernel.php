@@ -87,15 +87,29 @@ class Kernel extends ConsoleKernel
                     $cronTask->job_info_id = $jobInfo->id;
                     $cronTask->save();
                 } elseif($jobInfo->status === JobInfo::FAILED) {
-                    $jobInfo = new JobInfo([
-                        'status' => JobInfo::WAITING
-                    ]);
-                    $jobInfo->save();
-                    $cronTask->job_info_id = $jobInfo->id;
-                    $cronTask->save();
+                    $limit = 0;
+                    do {                        
+                        $jobInfo = new JobInfo([
+                            'status' => JobInfo::WAITING
+                        ]);
+                        $jobInfo->save();
+                        $cronTask->job_info_id = $jobInfo->id;
+                        $cronTask->save();
+                        dispatch_sync(new OkParserApi($cronTask->method, $cronTask->signature, $cronTask->jobInfo));
+                        
+                        $jobInfo = JobInfo::find($jobInfo->id);
+                        if($jobInfo->status === JobInfo::FINISHED) {
+                            break;
+                        }
+                    } while ($jobInfo->status == JobInfo::FAILED && $limit++ <= 3);
+
+                    if($limit > 3) {
+                        $cronTask->status = 'failed';
+                        $cronTask->save();
+                    }
                 }
             }
-        })->hourly();
+        })->everyMinute();
     }
 
     /**
