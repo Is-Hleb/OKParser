@@ -17,7 +17,7 @@ class CreateProxyCookiesTable extends Migration
             $table->id();
             $table->foreignId('ok_user_id')->references('id')->on('ok_users')->onDelete('cascade');
             $table->foreignId('proxy_id')->references('id')->on('proxies')->onDelete('cascade');
-            $table->json('cookies');
+            $table->longText('cookies');
             $table->timestamps();
         });
     }
