@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
                 ]);
                 $task->save();
             }
-        })->everyMinute();
+        })->hourly();
 
         $schedule->call(function () {
             $tasks = BotTask::getWaiting();
