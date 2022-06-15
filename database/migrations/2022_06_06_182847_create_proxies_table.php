@@ -61,6 +61,16 @@ https://dm3nz_ya_ru:3d360c117a@213.166.89.35:30016
 https://dm3nz_ya_ru:3d360c117a@213.166.90.92:30016
 https://dm3nz_ya_ru:3d360c117a@213.166.89.97:30016
 https://dm3nz_ya_ru:3d360c117a@213.166.89.186:30016
+https://3ggmwpUn:vHg8bFaw@45.140.62.98:59726
+https://3ggmwpUn:vHg8bFaw@45.140.63.83:50279
+https://3ggmwpUn:vHg8bFaw@45.159.84.42:56450
+https://3ggmwpUn:vHg8bFaw@45.156.151.97:63212
+https://3ggmwpUn:vHg8bFaw@45.153.55.104:58333
+https://3ggmwpUn:vHg8bFaw@45.152.215.146:63466
+https://3ggmwpUn:vHg8bFaw@45.159.87.52:52748
+https://3ggmwpUn:vHg8bFaw@45.152.212.56:46382
+https://3ggmwpUn:vHg8bFaw@45.156.148.35:54215
+https://3ggmwpUn:vHg8bFaw@45.139.55.230:48490
 https://dm3nz_ya_ru:3d360c117a@213.166.89.39:30016";
         $array = explode("\n", $proxies);
         foreach($array as $item) {
