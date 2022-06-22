@@ -77,5 +77,9 @@ class TasksController extends Controller
         }
 
         $task->save();
+
+        return response()->json([
+           "task_id" => $task->task_id
+        ]);
     }
 }
