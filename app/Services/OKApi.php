@@ -590,8 +590,8 @@ class OKApi
     {
         $ids = $logins;
         $output = [];
-        if (is_array($ids)) {
-            $ids = implode(',', $ids);
+        if(!is_array($ids)) {
+            $ids = [$ids];
         }
         foreach ($ids as &$id) {
             if(is_string($id)) {
@@ -602,6 +602,10 @@ class OKApi
 
         $ids_array = array_chunk($ids, 99_000);
         foreach ($ids_array as $ids) {
+            if (is_array($ids)) {
+                $ids = implode(',', $ids);
+            }
+
             $method = "users.getInfo";
 
             $md5 = md5("application_key=" . $this->appKey . "fields=age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortnameformat=jsonmethod=" . $method . "uids=" . $ids . $this->secret);
