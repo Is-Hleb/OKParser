@@ -6,6 +6,7 @@ use App\Http\Controllers\SpiderController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Web\IndexController;
 use App\Models\JobInfo;
+use App\Http\Controllers\TasksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,19 +18,5 @@ use App\Models\JobInfo;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/parse', SpiderController::class);
 
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [LoginController::class, 'login']);
-Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
-
-Route::group(['middleware' => 'auth'], function(){
-    Route::get('/', IndexController::class)->name('home');
-    Route::get('/job/delete/{job}', function(int $job) {
-        JobInfo::destroy($job); 
-        return redirect()->route('home');
-    })->name('job.delete');
-});
-
-
-Route::get('/test', TestController::class);
+Route::post('/task', [TasksController::class, 'register']);
