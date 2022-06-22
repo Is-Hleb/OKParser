@@ -61,7 +61,7 @@ class OKApi
                 'anchor'
             ],
             'getUserInfo' => [
-                'links' => 'required',
+                'logins' => 'required',
             ],
             'getPostInfoByUrl' => [
                 'url' => 'required',
@@ -586,9 +586,9 @@ class OKApi
         return $this->request($params);
     }
 
-    public function getUserInfo(array|int $links): bool|array
+    public function getUserInfo(array|int $logins): bool|array
     {
-        $ids = $links;
+        $ids = $logins;
         $output = [];
         if (is_array($ids)) {
             $ids = implode(',', $ids);
