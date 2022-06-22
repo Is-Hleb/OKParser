@@ -14,16 +14,20 @@ class TasksController extends Controller
 {
     const TYPES = [
         1 => [
-            'name' => 'getUserAuditory',
-            'sig' => [
-                'mode' => 'subscribers',
+            1 => [
+                'name' => 'getUserAuditory',
+                'sig' => [
+                    'mode' => 'subscribers',
+                ]
             ]
         ],
         3 => [
-            'name' => 'getFriendsByApi',
+            1 => [
+                'name' => 'getFriendsByApi',
+            ]
         ],
         4 => [
-            '1' => [
+            1 => [
                 'name' => 'getUserInfo',
             ]
         ]
