@@ -19,4 +19,4 @@ use App\Http\Controllers\TasksController;
 |
 */
 
-Route::post('/task', [TasksController::class, 'register']);
+Route::post('/task', TasksController::class);

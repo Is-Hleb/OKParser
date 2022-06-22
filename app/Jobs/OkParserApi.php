@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\JobInfo;
+use App\Services\CoreApiService;
 use App\Services\OKApi;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,14 +20,16 @@ class OkParserApi implements ShouldQueue
     private string $method;
     private OkApi $service;
     private JobInfo $jobInfo;
+    private CoreApiService $coreApiService;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(string $action, array $signature, JobInfo $jobInfo)
+    public function __construct(string $action, array $signature, JobInfo $jobInfo, CoreApiService $coreApiService)
     {
+        $this->coreApiService = $coreApiService;
         $this->jobInfo = $jobInfo;
         $this->service = new OKApi();
         $this->signature = $signature;
@@ -35,6 +38,7 @@ class OkParserApi implements ShouldQueue
 
     public function failed(Throwable $e)
     {
+        $this->coreApiService->error();
         $this->jobInfo->status = JobInfo::FAILED;
         $this->jobInfo->exception = $e->getTrace();
         $this->jobInfo->output = $e->getMessage();
@@ -49,6 +53,7 @@ class OkParserApi implements ShouldQueue
     public function handle()
     {
         try {
+            $this->coreApiService->running();
             $this->jobInfo->status = JobInfo::RUNNING;
             $this->jobInfo->save();
 
@@ -57,7 +62,11 @@ class OkParserApi implements ShouldQueue
 
             $this->jobInfo->output = $result;
             $this->jobInfo->status = JobInfo::FINISHED;
+
+            $this->coreApiService->data([OKApi::TASKS_CORE_IDS[$method] => [$result]]);
+
         } catch (\Exception $e) {
+            $this->coreApiService->error();
             $this->jobInfo->status = JobInfo::FAILED;
             $this->jobInfo->exception = $e->getTrace();
             $this->jobInfo->output = $e->getMessage();
