@@ -49,7 +49,7 @@ class OKApi
     {
         return [
             'getFriendsByApi' => [
-                'users' => 'required'
+                'logins' => 'required'
             ],
             'getPostsByGroup' => [
                 'url' => 'required',
@@ -135,14 +135,11 @@ class OKApi
         ");
     }
 
-    public function getFriendsByApi($users)
+    public function getFriendsByApi($logins)
     {
-        if (!is_array($users)) {
-            $users = [$users];
-        }
-
+        $logins = $this->getIdsChunks($logins, 1_000_000);
         $result = [];
-        foreach ($users as $user) {
+        foreach ($logins as $user) {
 
             do {
                 $method = "friends.get";
@@ -586,7 +583,7 @@ class OKApi
         return $this->request($params);
     }
 
-    public function getUserInfo(array|int $logins): bool|array
+    private function getIdsChunks($logins, $size): array
     {
         $ids = $logins;
         $output = [];
@@ -600,7 +597,12 @@ class OKApi
             }
         }
 
-        $ids_array = array_chunk($ids, 99_000);
+        return array_chunk($ids, $size);
+    }
+
+    public function getUserInfo(array|int $logins): bool|array
+    {
+        $ids_array = $this->getIdsChunks($logins, 99);
         foreach ($ids_array as $ids) {
             if (is_array($ids)) {
                 $ids = implode(',', $ids);
