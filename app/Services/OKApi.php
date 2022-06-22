@@ -16,16 +16,16 @@ class OKApi
 {
     private const BASE_URL = "https://api.ok.ru/fb.do?";
     public const TYPES = [
-        'CHAT','CITY_NEWS','GROUP_MOVIE', 'GROUP_PHOTO',
-        'GROUP_PRODUCT','GROUP_TOPIC','HAPPENING_TOPIC',
-        'MOVIE','OFFER','PRESENT','SCHOOL_FORUM','SHARE',
-        'USER_ALBUM','USER_FORUM','USER_PHOTO','USER_PRODUCT',
+        'CHAT', 'CITY_NEWS', 'GROUP_MOVIE', 'GROUP_PHOTO',
+        'GROUP_PRODUCT', 'GROUP_TOPIC', 'HAPPENING_TOPIC',
+        'MOVIE', 'OFFER', 'PRESENT', 'SCHOOL_FORUM', 'SHARE',
+        'USER_ALBUM', 'USER_FORUM', 'USER_PHOTO', 'USER_PRODUCT',
         'USER_STATUS'
     ];
     public const ACTIONS = [
-        'getPostsByUser','getGroupFollowers',
-        'getUserInfo','getPostInfoById','getPostComments',
-        'getPostLikes','getUserAuditory', 'getPostsByGroup',
+        'getPostsByUser', 'getGroupFollowers',
+        'getUserInfo', 'getPostInfoById', 'getPostComments',
+        'getPostLikes', 'getUserAuditory', 'getPostsByGroup',
         'getFriendsByApi'
     ];
 
@@ -43,7 +43,6 @@ class OKApi
     private JsFunction $sutoscrollFunction;
     private Puppeteer $puppeteer;
     private Browser $browser;
-
 
 
     public static function validationRules(): array
@@ -97,7 +96,8 @@ class OKApi
         ];
     }
 
-    private function setRandomToken() {
+    private function setRandomToken()
+    {
         $okToken = ApiToken::inRandomOrder()->first();
         $this->appKey = $okToken->app_key;
         $this->key = $okToken->key;
@@ -114,7 +114,8 @@ class OKApi
         $this->init();
     }
 
-    private function init() {
+    private function init()
+    {
         $this->sutoscrollFunction = JsFunction::createWithBody("
         async function subscribe() {
             let response = await await new Promise(resolve => {
@@ -136,7 +137,7 @@ class OKApi
 
     public function getFriendsByApi($users)
     {
-        if(!is_array($users)) {
+        if (!is_array($users)) {
             $users = [$users];
         }
 
@@ -172,7 +173,7 @@ class OKApi
     {
         $limitExist = $limit != "-1";
         $this->puppeteer = new Puppeteer([
-                'executable_path' => config('puppeter.node_path'),
+            'executable_path' => config('puppeter.node_path'),
         ]);
         $this->browser = $this->puppeteer->launch([
             // 'headless' => false
@@ -191,13 +192,13 @@ class OKApi
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
             $blockedPage = $dom->find('.hookBlock', 0);
-            if($flag || $blockedPage) {
+            if ($flag || $blockedPage) {
                 $page = $this->relogin($page, $url);
             }
             $flag1 = $dom->find('a#buttonCancel', 0);
             $flag = $dom->find('a.nav-side_i.__ac', 0);
             dump("START CHECKING FALGS");
-            if($flag1) {
+            if ($flag1) {
                 $page->click('a#buttonCancel');
                 $page->goto($url, [
                     "waitUntil" => 'networkidle0',
@@ -213,14 +214,13 @@ class OKApi
         }
 
 
-
         $page->evaluate($this->sutoscrollFunction);
 
         $dom = new Dom;
         $iterations = 0;
         $output = [];
         ini_set('max_execution_time', 0);
-        if($mode == 'groups') {
+        if ($mode == 'groups') {
             $lastArraySize = 0;
             $equalArrayCount = 0;
             do {
@@ -237,7 +237,7 @@ class OKApi
                 sleep(2);
                 $equalArrayCount += $lastArraySize == sizeof($output);
                 $lastArraySize = sizeof($output);
-                if($equalArrayCount > 5) {
+                if ($equalArrayCount > 5) {
                     break;
                 }
             } while (!$limitExist || sizeof($output) < $limit);
@@ -269,7 +269,7 @@ class OKApi
                 sleep(2);
                 $equalArrayCount += $lastArraySize == sizeof($output);
                 $lastArraySize = sizeof($output);
-                if($equalArrayCount > 5) {
+                if ($equalArrayCount > 5) {
                     dump("BREAKET ON ARRAY");
                     break;
                 }
@@ -290,8 +290,8 @@ class OKApi
             $cookies = json_decode($this->user->cookies, JSON_OBJECT_AS_ARRAY);
             $page->setCookie(...$cookies['cookies']);
             $page->goto($url, [
-                    "waitUntil" => 'networkidle0',
-                ]);
+                "waitUntil" => 'networkidle0',
+            ]);
 
             $dom = new DOM;
             $dom->loadStr($page->content());
@@ -310,8 +310,8 @@ class OKApi
         $dom->loadStr($page->content());
         $infs = $dom->find('div.user-profile_i');
         $edu = [];
-        foreach($infs as $info) {
-            if(
+        foreach ($infs as $info) {
+            if (
                 $info->find('.svg-ic.svg-ico_globe_16.tico_img', 0)
                 || $info->find('.svg-ic.svg-ico_education_16.tico_img', 0)
             ) {
@@ -466,9 +466,9 @@ class OKApi
             'executable_path' => config('puppeter.node_path'),
         ]);
         $this->browser = $this->puppeteer->launch([
-           //  'headless' => false
+            //  'headless' => false
         ]);
-        if(is_string($urls)) {
+        if (is_string($urls)) {
             $urls = [$urls];
         }
         // return $urls;
@@ -489,12 +489,12 @@ class OKApi
                     $userAddictionsInfo = array_merge($userAddictionsInfo, $this->getUserInfo($userIds));
                     $userIds = [];
                 }
-                $users[$userId . 'comment'.$postId] = [
-                        'postId' => $postId,
-                        'activityType' => 'comment',
-                        'profileId' => $userId,
-                        'profileUrl' => "https://ok.ru/profile/$userId",
-                        'commentText' => $comment['text']
+                $users[$userId . 'comment' . $postId] = [
+                    'postId' => $postId,
+                    'activityType' => 'comment',
+                    'profileId' => $userId,
+                    'profileUrl' => "https://ok.ru/profile/$userId",
+                    'commentText' => $comment['text']
                 ];
             }
 
@@ -530,10 +530,10 @@ class OKApi
                 $sex = $userInfo['gender'] == 'male' ? "Мужчина" : "Женщина";
                 if (isset($users[$userId . 'like' . $postId])) {
                     $users[$userId . 'like' . $postId] = array_merge($users[$userId . 'like' . $postId], [
-                            'education' => implode(',', $edu),
-                            'gender' => $sex,
-                            'age' => $userInfo['age'] ?? '',
-                            'location' => implode(',', array_values($userInfo['location']))
+                        'education' => implode(',', $edu),
+                        'gender' => $sex,
+                        'age' => $userInfo['age'] ?? '',
+                        'location' => implode(',', array_values($userInfo['location']))
                     ]);
                 }
                 if (isset($users[$userId . 'comment' . $postId])) {
@@ -549,7 +549,7 @@ class OKApi
         }
         $file = fopen(public_path() . 'output.csv', 'w');
         $data = array_values($output);
-        foreach($data as $datum) {
+        foreach ($data as $datum) {
             fputcsv($file, $datum);
         }
         fclose($file);
@@ -590,11 +590,11 @@ class OKApi
     {
         $ids = $logins;
         $output = [];
-        if(!is_array($ids)) {
+        if (!is_array($ids)) {
             $ids = [$ids];
         }
         foreach ($ids as &$id) {
-            if(is_string($id)) {
+            if (is_string($id)) {
                 $tmp = explode('/', $id);
                 $id = end($tmp);
             }
@@ -625,7 +625,7 @@ class OKApi
         return $output;
     }
 
-    public function getPostInfoById($id) : array|bool
+    public function getPostInfoById($id): array|bool
     {
         foreach (self::TYPES as $type) {
             $method = "discussions.get";
@@ -779,7 +779,7 @@ class OKApi
         return [];
     }
 
-    private function relogin($page, $url) : Page
+    private function relogin($page, $url): Page
     {
         do {
             do {
@@ -794,7 +794,7 @@ class OKApi
                 }
                 $email_field = $dom->find('#field_email', 0);
                 $password_field = $dom->find('#field_password', 0);
-            } while(!$email_field && !$password_field);
+            } while (!$email_field && !$password_field);
 
             $page->type('#field_email', $this->user->login);
             $page->type('#field_password', $this->user->password);
@@ -825,7 +825,7 @@ class OKApi
         $dom = new DOM;
         $dom->loadStr($page->content());
         $flag = $dom->find('a.nav-side_i.__ac', 0);
-        if(!$flag) {
+        if (!$flag) {
             $page->goto($url, [
                 "waitUntil" => 'networkidle0',
             ]);
@@ -851,17 +851,22 @@ class OKApi
      */
     private function request(array $params): bool|array
     {
-        $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => 'Content-type: application/x-www-form-urlencoded',
-                'content' => http_build_query($params)
-            )
-        )));
-        $res = json_decode($requestResult, true);
-        if(isset($res['error_code']) && $res['error_code'] == 102) {
-            throw new Exception("Session expired for");
-        }
+        do {
+            $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
+                'http' => array(
+                    'method' => 'POST',
+                    'header' => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => http_build_query($params)
+                )
+            )));
+            $res = json_decode($requestResult, true);
+
+            if(isset($res['error_code']) && $res['error_code'] == 102) {
+                $this->setRandomToken();
+            }
+
+        } while (isset($res['error_code']) && $res['error_code'] == 102);
+
         return $res;
     }
 }
