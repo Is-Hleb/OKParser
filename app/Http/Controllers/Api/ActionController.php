@@ -12,6 +12,7 @@ class ActionController extends Controller
 {
     public function __construct(private ApiRequest $request)
     {
+        
     }
 
     public function __invoke(ApiRequest $request)
