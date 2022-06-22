@@ -144,11 +144,11 @@ class OKApi
             do {
                 $method = "friends.get";
 
-                $md5 = md5("application_key=" . $this->appKey . "fid=" . $user_id . "format=jsonmethod=" . $method . $this->secret);
+                $md5 = md5("application_key=" . $this->appKey . "fid=" . $user . "format=jsonmethod=" . $method . $this->secret);
 
                 $params = [
                     'application_key' => $this->appKey,
-                    'fid' => $user_id,
+                    'fid' => $user,
                     'format' => 'json',
                     'method' => $method,
                     'sig' => $md5,
