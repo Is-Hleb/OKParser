@@ -29,6 +29,12 @@ class OKApi
         'getFriendsByApi'
     ];
 
+    public const TASKS_CORE_IDS = [
+        'getUserInfo' => '1-1',
+        'getUserAuditory' => '1-1',
+        'getFriendsByApi' => '3-1',
+    ];
+
     public int $id;
     private string $appKey;
     private string $key;
@@ -38,11 +44,13 @@ class OKApi
     private Puppeteer $puppeteer;
     private Browser $browser;
 
+
+
     public static function validationRules(): array
     {
         return [
             'getFriendsByApi' => [
-                'user_id' => 'required'
+                'users' => 'required'
             ],
             'getPostsByGroup' => [
                 'url' => 'required',
@@ -53,7 +61,7 @@ class OKApi
                 'anchor'
             ],
             'getUserInfo' => [
-                'ids' => 'required',
+                'links' => 'required',
             ],
             'getPostInfoByUrl' => [
                 'url' => 'required',
@@ -81,9 +89,9 @@ class OKApi
             'getPostsByUser' => [
                 'url' => 'required',
                 'limit' => 'required'
-            ], 
+            ],
             'getPostUserActivity' => [
-                'urls' => "required", 
+                'urls' => "required",
                 'withEducation'
             ]
         ];
@@ -102,7 +110,7 @@ class OKApi
         $this->setAnotherUser();
         // $this->user = OkUser::find(9);
 
-        
+
         $this->init();
     }
 
@@ -126,29 +134,38 @@ class OKApi
         ");
     }
 
-    public function getFriendsByApi($user_id) 
+    public function getFriendsByApi($users)
     {
-        do {
-            $method = "friends.get";
-
-            $md5 = md5("application_key=" . $this->appKey . "fid=" . $user_id . "format=jsonmethod=" . $method .$this->secret);
-
-            $params = [
-                'application_key' => $this->appKey,
-                'fid' => $user_id,
-                'format' => 'json',
-                'method' => $method,
-                'sig' => $md5,
-                'access_token' => $this->key,
-            ];
-
-            $output = $this->request($params);
-            $this->setRandomToken();
-        } while(isset($output['error_code']) && $output['error_code'] == 102);
-        if(isset($output['error_code']) && $output['error_code'] == 455) {
-            return [];
+        if(!is_array($users)) {
+            $users = [$users];
         }
-        return $output;
+
+        $result = [];
+        foreach ($users as $user) {
+
+            do {
+                $method = "friends.get";
+
+                $md5 = md5("application_key=" . $this->appKey . "fid=" . $user_id . "format=jsonmethod=" . $method . $this->secret);
+
+                $params = [
+                    'application_key' => $this->appKey,
+                    'fid' => $user_id,
+                    'format' => 'json',
+                    'method' => $method,
+                    'sig' => $md5,
+                    'access_token' => $this->key,
+                ];
+
+                $output = $this->request($params);
+                $this->setRandomToken();
+            } while (isset($output['error_code']) && $output['error_code'] == 102);
+            if (isset($output['error_code']) && $output['error_code'] == 455) {
+                $result[$user] = [];
+            }
+            $result[$user] = $output;
+        }
+        return $result;
     }
 
     public function getUserAuditory($user_id, $limit, $mode)
@@ -198,7 +215,7 @@ class OKApi
 
 
         $page->evaluate($this->sutoscrollFunction);
-        
+
         $dom = new Dom;
         $iterations = 0;
         $output = [];
@@ -208,7 +225,7 @@ class OKApi
             $equalArrayCount = 0;
             do {
                 $dom->loadStr($page->content());
-            
+
                 $postsHtml = $dom->find('.ugrid_i.show-on-hover.group-detailed-card');
                 foreach ($postsHtml as $postHtml) {
                     $group_id = $postHtml->getAttribute('data-group-id');
@@ -229,7 +246,7 @@ class OKApi
             $equalArrayCount = 0;
             do {
                 $dom->loadStr($page->content());
-            
+
                 $postsHtml = $dom->find('.ugrid_i');
                 foreach ($postsHtml as $postHtml) {
                     if ($mode === 'friends') {
@@ -275,7 +292,7 @@ class OKApi
             $page->goto($url, [
                     "waitUntil" => 'networkidle0',
                 ]);
-    
+
             $dom = new DOM;
             $dom->loadStr($page->content());
             $flag = $dom->find('#hook_Block_ContentUnavailableForAnonymMRB', 0);
@@ -287,7 +304,7 @@ class OKApi
                 $page = $this->relogin($page, $url);
             }
         }
-            
+
         $dom = new Dom;
         ini_set('max_execution_time', 0);
         $dom->loadStr($page->content());
@@ -295,7 +312,7 @@ class OKApi
         $edu = [];
         foreach($infs as $info) {
             if(
-                $info->find('.svg-ic.svg-ico_globe_16.tico_img', 0) 
+                $info->find('.svg-ic.svg-ico_globe_16.tico_img', 0)
                 || $info->find('.svg-ic.svg-ico_education_16.tico_img', 0)
             ) {
                 $div = $info->find('div.user-profile_i_value', 0);
@@ -343,7 +360,7 @@ class OKApi
         }
 
         $page->evaluate($this->sutoscrollFunction);
-        
+
         $dom = new Dom;
         $iterations = 0;
         ini_set('max_execution_time', 0);
@@ -409,7 +426,7 @@ class OKApi
         }
 
         $page->evaluate($this->sutoscrollFunction);
-        
+
         $dom = new Dom;
         $iterations = 0;
         ini_set('max_execution_time', 0);
@@ -461,7 +478,7 @@ class OKApi
 
             $postId = $postInfo[0]['discussion']['object_id'];
             $comments = $this->getPostComments($postId, -1);
-        
+
             $users = [];
             $userIds = [];
             $userAddictionsInfo = [];
@@ -482,7 +499,7 @@ class OKApi
             }
 
             $likes = $this->getPostLikes($postId, -1);
-        
+
             foreach ($likes as $like) {
                 $userId = $like['uid'];
                 $userIds[] = $userId;
@@ -503,7 +520,7 @@ class OKApi
                 $userAddictionsInfo = array_merge($userAddictionsInfo, $this->getUserInfo($userIds));
                 $userIds = [];
             }
-        
+
             foreach ($userAddictionsInfo as $userInfo) {
                 $userId = $userInfo['uid'];
                 $edu = [];
@@ -569,27 +586,39 @@ class OKApi
         return $this->request($params);
     }
 
-    public function getUserInfo(array|int $ids): bool|array
+    public function getUserInfo(array|int $links): bool|array
     {
+        $ids = $links;
+        $output = [];
         if (is_array($ids)) {
             $ids = implode(',', $ids);
         }
+        foreach ($ids as &$id) {
+            if(is_string($id)) {
+                $tmp = explode('/', $id);
+                $id = end($tmp);
+            }
+        }
 
-        $method = "users.getInfo";
+        $ids_array = array_chunk($ids, 99_000);
+        foreach ($ids_array as $ids) {
+            $method = "users.getInfo";
 
-        $md5 = md5("application_key=" . $this->appKey . "fields=age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortnameformat=jsonmethod=" . $method . "uids=" . $ids . $this->secret);
+            $md5 = md5("application_key=" . $this->appKey . "fields=age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortnameformat=jsonmethod=" . $method . "uids=" . $ids . $this->secret);
 
-        $params = [
-            'application_key' => $this->appKey,
-            'fields' => 'age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortname',
-            'format' => 'json',
-            'method' => $method,
-            'uids' => $ids,
-            'sig' => $md5,
-            'access_token' => $this->key
-        ];
+            $params = [
+                'application_key' => $this->appKey,
+                'fields' => 'age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortname',
+                'format' => 'json',
+                'method' => $method,
+                'uids' => $ids,
+                'sig' => $md5,
+                'access_token' => $this->key
+            ];
 
-        return $this->request($params);
+            $output = array_merge($this->request($params), $output);
+        }
+        return $output;
     }
 
     public function getPostInfoById($id) : array|bool
@@ -616,7 +645,7 @@ class OKApi
         return $output;
     }
 
-   
+
     public function getPostInfoByUrl($url): array|bool
     {
         $array = explode('/', $url);
@@ -654,7 +683,7 @@ class OKApi
                     $method = "discussions.getDiscussionComments";
 
                     $md5 = md5("application_key={$this->appKey}count=1000entityId={$id}entityType={$type}format=jsonmethod={$method}offset={$offset}{$this->secret}");
-        
+
                     $params = [
                         'application_key' => $this->appKey,
                         'count' => 1000,
@@ -675,7 +704,7 @@ class OKApi
                 return $comments;
             }
         }
-        
+
         return [];
     }
 
@@ -727,9 +756,9 @@ class OKApi
                     ];
                     // dump($md5);
                     // $params = array_merge(array('anchor' => $anchor), $params);
-                    
+
                     $answer = $this->request($params);
-                    
+
                     if (!empty($answer) && !array_key_exists('error_msg', $answer) && isset($answer['users'])) {
                         $output = array_merge($output, $answer['users']);
                         $anchor = $answer['anchor'];
@@ -762,7 +791,7 @@ class OKApi
                 $email_field = $dom->find('#field_email', 0);
                 $password_field = $dom->find('#field_password', 0);
             } while(!$email_field && !$password_field);
-            
+
             $page->type('#field_email', $this->user->login);
             $page->type('#field_password', $this->user->password);
 
@@ -772,7 +801,7 @@ class OKApi
                 "waitUntil" => 'networkidle0',
             ]);
             $dom = new DOM;
-            
+
             $dom->loadStr($page->content());
             $captchFlag = $dom->find('#hook_Block_AnonymVerifyCaptchaStart', 0);
             $blockedFlag = $dom->find('#hook_Block_AnonymUnblockConfirmPhone', 0);
@@ -799,7 +828,7 @@ class OKApi
         }
 
         $coo = json_encode($page->_client->send('Network.getAllCookies'));
-        
+
         $this->user->cookies = $coo;
         $this->user->save();
         return $page;
@@ -813,6 +842,9 @@ class OKApi
         $this->user = OkUser::where('blocked', false)->first();
     }
 
+    /**
+     * @throws Exception
+     */
     private function request(array $params): bool|array
     {
         $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
@@ -822,6 +854,10 @@ class OKApi
                 'content' => http_build_query($params)
             )
         )));
-        return json_decode($requestResult, true);
+        $res = json_decode($requestResult, true);
+        if(isset($res['error_code']) && $res['error_code'] == 102) {
+            throw new Exception("Session expired for");
+        }
+        return $res;
     }
 }
