@@ -605,22 +605,26 @@ class OKApi
             if (is_array($ids)) {
                 $ids = implode(',', $ids);
             }
+            do {
+                $method = "users.getInfo";
 
-            $method = "users.getInfo";
+                $md5 = md5("application_key=" . $this->appKey . "fields=age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortnameformat=jsonmethod=" . $method . "uids=" . $ids . $this->secret);
 
-            $md5 = md5("application_key=" . $this->appKey . "fields=age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortnameformat=jsonmethod=" . $method . "uids=" . $ids . $this->secret);
-
-            $params = [
-                'application_key' => $this->appKey,
-                'fields' => 'age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortname',
-                'format' => 'json',
-                'method' => $method,
-                'uids' => $ids,
-                'sig' => $md5,
-                'access_token' => $this->key
-            ];
-
-            $output = array_merge($this->request($params), $output);
+                $params = [
+                    'application_key' => $this->appKey,
+                    'fields' => 'age,birthday,first_name,email,last_name,gender,location,name,pic_full,shortname',
+                    'format' => 'json',
+                    'method' => $method,
+                    'uids' => $ids,
+                    'sig' => $md5,
+                    'access_token' => $this->key
+                ];
+                $response = $this->request($params);
+                if(isset($response['error_code']) && $response['error_code'] == 102) {
+                    $this->setRandomToken();
+                }
+            } while(isset($response['error_code']) && $response['error_code'] == 102);
+            $output = array_merge($response, $output);
         }
         return $output;
     }
@@ -851,22 +855,13 @@ class OKApi
      */
     private function request(array $params): bool|array
     {
-        do {
-            $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
-                'http' => array(
-                    'method' => 'POST',
-                    'header' => 'Content-type: application/x-www-form-urlencoded',
-                    'content' => http_build_query($params)
-                )
-            )));
-            $res = json_decode($requestResult, true);
-
-            if(isset($res['error_code']) && $res['error_code'] == 102) {
-                $this->setRandomToken();
-            }
-
-        } while (isset($res['error_code']) && $res['error_code'] == 102);
-
-        return $res;
+        $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
+            'http' => array(
+                'method' => 'POST',
+                'header' => 'Content-type: application/x-www-form-urlencoded',
+                'content' => http_build_query($params)
+            )
+        )));
+        return json_decode($requestResult, true);
     }
 }
