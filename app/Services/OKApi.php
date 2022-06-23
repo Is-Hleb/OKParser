@@ -603,6 +603,7 @@ class OKApi
     public function getUserInfo(array|int $logins): bool|array
     {
         $ids_array = $this->getIdsChunks($logins, 99);
+        $output = [];
         foreach ($ids_array as $ids) {
             if (is_array($ids)) {
                 $ids = implode(',', $ids);
