@@ -137,7 +137,7 @@ class OKApi
 
     public function getFriendsByApi($logins)
     {
-        $logins = $this->getIdsChunks($logins, 1_000_000);
+        $logins = $this->getIdsChunks($logins, 1_000_000)[0];
         $result = [];
         foreach ($logins as $user) {
 
