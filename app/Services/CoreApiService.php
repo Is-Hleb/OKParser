@@ -61,7 +61,7 @@ class CoreApiService
     {
         Http::post("http://84.38.187.209:8080/data", [
             "task_id" => $this->task->task_id,
-            "data" => $output,
+            "data" => ["data" => $output],
             "type" => $type
         ]);
         $this->ok();
