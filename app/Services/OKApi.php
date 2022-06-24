@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ApiToken;
 use App\Models\OkUser;
 use Exception;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use PHPHtmlParser\Dom;
 use Nesk\Puphpeteer\Puppeteer;
@@ -30,10 +31,10 @@ class OKApi
     ];
 
     public const TASKS_CORE_IDS = [
-        'getUserInfo' => '1-1',
-        'getUserAuditory' => '1-1',
+        'getUserInfo' => '4-1',
         'getFriendsByApi' => '3-1',
-        'getGroupFollowers' => '5-1'
+        'getGroupFollowers' => '5-1',
+        'getUserSubscribers' => '1-1'
     ];
 
     public int $id;
@@ -50,6 +51,9 @@ class OKApi
     {
         return [
             'getFriendsByApi' => [
+                'logins' => 'required'
+            ],
+            'getUserSubscribers' => [
                 'logins' => 'required'
             ],
             'getPostsByGroup' => [
@@ -109,11 +113,7 @@ class OKApi
         $this->secret = $okToken->secret;
     }
 
-    public function getUserSubscribers($logins)
-    {
-        $output = [];
 
-    }
 
     public function __construct()
     {
@@ -179,6 +179,49 @@ class OKApi
             $result[$user] = $output;
         }
         return $result;
+    }
+
+    public function getUserSubscribers($logins)
+    {
+        $logins = $this->getIdsChunks($logins, 1_000_000)[0];
+        $output = [];
+
+        foreach ($logins as $id) {
+            try {
+                $page = 1;
+                do {
+                    $data = [];
+                    $link = "https://m.ok.ru/dk?st.cmd=friendFriends&st.sbr=on&st.friendId=$id&st.sbs=off&st.frwd=on&st.page=$page&st.dir=FORWARD&_prevCmd=friendFriends";
+                    $dom = new Dom;
+                    $pageContent = Http::get($link)->body();
+                    $dom->loadStr($pageContent);
+                    $page += 1;
+
+                    $users = $dom->find('.item.it');
+                    foreach ($users as $user) {
+                        $avatar = $user->find('.common-avatar', 0)->find('img', 0)->getAttribute('src');
+                        $name = $user->find('.emphased.usr', 0)->text();
+                        $profile_link = $user->find('a.u-ava', 0)->getAttribute('href');
+                        if(!isset($output[$id][$profile_link])) {
+                            $data[$profile_link] = [
+                                'name' => $name,
+                                'avatar' => "https:" . $avatar,
+                                'id' => $this->getUrlInfo("https://ok.ru$profile_link")['objectId'] ?? "",
+                            ];
+                        }
+                    }
+                    $output[$id] = array_merge($data, $output[$id] ?? []);
+                } while (!empty($data));
+
+
+            } catch (Exception $exception) {
+                // TODO log error
+            }
+        }
+        foreach ($output as &$data) {
+            $data = array_values($data);
+        }
+        return $output;
     }
 
     public function getUserAuditory($user_id, $limit, $mode)
