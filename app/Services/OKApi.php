@@ -631,12 +631,8 @@ class OKApi
                     $this->setRandomToken();
                 } else {
                     // then if we have more subscribers, repeat loop until it not saved
-                    $hasMore = $response['has_more'];
-                    if(isset($response['anchor'])) {
-                        $anchor = $response['anchor'];
-                    } else {
-                        $hasMore = false;
-                    }
+                    $hasMore = $response['has_more'] ?? false;
+                    $anchor = $response['anchor'] ?? "";
 
                     // save users
                     $users = $response['members'] ?? [];
