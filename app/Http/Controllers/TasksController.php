@@ -50,7 +50,7 @@ class TasksController extends Controller
 
         $task = new Task([
             'task_id' => $id,
-            'type' => $id
+            'type' => $type
         ]);
         $this->coreApiService = new CoreApiService($task);
 
