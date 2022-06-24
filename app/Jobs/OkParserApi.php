@@ -62,7 +62,7 @@ class OkParserApi implements ShouldQueue
 
             $this->jobInfo->output = $result;
             $this->jobInfo->status = JobInfo::FINISHED;
-            $dataType = OKApi::TASKS_CORE_IDS[$method];
+            $dataType =  OKApi::TASKS_CORE_IDS[$method];
             $this->coreApiService->data($result, $dataType);
 
         } catch (\Exception $e) {

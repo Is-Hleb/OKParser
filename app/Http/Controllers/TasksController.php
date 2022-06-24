@@ -26,6 +26,11 @@ class TasksController extends Controller
                 'name' => 'getFriendsByApi',
             ]
         ],
+        5 => [
+          1 => [
+              'name' => 'getGroupFollowers',
+          ]
+        ],
         4 => [
             1 => [
                 'name' => 'getUserInfo',
