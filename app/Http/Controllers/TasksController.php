@@ -27,9 +27,9 @@ class TasksController extends Controller
             ]
         ],
         5 => [
-          1 => [
-              'name' => 'getGroupFollowers',
-          ]
+            1 => [
+                'name' => 'getGroupFollowers',
+            ]
         ],
         4 => [
             1 => [
@@ -61,7 +61,7 @@ class TasksController extends Controller
         foreach ($methods as $method) {
             $rules = OKApi::validationRules()[$method['name']];
             $validator = validator($request->all(), $rules);
-            if($validator->fails()) {
+            if ($validator->fails()) {
                 $this->coreApiService->validationErr();
             }
         }
@@ -72,7 +72,7 @@ class TasksController extends Controller
 
         foreach ($methods as $method) {
             $signature = [];
-            if(isset($method['sig'])) {
+            if (isset($method['sig'])) {
                 $signature = $method['sig'];
             }
             $signature = array_merge($signature, $data);
@@ -88,7 +88,7 @@ class TasksController extends Controller
         $task->save();
 
         return response()->json([
-           "task_id" => $task->task_id
+            "task_id" => $task->task_id
         ]);
     }
 }

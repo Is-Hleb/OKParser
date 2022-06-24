@@ -109,6 +109,12 @@ class OKApi
         $this->secret = $okToken->secret;
     }
 
+    public function getUserSubscribers($logins)
+    {
+        $output = [];
+
+    }
+
     public function __construct()
     {
         $this->setRandomToken();
@@ -556,7 +562,7 @@ class OKApi
         return $output;
     }
 
-    public function getUrlInfo($url)
+    public function getUrlInfo($url): array
     {
         do {
             $method = "url.getInfo";
@@ -576,20 +582,25 @@ class OKApi
                 $this->setRandomToken();
             }
         } while($this->sessionBlocked($response));
+
+        if(!is_array($response)) {
+            return [];
+        }
         return $response;
     }
 
     public function getGroupFollowers($logins): bool|array
     {
-        $anchor = "";
         $output = [];
         foreach ($logins as $link) {
+            $anchor = "";
+            $anpr = "";
+
             $id = $link;
             $hasMore = false;
             if(is_string($link)) {
                 $id = $this->getUrlInfo($link)['objectId'];
             }
-            $anpr = ""; //anchor
             do {
 
                 if ($anchor != "") {
