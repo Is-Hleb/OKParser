@@ -33,6 +33,7 @@ class OKApi
         'getUserInfo' => '1-1',
         'getUserAuditory' => '1-1',
         'getFriendsByApi' => '3-1',
+        'getGroupFollowers' => '5-1'
     ];
 
     public int $id;
@@ -56,8 +57,7 @@ class OKApi
                 'limit' => 'required'
             ],
             'getGroupFollowers' => [
-                'id' => 'required',
-                'anchor'
+                'logins' => 'required',
             ],
             'getUserInfo' => [
                 'logins' => 'required',
@@ -96,6 +96,11 @@ class OKApi
         ];
     }
 
+    private function sessionBlocked($response) : bool
+    {
+        return isset($response['error_code']) && $response['error_code'] == 102;
+    }
+
     private function setRandomToken()
     {
         $okToken = ApiToken::inRandomOrder()->first();
@@ -107,7 +112,11 @@ class OKApi
     public function __construct()
     {
         $this->setRandomToken();
-        $this->setAnotherUser();
+        try {
+            $this->setAnotherUser();
+        } catch (Exception $exception) {
+            dump($exception->getMessage());
+        }
         // $this->user = OkUser::find(9);
 
 
@@ -544,49 +553,96 @@ class OKApi
             }
             $output = array_merge($output, array_values($users));
         }
-        $file = fopen(public_path() . 'output.csv', 'w');
-        $data = array_values($output);
-        foreach ($data as $datum) {
-            fputcsv($file, $datum);
-        }
-        fclose($file);
         return $output;
     }
 
-    public function getGroupFollowers($id, $anchor = ""): bool|array
+    public function getUrlInfo($url)
     {
-        $anpr = ""; //anchor
+        do {
+            $method = "url.getInfo";
+            $md5 = md5( "application_key=" . $this->appKey . "format=jsonmethod=" . $method . "url=" . $url . $this->secret);
 
-        if ($anchor != "") {
-            $anpr = "anchor=" . $anchor;
+            $params = [
+                'application_key' => $this->appKey,
+                'format' => 'json',
+                'method' => $method,
+                'url' => $url,
+                'sig' => $md5,
+                'access_token' => $this->key,
+            ];
+
+            $response = $this->request($params);
+            if($this->sessionBlocked($response)) {
+                $this->setRandomToken();
+            }
+        } while($this->sessionBlocked($response));
+        return $response;
+    }
+
+    public function getGroupFollowers($logins): bool|array
+    {
+        $anchor = "";
+        $output = [];
+        foreach ($logins as $link) {
+            $id = $link;
+            $hasMore = false;
+            if(is_string($link)) {
+                $id = $this->getUrlInfo($link)['objectId'];
+            }
+            $anpr = ""; //anchor
+            do {
+
+                if ($anchor != "") {
+                    $anpr = "anchor=" . $anchor;
+                }
+
+                $method = "group.getMembers";
+
+                $md5 = md5($anpr . "application_key=" . $this->appKey . "count=1000format=jsonmethod=" . $method . "uid=" . $id . $this->secret);
+
+                $params = [
+                    'application_key' => $this->appKey,
+                    'count' => 1000,
+                    'format' => 'json',
+                    'method' => $method,
+                    'uid' => $id,
+                    'sig' => $md5,
+                    'access_token' => $this->key,
+                ];
+
+                if ($anchor != "") {
+                    $params = array_merge(array('anchor' => $anchor), $params);
+                }
+
+                $response = $this->request($params);
+                // If session blocked - reset session
+                if($this->sessionBlocked($response)) {
+                    $this->setRandomToken();
+                } else {
+                    // then if we have more subscribers, repeat loop until it not saved
+                    $hasMore = $response['has_more'];
+                    if(isset($response['anchor'])) {
+                        $anchor = $response['anchor'];
+                    } else {
+                        $hasMore = false;
+                    }
+
+                    // save users
+                    $users = $response['members'] ?? [];
+                    foreach ($users as &$user) {
+                        // change object on userId only
+                        $user = $user['userId'];
+                    }
+                    $output[$id] = array_merge($users, $output[$id] ?? []);
+                }
+            } while($this->sessionBlocked($response) || $hasMore);
         }
-
-        $method = "group.getMembers";
-
-        $md5 = md5($anpr . "application_key=" . $this->appKey . "count=1000format=jsonmethod=" . $method . "uid=" . $id . $this->secret);
-
-        $params = [
-            'application_key' => $this->appKey,
-            'count' => 1000,
-            'format' => 'json',
-            'method' => $method,
-            'uid' => $id,
-            'sig' => $md5,
-            'access_token' => $this->key,
-        ];
-
-        if ($anchor != "") {
-            $params = array_merge(array('anchor' => $anchor), $params);
-        }
-
-
-        return $this->request($params);
+        return $output;
     }
 
     private function getIdsChunks($logins, $size): array
     {
         $ids = $logins;
-        $output = [];
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -623,10 +679,10 @@ class OKApi
                     'access_token' => $this->key
                 ];
                 $response = $this->request($params);
-                if(isset($response['error_code']) && $response['error_code'] == 102) {
+                if (isset($response['error_code']) && $response['error_code'] == 102) {
                     $this->setRandomToken();
                 }
-            } while(isset($response['error_code']) && $response['error_code'] == 102);
+            } while (isset($response['error_code']) && $response['error_code'] == 102);
             $output = array_merge($response, $output);
         }
         return $output;
