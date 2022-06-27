@@ -183,6 +183,29 @@ class OKApi
         return $result;
     }
 
+    private function httpProxyGet($url): string
+    {
+        do {
+            $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
+            try {
+                $auth = base64_encode($proxy->user . ':' . $proxy->password);
+                $proxyUrl = 'tcp://' . $proxy->ip;
+                return file_get_contents($url, false, stream_context_create(array(
+                    'http' => array(
+                        'proxy' => $proxyUrl,
+                        'request_fulluri' => true,
+                        'method' => 'GET',
+                        'header' => "Proxy-Authorization: Basic $auth",
+                    )
+                )));
+            } catch (Exception $exception) {
+                // TODO add log
+                $proxy->blocked = true;
+                $proxy->save();
+            }
+        } while(true);
+    }
+
     public function getUserSubscribers($logins)
     {
         $logins = $this->getIdsChunks($logins, 1_000_000)[0];
@@ -195,7 +218,9 @@ class OKApi
                     $data = [];
                     $link = "https://m.ok.ru/dk?st.cmd=friendFriends&st.sbr=on&st.friendId=$id&st.sbs=off&st.frwd=on&st.page=$page&st.dir=FORWARD&_prevCmd=friendFriends";
                     $dom = new Dom;
-                    $pageContent = Http::get($link)->body();
+
+                    $pageContent = $this->httpProxyGet($link);
+                    dump(1);
                     $dom->loadStr($pageContent);
                     $page += 1;
 
@@ -217,6 +242,7 @@ class OKApi
 
 
             } catch (Exception $exception) {
+                dump($exception->getMessage());
                 // TODO log error
             }
         }
