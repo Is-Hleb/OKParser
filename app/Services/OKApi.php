@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ApiToken;
 use App\Models\OkUser;
+use App\Models\Proxy;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
@@ -100,7 +101,7 @@ class OKApi
         ];
     }
 
-    private function sessionBlocked($response) : bool
+    private function sessionBlocked($response): bool
     {
         return isset($response['error_code']) && $response['error_code'] == 102;
     }
@@ -112,7 +113,6 @@ class OKApi
         $this->key = $okToken->key;
         $this->secret = $okToken->secret;
     }
-
 
 
     public function __construct()
@@ -176,7 +176,9 @@ class OKApi
             if (isset($output['error_code']) && $output['error_code'] == 455) {
                 $result[$user] = [];
             }
-            $result[$user] = $output;
+            $result[$user] = array_map(function ($value) {
+                return ['id' => $value];
+            }, $output);
         }
         return $result;
     }
@@ -202,7 +204,7 @@ class OKApi
                         $avatar = $user->find('.common-avatar', 0)->find('img', 0)->getAttribute('src');
                         $name = $user->find('.emphased.usr', 0)->text();
                         $profile_link = $user->find('a.u-ava', 0)->getAttribute('href');
-                        if(!isset($output[$id][$profile_link])) {
+                        if (!isset($output[$id][$profile_link])) {
                             $data[$profile_link] = [
                                 'name' => $name,
                                 'avatar' => "https:" . $avatar,
@@ -609,7 +611,7 @@ class OKApi
     {
         do {
             $method = "url.getInfo";
-            $md5 = md5( "application_key=" . $this->appKey . "format=jsonmethod=" . $method . "url=" . $url . $this->secret);
+            $md5 = md5("application_key=" . $this->appKey . "format=jsonmethod=" . $method . "url=" . $url . $this->secret);
 
             $params = [
                 'application_key' => $this->appKey,
@@ -621,12 +623,12 @@ class OKApi
             ];
 
             $response = $this->request($params);
-            if($this->sessionBlocked($response)) {
+            if ($this->sessionBlocked($response)) {
                 $this->setRandomToken();
             }
-        } while($this->sessionBlocked($response));
+        } while ($this->sessionBlocked($response));
 
-        if(!is_array($response)) {
+        if (!is_array($response)) {
             return [];
         }
         return $response;
@@ -641,7 +643,7 @@ class OKApi
 
             $id = $link;
             $hasMore = false;
-            if(is_string($link)) {
+            if (is_string($link)) {
                 $id = $this->getUrlInfo($link)['objectId'];
             }
             do {
@@ -670,7 +672,7 @@ class OKApi
 
                 $response = $this->request($params);
                 // If session blocked - reset session
-                if($this->sessionBlocked($response)) {
+                if ($this->sessionBlocked($response)) {
                     $this->setRandomToken();
                 } else {
                     // then if we have more subscribers, repeat loop until it not saved
@@ -685,7 +687,7 @@ class OKApi
                     }
                     $output[$id] = array_merge($users, $output[$id] ?? []);
                 }
-            } while($this->sessionBlocked($response) || $hasMore);
+            } while ($this->sessionBlocked($response) || $hasMore);
         }
         return $output;
     }
@@ -964,13 +966,26 @@ class OKApi
      */
     private function request(array $params): bool|array
     {
-        $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => 'Content-type: application/x-www-form-urlencoded',
-                'content' => http_build_query($params)
-            )
-        )));
-        return json_decode($requestResult, true);
+        do {
+            $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
+            try {
+                $auth = base64_encode($proxy->user . ':' . $proxy->password);
+                $proxyUrl = 'tcp://' . $proxy->ip;
+                $requestResult = file_get_contents(self::BASE_URL, false, stream_context_create(array(
+                    'http' => array(
+                        'proxy' => $proxyUrl,
+                        'request_fulluri' => true,
+                        'method' => 'POST',
+                        'header' => "Proxy-Authorization: Basic $auth\r\nContent-type: application/x-www-form-urlencoded\r\n",
+                        'content' => http_build_query($params)
+                    )
+                )));
+                return json_decode($requestResult, true);
+            } catch (Exception $exception) {
+                // TODO add log
+                $proxy->blocked = true;
+                $proxy->save();
+            }
+        } while(true);
     }
 }
