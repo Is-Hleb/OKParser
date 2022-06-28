@@ -623,7 +623,7 @@ class OKApi
                 $userIds = [];
             }
 
-            foreach ($userAddictionsInfo as $userInfo) {
+            foreach ($userAddictionsInfo as $key => $userInfo) {
                 $userId = $userInfo['uid'];
                 $edu = [];
                 if ($withEducation) {
