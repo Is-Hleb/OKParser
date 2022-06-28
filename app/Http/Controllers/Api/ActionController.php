@@ -12,7 +12,7 @@ class ActionController extends Controller
 {
     public function __construct(private ApiRequest $request)
     {
-        
+
     }
 
     public function __invoke(ApiRequest $request)
@@ -51,8 +51,8 @@ class ActionController extends Controller
         ]);
         $jobInfo->save();
 
-        dispatch((new OkParserApi($input['action'], $data, $jobInfo)));
-    
+        dispatch((new OkParserApi($input['action'], $data, $jobInfo, null)));
+
         $jobInfo = JobInfo::find($jobInfo->id);
         return $this->response([
             'job' => new JobInfoResource($jobInfo)
