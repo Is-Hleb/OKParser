@@ -150,6 +150,9 @@ class OKApi
         ");
     }
 
+    /**
+     * @throws Exception
+     */
     public function getFriendsByApi($logins)
     {
         $logins = $this->getIdsChunks($logins, 1_000_000)[0];
@@ -173,12 +176,16 @@ class OKApi
                 $output = $this->request($params);
                 $this->setRandomToken();
             } while (isset($output['error_code']) && $output['error_code'] == 102);
+
             if (isset($output['error_code']) && $output['error_code'] == 455) {
                 $result[$user] = [];
+            } elseif (isset($output['error_code'])) {
+                throw new Exception($output['error_message']);
+            } else {
+                $result[$user] = array_map(function ($value) {
+                    return ['id' => $value];
+                }, $output);
             }
-            $result[$user] = array_map(function ($value) {
-                return ['id' => $value];
-            }, $output);
         }
         return $result;
     }
@@ -761,7 +768,10 @@ class OKApi
                     $this->setRandomToken();
                 }
             } while (isset($response['error_code']) && $response['error_code'] == 102);
-            $output = array_merge($response, $output);
+
+            if(!isset($response['error_code'])) {
+                $output = array_merge($response, $output);
+            }
         }
         return $output;
     }
@@ -987,9 +997,6 @@ class OKApi
         $this->user = OkUser::where('blocked', false)->first();
     }
 
-    /**
-     * @throws Exception
-     */
     private function request(array $params): bool|array
     {
         do {
