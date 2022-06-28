@@ -209,7 +209,7 @@ class OKApi
                 $proxy->blocked = true;
                 $proxy->save();
             }
-        } while(true);
+        } while (true);
     }
 
     public function getUserSubscribers($logins)
@@ -567,16 +567,14 @@ class OKApi
 
             try {
                 $ibd = $data[0];
-                $url = $data[1];
+                $url = explode('?', $data[1])[0];
             } catch (Exception $exception) {
                 continue;
             }
 
-            do {
-                $postInfo = $this->getPostInfoByUrl($url);
-            } while(!isset($postInfo[0]['discussion']));
 
-
+            $postInfo = $this->getPostInfoByUrl($url);
+            dump($postInfo);
 
             $postId = $postInfo[0]['discussion']['object_id'];
             $comments = $this->getPostComments($postId, -1);
@@ -637,7 +635,7 @@ class OKApi
                         'education' => implode(',', $edu),
                         'gender' => $sex,
                         'age' => $userInfo['age'] ?? '',
-                        'location' => implode(',', array_values($userInfo['location']))
+                        'location' => $userInfo['location']
                     ]);
                 }
                 if (isset($users[$userId . 'comment' . $postId])) {
@@ -645,7 +643,7 @@ class OKApi
                         'education' => implode(',', $edu),
                         'gender' => $sex,
                         'age' => $userInfo['age'] ?? '',
-                        'location' => implode(',', array_values($userInfo['location']))
+                        'location' => $userInfo['location']
                     ]);
                 }
             }
@@ -730,7 +728,7 @@ class OKApi
                     $users = $response['members'] ?? [];
                     foreach ($users as &$user) {
                         // change object on userId only
-                        $user = $user['userId'];
+                        $user = ['user_id' => $user['userId']];
                     }
                     $output[$id] = array_merge($users, $output[$id] ?? []);
                 }
@@ -783,30 +781,45 @@ class OKApi
                 }
             } while (isset($response['error_code']) && $response['error_code'] == 102);
 
-            if(!isset($response['error_code'])) {
-                $output = array_merge($response, $output);
+            if (!isset($response['error_code'])) {
+                foreach ($response as &$datum) {
+                    try {
+                        $datum['location'] = $datum['location']['city'] . '-' . $datum['location']['country'] . '-' . $datum['location']['countryCode'] . '-' . $datum['location']['countryName'];
+                    } catch (Exception $exception) {
+                        $datum['location'] = '';
+                    }
+                    $output[$datum['uid']] = $datum;
+                }
             }
         }
+
         return $output;
     }
 
     public function getPostInfoById($id): array|bool
     {
+        $output = [];
         foreach (self::TYPES as $type) {
-            $method = "discussions.get";
+            do {
+                $method = "discussions.get";
 
-            $md5 = md5("application_key={$this->appKey}discussionId={$id}discussionType={$type}format=jsonmethod={$method}{$this->secret}");
+                $md5 = md5("application_key={$this->appKey}discussionId={$id}discussionType={$type}format=jsonmethod={$method}{$this->secret}");
 
-            $params = [
-                'application_key' => $this->appKey,
-                'discussionId' => $id,
-                'discussionType' => $type,
-                'format' => 'json',
-                'method' => $method,
-                'sig' => $md5,
-                'access_token' => $this->key
-            ];
-            $result = $this->request($params);
+                $params = [
+                    'application_key' => $this->appKey,
+                    'discussionId' => $id,
+                    'discussionType' => $type,
+                    'format' => 'json',
+                    'method' => $method,
+                    'sig' => $md5,
+                    'access_token' => $this->key
+                ];
+
+                $result = $this->request($params);
+                if($this->sessionBlocked($result)) {
+                    $this->setRandomToken();
+                }
+            } while($this->sessionBlocked($result));
             if (!empty($result)) {
                 $output[] = $result;
             }
@@ -1033,6 +1046,6 @@ class OKApi
                 $proxy->blocked = true;
                 $proxy->save();
             }
-        } while(true);
+        } while (true);
     }
 }
