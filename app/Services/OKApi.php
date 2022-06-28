@@ -564,13 +564,21 @@ class OKApi
         $output = [];
         foreach ($urls as $url) {
             $data = explode(';', $url);
+
             try {
                 $ibd = $data[0];
                 $url = $data[1];
             } catch (Exception $exception) {
                 continue;
             }
-            $postId = $this->getUrlInfo($url)['objectId'] ?? null;
+
+            do {
+                $postInfo = $this->getPostInfoByUrl($url);
+            } while(!isset($postInfo[0]['discussion']));
+
+
+
+            $postId = $postInfo[0]['discussion']['object_id'];
             $comments = $this->getPostComments($postId, -1);
 
             $users = [];
