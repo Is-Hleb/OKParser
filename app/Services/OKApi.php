@@ -788,7 +788,7 @@ class OKApi
                     } catch (Exception $exception) {
                         $datum['location'] = '';
                     }
-                    $output[$datum['uid']] = $datum;
+                    $output[$datum['uid']] = [$datum];
                 }
             }
         }

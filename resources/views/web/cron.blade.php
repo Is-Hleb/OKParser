@@ -7,13 +7,13 @@
             <div class="col-4">
                 @foreach($cronTabs as $tab)
                     <div class="my-2 p-2 bg-light border-bottom shadow-sm">
-                        <h3>CronTab №{{ $tab->id }}</h3>
+                        <h3>jobInfo №{{ $tab->jobInfo->id }}</h3>
                         <span class="text-primary">{{ $tab->jobinfo->status }}</span>
                     </div>
                 @endforeach
             </div>
             <div class="col-8">
-                <h2 class="w-75 border-bottom mb-3">Добавить cron по ссылкам</h2>
+                <h2 class="w-75 border-bottom mb-3">Посты ИРИ (Поставить задачу)</h2>
                 <form method="post" action="{{ route('cron.post.links') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
@@ -43,7 +43,7 @@
                             </th>
                             <th>{{ $tab->satus }}</th>
                             <th>
-                                <a href="#">Drop from queue</a>
+                                <a href="#">drop from queue</a>
                             </th>
                         </tr>
                     @endforeach
