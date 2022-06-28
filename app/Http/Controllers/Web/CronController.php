@@ -48,5 +48,6 @@ class CronController extends Controller
 
             $cronInfo->save();
         }
+        return redirect()->back();
     }
 }
