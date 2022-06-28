@@ -20,16 +20,18 @@ class OkParserApi implements ShouldQueue
     private string $method;
     private OkApi $service;
     private JobInfo $jobInfo;
-    private CoreApiService $coreApiService;
+    private CoreApiService|null $coreApiService = null;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(string $action, array $signature, JobInfo $jobInfo, CoreApiService $coreApiService)
+    public function __construct(string $action, array $signature, JobInfo $jobInfo, CoreApiService|null $coreApiService)
     {
-        $this->coreApiService = $coreApiService;
+        if($coreApiService) {
+            $this->coreApiService = $coreApiService;
+        }
         $this->jobInfo = $jobInfo;
         $this->service = new OKApi();
         $this->signature = $signature;
@@ -38,7 +40,7 @@ class OkParserApi implements ShouldQueue
 
     public function failed(Throwable $e)
     {
-        $this->coreApiService->error();
+        $this->coreApiService?->error();
         $this->jobInfo->status = JobInfo::FAILED;
         $this->jobInfo->exception = $e->getTrace();
         $this->jobInfo->output = $e->getMessage();
@@ -53,7 +55,7 @@ class OkParserApi implements ShouldQueue
     public function handle()
     {
         try {
-            $this->coreApiService->running();
+            $this->coreApiService?->running();
             $this->jobInfo->status = JobInfo::RUNNING;
             $this->jobInfo->save();
 
@@ -63,10 +65,10 @@ class OkParserApi implements ShouldQueue
             $this->jobInfo->output = $result;
             $this->jobInfo->status = JobInfo::FINISHED;
             $dataType =  OKApi::TASKS_CORE_IDS[$method];
-            $this->coreApiService->data($result, $dataType);
+            $this->coreApiService?->data($result, $dataType);
 
         } catch (\Exception $e) {
-            $this->coreApiService->error();
+            $this->coreApiService?->error();
             $this->jobInfo->status = JobInfo::FAILED;
             $this->jobInfo->exception = $e->getTrace();
             $this->jobInfo->output = $e->getMessage();
