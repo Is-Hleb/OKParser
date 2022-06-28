@@ -6,7 +6,6 @@ use App\Models\ApiToken;
 use App\Models\OkUser;
 use App\Models\Proxy;
 use Exception;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use PHPHtmlParser\Dom;
 use Nesk\Puphpeteer\Puppeteer;
@@ -564,6 +563,10 @@ class OKApi
         // return $urls;
         $output = [];
         foreach ($urls as $url) {
+            $data = explode(';', $url);
+            $ibd = $data[0];
+            $url = $data[1];
+
             $postInfo = $this->getPostInfoByUrl($url);
 
             $postId = $postInfo[0]['discussion']['object_id'];
@@ -584,7 +587,8 @@ class OKApi
                     'activityType' => 'comment',
                     'profileId' => $userId,
                     'profileUrl' => "https://ok.ru/profile/$userId",
-                    'commentText' => $comment['text']
+                    'commentText' => $comment['text'],
+                    'ibd' => $ibd
                 ];
             }
 
@@ -602,7 +606,8 @@ class OKApi
                     'activityType' => 'like',
                     'profileId' => $userId,
                     'profileUrl' => "https://ok.ru/profile/$userId",
-                    'commentText' => ''
+                    'commentText' => '',
+                    'ibd' => $ibd
                 ];
             }
 
