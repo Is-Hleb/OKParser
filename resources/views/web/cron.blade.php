@@ -25,30 +25,34 @@
                     </div>
                 </form>
                 <hr>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Output</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($cronTabs as $tab)
+                <form action="{{ route('cron.post.output') }}" method="post">
+                    <table class="table">
+                        <thead>
                         <tr>
-                            <th scope="row">{{ $tab->id }}</th>
-                            <th>
-                                <a href="{{ route('cron.post.output', $tab->id) }}">Download</a>
-                            </th>
-                            <th>{{ $tab->satus }}</th>
-                            <th>
-                                <a href="#">drop from queue</a>
-                            </th>
+                            <th scope="col">#</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                            <th scope="col">Add to output</th>
                         </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        @foreach($cronTabs as $tab)
+                            <tr>
+                                <th scope="row">{{ $tab->id }}</th>
+                                <th>{{ $tab->satus }}</th>
+                                <th>
+                                    <a href="#">drop from queue</a>
+                                </th>
+                                <th>
+                                    <input class="form-check" type="checkbox" name="download-{{ $tab->id }}"
+                                           id="download-{{ $tab->id }}">
+                                </th>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                    <input class="form-control bg-dark text-white" type="submit" value="Скачать">
+                </form>
             </div>
         </div>
     </div>
