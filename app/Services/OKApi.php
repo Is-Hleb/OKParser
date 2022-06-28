@@ -551,12 +551,12 @@ class OKApi
 
     public function getPostUserActivity(string|array $urls, $withEducation = false)
     {
-        $this->puppeteer = new Puppeteer([
-            'executable_path' => config('puppeter.node_path'),
-        ]);
-        $this->browser = $this->puppeteer->launch([
-            //  'headless' => false
-        ]);
+//        $this->puppeteer = new Puppeteer([
+//            'executable_path' => config('puppeter.node_path'),
+//        ]);
+//        $this->browser = $this->puppeteer->launch([
+//            //  'headless' => false
+//        ]);
         if (is_string($urls)) {
             $urls = [$urls];
         }
@@ -567,13 +567,7 @@ class OKApi
             $ibd = $data[0];
             $url = $data[1];
 
-            do {
-                $postInfo = $this->getPostInfoByUrl($url);
-            } while(!isset($postInfo[0]['discussion']));
-
-
-
-            $postId = $postInfo[0]['discussion']['object_id'];
+            $postId = $this->getUrlInfo($url)['objectId'] ?? null;
             $comments = $this->getPostComments($postId, -1);
 
             $users = [];
