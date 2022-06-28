@@ -564,9 +564,12 @@ class OKApi
         $output = [];
         foreach ($urls as $url) {
             $data = explode(';', $url);
-            $ibd = $data[0];
-            $url = $data[1];
-
+            try {
+                $ibd = $data[0];
+                $url = $data[1];
+            } catch (Exception $exception) {
+                continue;
+            }
             $postId = $this->getUrlInfo($url)['objectId'] ?? null;
             $comments = $this->getPostComments($postId, -1);
 
