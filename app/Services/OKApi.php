@@ -567,7 +567,11 @@ class OKApi
             $ibd = $data[0];
             $url = $data[1];
 
-            $postInfo = $this->getPostInfoByUrl($url);
+            do {
+                $postInfo = $this->getPostInfoByUrl($url);
+            } while(!isset($postInfo[0]['discussion']));
+
+
 
             $postId = $postInfo[0]['discussion']['object_id'];
             $comments = $this->getPostComments($postId, -1);
