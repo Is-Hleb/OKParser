@@ -74,5 +74,6 @@
             @yield('content')
         </main>
     </div>
+    @stack('before-closed-body')
 </body>
 </html>
