@@ -620,11 +620,10 @@ class OKApi
 
             if (sizeof($userIds) > 0) {
                 $userAddictionsInfo = array_merge($userAddictionsInfo, $this->getUserInfo($userIds));
-                $userIds = [];
             }
 
-            foreach ($userAddictionsInfo as $key => $userInfo) {
-                $userId = $userInfo['uid'];
+            foreach ($userAddictionsInfo as $userId => $userInfo) {
+                $userInfo = $userInfo[0];
                 $edu = [];
                 if ($withEducation) {
                     $edu = $this->getUserEducation($userId);
