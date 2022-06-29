@@ -10,11 +10,18 @@ use Illuminate\Http\Request;
 
 class CronController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
-        return view('web.cron', [
-            'cronTabs' => CronTaskinfo::all()
-        ]);
+        if($request->get('js')) {
+            sleep(2);
+            return view('sections.cron', [
+                'cronTabs' => CronTaskinfo::all()
+            ]);
+        } else {
+            return view('web.cron', [
+                'cronTabs' => CronTaskinfo::all()
+            ]);
+        }
     }
 
     public function postOutput()
