@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property array $signature
- * @property boolean $finished
+ * @property boolean $status
  * @property string $method
  * @property int $job_info_id
  */

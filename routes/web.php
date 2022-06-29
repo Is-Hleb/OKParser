@@ -26,4 +26,5 @@ Route::group(['middleware' => 'auth', 'as' => 'cron.', 'prefix' => '/cron'], fun
     Route::get('/', [\App\Http\Controllers\Web\CronController::class, 'show']);
     Route::post('/post/links', [\App\Http\Controllers\Web\CronController::class, 'postLinks'])->name('post.links');
     Route::get('/post/output', [\App\Http\Controllers\Web\CronController::class, 'postOutput'])->name('post.output');
+    Route::put('/cron/stop/{id}', [\App\Http\Controllers\Web\CronController::class, 'stopCron'])->name('stop');
 });
