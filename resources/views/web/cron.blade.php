@@ -25,34 +25,40 @@
                     </div>
                 </form>
                 <hr>
-                <form action="{{ route('cron.post.output') }}" method="post">
-                    <table class="table">
-                        <thead>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col col-1">#</th>
+                        <th scope="col col-2">Status</th>
+                        <th scope="col col-2">Add to output</th>
+                        <th scope="col col-2">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($cronTabs as $tab)
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Action</th>
-                            <th scope="col">Add to output</th>
+                            <th scope="row">{{ $tab->id }}</th>
+                            <th>{{ $tab->status }}</th>
+                            <th>
+                                <input class="form-check" type="checkbox" name="download-{{ $tab->id }}"
+                                       id="download-{{ $tab->id }}">
+                            </th>
+                            <th>
+                                @if($tab->status !== 'finished')
+                                    <form method="post" action="{{ route('cron.stop', $tab->id) }}">
+                                        @csrf
+                                        @method('PUT')
+                                        <input class="btn btn-danger" type="submit" value="stop">
+                                    </form>
+                                @else
+                                    Остановлена
+                                @endif
+                            </th>
                         </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($cronTabs as $tab)
-                            <tr>
-                                <th scope="row">{{ $tab->id }}</th>
-                                <th>{{ $tab->satus }}</th>
-                                <th>
-                                    <a href="#">drop from queue</a>
-                                </th>
-                                <th>
-                                    <input class="form-check" type="checkbox" name="download-{{ $tab->id }}"
-                                           id="download-{{ $tab->id }}">
-                                </th>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                    <input class="form-control bg-dark text-white" type="submit" value="Скачать">
-                </form>
+                    @endforeach
+                    </tbody>
+                </table>
+                <input class="form-control bg-dark text-white" type="submit" value="Скачать">
             </div>
         </div>
     </div>

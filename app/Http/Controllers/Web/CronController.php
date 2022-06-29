@@ -22,6 +22,14 @@ class CronController extends Controller
 
     }
 
+    public function stopCron($id)
+    {
+        $cronTaskinfo = CronTaskinfo::find($id);
+        $cronTaskinfo->status = JobInfo::FINISHED;
+        $cronTaskinfo->save();
+        return redirect()->back();
+    }
+
     public function postLinks(Request $request)
     {
 
