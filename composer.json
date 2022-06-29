@@ -14,7 +14,8 @@
         "laravel/ui": "^3.4",
         "nesk/puphpeteer": "^2.0",
         "paquettg/php-html-parser": "^3.1",
-        "roach-php/laravel": "^0.3.1"
+        "roach-php/laravel": "^0.3.1",
+      "ext-zip": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

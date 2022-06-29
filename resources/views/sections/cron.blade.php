@@ -1,9 +1,9 @@
 <div class="container">
     <div class="row">
-        <div class="col-4">
+        <div class="col-4 overflow-scroll">
             @foreach($cronTabs as $tab)
                 <div class="my-2 p-2 bg-light border-bottom shadow-sm">
-                    <h3>jobInfo №{{ $tab->jobInfo->id }}</h3>
+                    <h3>jobInfo №{{ $tab->jobInfo->id }} - cron №{{ $tab->id }}</h3>
                     <span class="text-primary">{{ $tab->jobinfo->status }}</span>
                 </div>
             @endforeach
@@ -12,6 +12,10 @@
             <h2 class="w-75 border-bottom mb-3">Посты ИРИ (Поставить задачу)</h2>
             <form method="post" action="{{ route('cron.post.links') }}" enctype="multipart/form-data">
                 @csrf
+                <div class="form-group mb-3">
+                    <label for="csv">Название группы задач</label>
+                    <input class="form-control" type="text" placeholder="Писать сюда" name="name" id="name">
+                </div>
                 <div class="form-group">
                     <label for="csv">CSV файл с сылками</label>
                     <input class="form-control" type="file" name="csv" id="csv">
@@ -26,7 +30,8 @@
                 <tr>
                     <th scope="col col-1">#</th>
                     <th scope="col col-2">Status</th>
-                    <th scope="col col-2">Add to output</th>
+                    <th scope="col col-2">Group name</th>
+                    <th scope="col col-2">Download</th>
                     <th scope="col col-2">Action</th>
                 </tr>
                 </thead>
@@ -36,8 +41,17 @@
                         <th scope="row">{{ $tab->id }}</th>
                         <th>{{ $tab->status }}</th>
                         <th>
-                            <input class="form-check" type="checkbox" name="download-{{ $tab->id }}"
-                                   id="download-{{ $tab->id }}">
+                            {{ $tab->name ?? "Имя не задано" }}
+                        </th>
+                        <th>
+                            @if($tab->name)
+                                <a href="{{ route('cron.post.output', ['group', $tab->id]) }}">Скачать группу</a>
+                                <br><a href="{{ route('cron.post.output', ['tab', $tab->id]) }}">Скачать результаты</a>
+                                <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
+                            @else
+                                <a href="{{ route('cron.post.output', ['tab', $tab->id]) }}">Скачать результаты</a>
+                                <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
+                            @endif
                         </th>
                         <th>
                             @if($tab->status !== 'finished')
@@ -54,7 +68,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <input class="form-control bg-dark text-white" type="submit" value="Скачать">
+            {{ $cronTabs->links() }}
         </div>
     </div>
 </div>

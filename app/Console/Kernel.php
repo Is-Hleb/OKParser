@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -37,7 +37,7 @@ class Kernel extends ConsoleKernel
                 $jobInfo->save();
 
                 dispatch((new OkParserApi($request['action'], $data, $jobInfo)));
-    
+
                 $jobInfo = JobInfo::find($jobInfo->id);
 
                 $task->status_task = $jobInfo->status;
@@ -60,7 +60,7 @@ class Kernel extends ConsoleKernel
                 $task->save();
             }
         })->everyMinute();
-        
+
         $schedule->call(function () {
             $cronTasks = CronTaskinfo::where('status', JobInfo::WAITING)->get();
             foreach ($cronTasks as $cronTask) {
@@ -88,13 +88,13 @@ class Kernel extends ConsoleKernel
                     $cronTask->save();
                 } elseif ($jobInfo->status === JobInfo::FAILED) {
                     $jobInfo = new JobInfo([
-                            'status' => JobInfo::WAITING
-                        ]);
+                        'status' => JobInfo::WAITING
+                    ]);
                     $jobInfo->save();
                     $cronTask->job_info_id = $jobInfo->id;
                     $cronTask->save();
                     OkParserApi::dispatch($cronTask->method, $cronTask->signature, $cronTask->jobInfo);
-                        
+
                     $jobInfo = JobInfo::find($jobInfo->id);
                     if ($jobInfo->status === JobInfo::FINISHED) {
                         break;
@@ -111,7 +111,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property boolean $status
  * @property string $method
  * @property int $job_info_id
+ * @property string $name
  */
 class CronTaskinfo extends Model
 {
