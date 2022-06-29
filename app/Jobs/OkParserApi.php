@@ -27,7 +27,7 @@ class OkParserApi implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(string $action, array $signature, JobInfo $jobInfo, CoreApiService|null $coreApiService)
+    public function __construct(string $action, array $signature, JobInfo $jobInfo, CoreApiService|null $coreApiService = null)
     {
         if($coreApiService) {
             $this->coreApiService = $coreApiService;
