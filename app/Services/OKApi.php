@@ -574,7 +574,6 @@ class OKApi
 
 
             $postInfo = $this->getPostInfoByUrl($url);
-            dump($postInfo);
 
             $postId = $postInfo[0]['discussion']['object_id'];
             $comments = $this->getPostComments($postId, -1);
@@ -624,6 +623,7 @@ class OKApi
 
             foreach ($userAddictionsInfo as $userId => $userInfo) {
                 $userInfo = $userInfo[0];
+                $userId = $userInfo['uid'];
                 $edu = [];
                 if ($withEducation) {
                     $edu = $this->getUserEducation($userId);
@@ -634,7 +634,9 @@ class OKApi
                         'education' => implode(',', $edu),
                         'gender' => $sex,
                         'age' => $userInfo['age'] ?? '',
-                        'location' => $userInfo['location']
+                        'location' => $userInfo['location'],
+                        'name' => $userInfo['name'],
+                        'postUrl' => $url
                     ]);
                 }
                 if (isset($users[$userId . 'comment' . $postId])) {
@@ -642,7 +644,9 @@ class OKApi
                         'education' => implode(',', $edu),
                         'gender' => $sex,
                         'age' => $userInfo['age'] ?? '',
-                        'location' => $userInfo['location']
+                        'location' => $userInfo['location'],
+                        'name' => $userInfo['name'],
+                        'postUrl' => $url
                     ]);
                 }
             }
