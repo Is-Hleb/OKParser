@@ -44,14 +44,13 @@
                             {{ $tab->name ?? "Имя не задано" }}
                         </th>
                         <th>
+                            <a href="{{ route('cron.post.output', ['tab', $tab->id]) }}">Скачать результаты</a>
+                            <br><a href="{{ route('cron.post.output', ['last', $tab->id]) }}">Скачать последний результат</a>
+                            <br><a href="{{ route('cron.post.output', ['delta', $tab->id]) }}">Скачать дельту</a>
+                            <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
                             @if($tab->name)
-                                <a href="{{ route('cron.post.output', ['group', $tab->id]) }}">Скачать группу</a>
-                                <br><a href="{{ route('cron.post.output', ['tab', $tab->id]) }}">Скачать результаты</a>
-                                <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
-                            @else
-                                <a href="{{ route('cron.post.output', ['tab', $tab->id]) }}">Скачать результаты</a>
-                                <a href="{{ route('cron.post.output', ['delta', $tab->id]) }}">Скачать дельту</a>
-                                <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
+                                <br><a href="{{ route('cron.post.output', ['group', $tab->id]) }}">Скачать дельту группы</a>
+                                <br><a href="{{ route('cron.post.output', ['lastGroup', $tab->id]) }}">Скачать группу</a>
                             @endif
                         </th>
                         <th>
