@@ -799,7 +799,7 @@ class OKApi
                 }
             }
         }
-        foreach ($output as &$userArr) {
+        foreach ($output as $userId => &$userArr) {
             foreach (array_keys($maxArray) as $key) {
                 $userArr[0][$key] = $userArr[0][$key] ?? null;
             }
