@@ -760,6 +760,7 @@ class OKApi
     {
         $ids_array = $this->getIdsChunks($logins, 99);
         $output = [];
+        $maxArray = [];
         foreach ($ids_array as $ids) {
             if (is_array($ids)) {
                 $ids = implode(',', $ids);
@@ -791,11 +792,18 @@ class OKApi
                     } catch (Exception $exception) {
                         $datum['location'] = '';
                     }
+                    if(sizeof($datum) > sizeof($maxArray)) {
+                        $maxArray = $datum;
+                    }
                     $output[$datum['uid']] = [$datum];
                 }
             }
         }
-
+        foreach ($output as &$userArr) {
+            foreach (array_keys($maxArray) as $key) {
+                $userArr[0][$key] = $userArr[0][$key] ?? null;
+            }
+        }
         return $output;
     }
 
