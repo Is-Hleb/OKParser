@@ -574,7 +574,9 @@ class OKApi
 
 
             $postInfo = $this->getPostInfoByUrl($url);
-
+            if(!$postInfo[0]['discussion']) {
+                continue;
+            }
             $postId = $postInfo[0]['discussion']['object_id'];
             $comments = $this->getPostComments($postId, -1);
 
