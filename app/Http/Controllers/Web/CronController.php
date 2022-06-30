@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\OkParserApi;
 use App\Models\CronTaskinfo;
 use App\Models\JobInfo;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
@@ -29,6 +30,7 @@ class CronController extends Controller
         $cronTab = CronTaskinfo::find($id);
         switch ($mode) {
             case "tab":
+            case "delta":
                 $result = $cronTab->output;
                 if (!$result) {
                     abort(302, "Результатов по этой задаче нет");
@@ -37,13 +39,41 @@ class CronController extends Controller
                 if (!is_dir($dirPath)) {
                     mkdir($dirPath);
                 }
-                foreach ($result as $date => $output) {
-                    $file_path = $dirPath . "/cron_{$cronTab->id}_result_$date.csv";
+                if($mode != 'delta') {
+                    foreach ($result as $date => $output) {
+                        $file_path = $dirPath . "/cron_{$cronTab->id}_result_$date.csv";
+                        $file = fopen($file_path, 'w');
+                        foreach ($output as $data) {
+                            fputcsv($file, $data);
+                        }
+                        fclose($file);
+                    }
+                } else {
+                    $results = array_values($result);
+
+                    $index = 1;
+                    do {
+
+                        $cur = $results[sizeof($results) - $index++] ?? null;
+                        $last = $results[sizeof($results) - $index] ?? null;
+
+                    } while($cur && $last && sizeof($cur) == sizeof($last));
+
+                    if(!$cur || !$last) {
+                        return redirect()->back()->withErrors(['diff' => 'diff is null']);
+                    }
+                    $offset = max(sizeof($cur), sizeof($last)) - 2;
+                    $content = array_slice($last, $offset);
+
+                    $file_path = $dirPath . "/cron_{$cronTab->id}_$mode.csv";
                     $file = fopen($file_path, 'w');
-                    foreach ($output as $data) {
+                    fputcsv($file, array_keys($content[0]));
+                    foreach ($content as $data) {
                         fputcsv($file, $data);
                     }
                     fclose($file);
+
+                    return \response()->download($file_path);
                 }
                 $zip_path = "cron_{$cronTab->id}_results.zip";
                 $zip = new \ZipArchive;

@@ -50,6 +50,7 @@
                                 <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
                             @else
                                 <a href="{{ route('cron.post.output', ['tab', $tab->id]) }}">Скачать результаты</a>
+                                <a href="{{ route('cron.post.output', ['delta', $tab->id]) }}">Скачать дельту</a>
                                 <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
                             @endif
                         </th>
