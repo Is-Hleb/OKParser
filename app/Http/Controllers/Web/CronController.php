@@ -25,21 +25,52 @@ class CronController extends Controller
         }
     }
 
+    private function getResultDelta($result): bool|array
+    {
+        $results = array_values($result);
+
+        $index = 1;
+        do {
+
+            $cur = $results[sizeof($results) - $index++] ?? null;
+            $last = $results[sizeof($results) - $index] ?? null;
+
+        } while ($cur && $last && sizeof($cur) == sizeof($last));
+
+        if (!$cur || !$last) {
+            return false;
+        }
+        $offset = max(sizeof($cur), sizeof($last)) - 2;
+        return array_slice($last, $offset);
+    }
+
     public function postOutput(string $mode, int $id)
     {
         $cronTab = CronTaskinfo::find($id);
         switch ($mode) {
+            case "last":
+                $file_path = storage_path($cronTab->id . '.csv');
+                $file = fopen($file_path, 'w');
+
+                fputcsv($file, array_keys(array_values($cronTab->output)[0]));
+                foreach ($cronTab->output as $date => $data) {
+                    foreach ($data as $item)
+                        fputcsv($file, $item);
+                }
+                fclose($file);
+                return \response()->download($file_path);
+
             case "tab":
             case "delta":
                 $result = $cronTab->output;
                 if (!$result) {
-                    abort(302, "Результатов по этой задаче нет");
+                    return redirect()->back();
                 }
                 $dirPath = storage_path("cron_{$cronTab->id}");
                 if (!is_dir($dirPath)) {
                     mkdir($dirPath);
                 }
-                if($mode != 'delta') {
+                if ($mode != 'delta') {
                     foreach ($result as $date => $output) {
                         $file_path = $dirPath . "/cron_{$cronTab->id}_result_$date.csv";
                         $file = fopen($file_path, 'w');
@@ -49,21 +80,12 @@ class CronController extends Controller
                         fclose($file);
                     }
                 } else {
-                    $results = array_values($result);
 
-                    $index = 1;
-                    do {
+                    $content = $this->getResultDelta($result);
 
-                        $cur = $results[sizeof($results) - $index++] ?? null;
-                        $last = $results[sizeof($results) - $index] ?? null;
-
-                    } while($cur && $last && sizeof($cur) == sizeof($last));
-
-                    if(!$cur || !$last) {
-                        return redirect()->back()->withErrors(['diff' => 'diff is null']);
+                    if (!$content) {
+                        return redirect()->back();
                     }
-                    $offset = max(sizeof($cur), sizeof($last)) - 2;
-                    $content = array_slice($last, $offset);
 
                     $file_path = $dirPath . "/cron_{$cronTab->id}_$mode.csv";
                     $file = fopen($file_path, 'w');
@@ -92,38 +114,55 @@ class CronController extends Controller
 
                 break;
             case "group":
+            case "lastGroup":
                 $tabs = CronTaskinfo::where('name', $cronTab->name)->get();
-                foreach ($tabs as $cronTab) {
-                    $result = $cronTab->output;
-                    if (!$result) {
-                        abort(302, "Результатов по этой задаче нет");
-                    }
-                    $dirPath = storage_path("cron_{$cronTab->id}");
-                    if (!is_dir($dirPath)) {
-                        mkdir($dirPath);
-                    }
-                    foreach ($result as $date => $output) {
-                        $file_path = $dirPath . "/cron_{$cronTab->id}_result_$date.csv";
-                        $file = fopen($file_path, 'w');
-                        foreach ($output as $data) {
-                            fputcsv($file, $data);
+                $content = [];
+                if($mode == 'group') {
+                    foreach ($tabs as $tab) {
+                        $temp = $this->getResultDelta($tab->output ?? []);
+                        if ($temp) {
+                            $content = array_merge($temp, $content);
                         }
-                        fclose($file);
                     }
-                    $zip_path = "cron_{$cronTab->id}_results.zip";
-                    $zip = new \ZipArchive;
-                    if ($zip->open(storage_path($zip_path), \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
-                        $files = File::files($dirPath);
 
-                        foreach ($files as $key => $value) {
-                            $relativeNameInZipFile = basename($value);
-                            $zip->addFile($value, $relativeNameInZipFile);
+                    $file_path = storage_path("{$cronTab->name}_delta.csv");
+                } else {
+                    $file_path = storage_path("{$cronTab->name}_content.csv");
+                    $biggestArr = [];
+                    foreach ($tabs as $tab) {
+                        if($tab->output) {
+                            $tmp = array_values($tab->output);
+                            $tmp = $tmp[sizeof($tmp) - 1];
+                            foreach ($tmp as $item) {
+                                if(sizeof($biggestArr) < sizeof($item)) {
+                                    $biggestArr = $item;
+                                }
+                            }
+                            $content = array_merge($content, $tmp);
                         }
-                        $zip->close();
-                        response()->download(storage_path($zip_path));
+                    }
+                    foreach ($content as &$item) {
+                        foreach ($biggestArr as $key => $value) {
+                            if(!isset($item[$key])) {
+                                $item[$key] = "none";
+                            }
+                        }
                     }
                 }
-                break;
+
+                if (!$content) {
+                    return redirect()->back();
+                }
+
+                $file = fopen($file_path, "w");
+
+                fputcsv($file, array_keys($content[0]));
+                foreach ($content as $data) {
+                    fputcsv($file, $data);
+                }
+                fclose($file);
+                return \response()->download($file_path);
+
         }
     }
 
