@@ -22,7 +22,7 @@ use App\Http\Controllers\TasksController;
 Route::post('/task', TasksController::class);
 
 \Illuminate\Support\Facades\Auth::routes();
-Route::group(['middleware' => 'auth', 'as' => 'cron.', 'prefix' => '/cron'], function(){
+Route::group(['middleware' => 'auth', 'as' => 'cron.', 'prefix' => '/cron'], function () {
     Route::get('/', [\App\Http\Controllers\Web\CronController::class, 'show']);
     Route::post('/post/links', [\App\Http\Controllers\Web\CronController::class, 'postLinks'])->name('post.links');
     Route::get('/post/output/{mode}/{tab}', [\App\Http\Controllers\Web\CronController::class, 'postOutput'])->name('post.output');

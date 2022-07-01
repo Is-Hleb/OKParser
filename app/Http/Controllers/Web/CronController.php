@@ -6,14 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Jobs\OkParserApi;
 use App\Models\CronTaskinfo;
 use App\Models\JobInfo;
+use App\Services\IriApi;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class CronController extends Controller
 {
-    public function show(Request $request)
+    public function show(Request $request, IriApi $iriApi)
     {
+        $input = array_chunk($iriApi->getTaskEUnExistedUrls(), 10);
+        if($input) {
+            $this->setTasks($input, 'Запрос_от_' . now()->format('d-m-y_m:s'));
+        }
         if ($request->get('js')) {
             return view('sections.cron', [
                 'cronTabs' => CronTaskinfo::paginate(5)
@@ -174,16 +179,8 @@ class CronController extends Controller
         return redirect()->back();
     }
 
-    public function postLinks(Request $request)
+    private function setTasks($input, $name)
     {
-
-        $content = file_get_contents($request->file('csv')->getRealPath());
-        $items = explode("\n", $content);
-        $items = array_map(function ($item) {
-            return str_replace("\r", '', $item);
-        }, $items);
-        $input = array_chunk($items, 10);
-
         foreach ($input as $items) {
             $jobInfo = new JobInfo([
                 'status' => JobInfo::WAITING
@@ -195,12 +192,26 @@ class CronController extends Controller
                 'signature' => ['urls' => $items],
                 'job_info_id' => $jobInfo->id,
                 'status' => JobInfo::WAITING,
-                'name' => $request->input('name')
+                'name' => $name
             ]);
             dispatch((new OkParserApi('getPostUserActivity', ['urls' => $items], $jobInfo, null)));
 
             $cronInfo->save();
         }
+    }
+
+    public function postLinks(Request $request)
+    {
+
+        $content = file_get_contents($request->file('csv')->getRealPath());
+        $items = explode("\n", $content);
+        $items = array_map(function ($item) {
+            return str_replace("\r", '', $item);
+        }, $items);
+        $input = array_chunk($items, 10);
+
+        $this->setTasks($input, $request->input('name'));
+
         return redirect()->back();
     }
 }
