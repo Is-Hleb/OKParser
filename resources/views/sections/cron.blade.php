@@ -1,10 +1,20 @@
 <div class="container">
     <div class="row">
         <div class="col-4 overflow-scroll">
+            <h3 class="w-75 border-bottom">Задачи</h3>
             @foreach($cronTabs as $tab)
                 <div class="my-2 p-2 bg-light border-bottom shadow-sm">
                     <h3>jobInfo №{{ $tab->jobInfo->id }} - cron №{{ $tab->id }}</h3>
                     <span class="text-primary">{{ $tab->jobinfo->status }}</span>
+                </div>
+            @endforeach
+
+            <h3 class="w-75 border-bottom mt-4">Группы</h3>
+            @foreach($tabsWithGroup as $group => $tabs)
+                <div class="my-2 p-2 bg-light border-bottom shadow-sm">
+                    <h3>{{ $group }}</h3>
+                    <a href="{{ route('cron.post.output', ['group', $tabs[0]->id]) }}">Последняя разница</a>
+                    <br><a href="{{ route('cron.post.output', ['lastGroup', $tabs[0]->id]) }}">Последний результат</a>
                 </div>
             @endforeach
         </div>
@@ -45,13 +55,10 @@
                         </th>
                         <th>
                             <a href="{{ route('cron.post.output', ['tab', $tab->id]) }}">Скачать результаты</a>
-                            <br><a href="{{ route('cron.post.output', ['last', $tab->id]) }}">Скачать последний результат</a>
+                            <br><a href="{{ route('cron.post.output', ['last', $tab->id]) }}">Скачать последний
+                                результат</a>
                             <br><a href="{{ route('cron.post.output', ['delta', $tab->id]) }}">Скачать дельту</a>
                             <br><a href="{{ route('cron.post.output', ['exceptions', $tab->id]) }}">Скачать ошибки</a>
-                            @if($tab->name)
-                                <br><a href="{{ route('cron.post.output', ['group', $tab->id]) }}">Скачать дельту группы</a>
-                                <br><a href="{{ route('cron.post.output', ['lastGroup', $tab->id]) }}">Скачать группу</a>
-                            @endif
                         </th>
                         <th>
                             @if($tab->status !== 'finished')
