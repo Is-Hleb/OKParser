@@ -15,18 +15,20 @@ class CronController extends Controller
 {
     public function show(Request $request, IriApi $iriApi)
     {
+        $tabsWithGroups = CronTaskinfo::all()->groupBy('name')->all();
+        $viewData = [
+            'cronTabs' => CronTaskinfo::paginate(5),
+            'tabsWithGroup' => $tabsWithGroups
+        ];
+
         $input = array_chunk($iriApi->getTaskEUnExistedUrls(), 10);
         if($input) {
             $this->setTasks($input, 'Запрос_от_' . now()->format('d-m-y_m:s'));
         }
         if ($request->get('js')) {
-            return view('sections.cron', [
-                'cronTabs' => CronTaskinfo::paginate(5)
-            ]);
+            return view('sections.cron', $viewData);
         } else {
-            return view('web.cron', [
-                'cronTabs' => CronTaskinfo::paginate(5)
-            ]);
+            return view('web.cron', $viewData);
         }
     }
 
