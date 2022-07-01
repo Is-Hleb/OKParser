@@ -13,13 +13,16 @@ class CoreApiService
     const ERROR = 'error';
     const VALIDATION_ERR = 'not_enough_data';
 
+    private string $baseUrl;
+
     public function __construct(private Task $task)
     {
+        $this->baseUrl = config('core_api_service.base_url');
     }
 
     public function waiting(): void
     {
-        Http::patch("http://84.38.187.209:8080/task/status", [
+        Http::patch("{$this->baseUrl}/task/status", [
             "id" => $this->task->task_id,
             "status" => self::WAITING
         ]);
@@ -27,7 +30,7 @@ class CoreApiService
 
     public function validationErr(): void
     {
-        Http::patch("http://84.38.187.209:8080/task/status", [
+        Http::patch("{$this->baseUrl}/task/status", [
             "id" => $this->task->task_id,
             "status" => self::VALIDATION_ERR
         ]);
@@ -35,7 +38,7 @@ class CoreApiService
 
     public function error(): void
     {
-        Http::patch("http://84.38.187.209:8080/task/status", [
+        Http::patch("{$this->baseUrl}/task/status", [
             "id" => $this->task->task_id,
             "status" => self::ERROR
         ]);
@@ -43,7 +46,7 @@ class CoreApiService
 
     public function running(): void
     {
-        Http::patch("http://84.38.187.209:8080/task/status", [
+        Http::patch("{$this->baseUrl}/task/status", [
             "id" => $this->task->task_id,
             "status" => self::RUNNING
         ]);
@@ -51,7 +54,7 @@ class CoreApiService
 
     private function ok(): void
     {
-        Http::patch("http://84.38.187.209:8080/task/status", [
+        Http::patch("{$this->baseUrl}/task/status", [
             "id" => $this->task->task_id,
             "status" => self::OK
         ]);
@@ -59,7 +62,7 @@ class CoreApiService
 
     public function data($output, $type): void
     {
-        Http::post("http://84.38.187.209:8080/data", [
+        Http::post("{$this->baseUrl}/data", [
             "task_id" => $this->task->task_id,
             "data" => ["data" => $output],
             "type" => $type
