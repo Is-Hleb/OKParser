@@ -761,9 +761,17 @@ class OKApi
     public function getUserInfo(array|int $logins): bool|array
     {
         $ids_array = $this->getIdsChunks($logins, 99);
+        dump($ids_array);
         $output = [];
         $maxArray = [];
         foreach ($ids_array as $ids) {
+
+            foreach ($ids as &$id) {
+                if(is_string($id)) {
+                    $id = $this->getUrlInfo("https://ok.ru/profile/$id")['objectId'];
+                }
+            }
+
             if (is_array($ids)) {
                 $ids = implode(',', $ids);
             }
