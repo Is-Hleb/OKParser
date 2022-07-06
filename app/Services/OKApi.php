@@ -179,7 +179,7 @@ class OKApi
             if (isset($output['error_code']) && $output['error_code'] == 455) {
                 $result[$user] = [];
             } elseif (isset($output['error_code'])) {
-                throw new Exception($output['error_message']);
+                throw new Exception(json_encode($output));
             } else {
                 $result[$user] = array_map(function ($value) {
                     return ['id' => $value];
