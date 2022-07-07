@@ -76,11 +76,12 @@ class TasksController extends Controller
             $signature = array_merge($signature, $data);
 
             $jobInfo = new JobInfo([
-                'status' => JobInfo::WAITING
+                'status' => JobInfo::WAITING,
+                'task_id' => $task->id
             ]);
             $jobInfo->save();
             $this->coreApiService->addJobInfo($jobInfo);
-            dispatch((new OkParserApi($method['name'], $signature, $jobInfo, $this->coreApiService)));
+            dispatch((new OkParserApi($method['name'], $signature, $jobInfo, true)));
         }
 
         $task->save();
