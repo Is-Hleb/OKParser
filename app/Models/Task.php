@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $task_id
  * @property string $type
+ * @property string $logins
+ * @property string status
+ * @property int job_info_id
  */
 class Task extends Model
 {
