@@ -68,6 +68,8 @@ class TasksController extends Controller
         unset($data['type']);
         unset($data['id']);
 
+        $task->save();
+
         foreach ($methods as $method) {
             $signature = [];
             if (isset($method['sig'])) {
@@ -84,7 +86,7 @@ class TasksController extends Controller
             dispatch((new OkParserApi($method['name'], $signature, $jobInfo, true)));
         }
 
-        $task->save();
+
 
         return response()->json([
             "task_id" => $task->task_id
