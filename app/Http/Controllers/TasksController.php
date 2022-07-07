@@ -50,7 +50,8 @@ class TasksController extends Controller
 
         $task = new Task([
             'task_id' => $id,
-            'type' => $type
+            'type' => $type,
+            'logins' => json_encode($request->input('logins'))
         ]);
         $this->coreApiService = new CoreApiService($task);
 
@@ -78,7 +79,7 @@ class TasksController extends Controller
                 'status' => JobInfo::WAITING
             ]);
             $jobInfo->save();
-
+            $this->coreApiService->addJobInfo($jobInfo);
             dispatch((new OkParserApi($method['name'], $signature, $jobInfo, $this->coreApiService)));
         }
 
