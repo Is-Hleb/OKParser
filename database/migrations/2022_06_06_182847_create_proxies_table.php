@@ -71,7 +71,27 @@ https://3ggmwpUn:vHg8bFaw@45.159.87.52:52748
 https://3ggmwpUn:vHg8bFaw@45.152.212.56:46382
 https://3ggmwpUn:vHg8bFaw@45.156.148.35:54215
 https://3ggmwpUn:vHg8bFaw@45.139.55.230:48490
-https://dm3nz_ya_ru:3d360c117a@213.166.89.39:30016";
+https://dm3nz_ya_ru:3d360c117a@213.166.89.39:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.214.221:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.234.106:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.214.92:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.215.166:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.234.24:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.233.150:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.215.17:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.233.107:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.234.5:30016
+https://hlebishenko_gmail_co:a2e8c6660d@83.171.234.1:30016
+https://hlebishenko_gmail_co:a2e8c6660d@84.54.16.166:30016
+https://hlebishenko_gmail_co:a2e8c6660d@84.54.19.135:30016
+https://hlebishenko_gmail_co:a2e8c6660d@84.54.17.145:30016
+https://hlebishenko_gmail_co:a2e8c6660d@84.54.17.83:30016
+https://hlebishenko_gmail_co:a2e8c6660d@84.54.19.155:30016
+https://hlebishenko_gmail_co:a2e8c6660d@212.81.34.48:30016
+https://hlebishenko_gmail_co:a2e8c6660d@212.81.33.154:30016
+https://hlebishenko_gmail_co:a2e8c6660d@212.81.34.55:30016
+https://hlebishenko_gmail_co:a2e8c6660d@212.81.34.220:30016
+https://hlebishenko_gmail_co:a2e8c6660d@212.81.33.162:30016";
         $array = explode("\n", $proxies);
         foreach($array as $item) {
             $item = explode("https://", $item);
