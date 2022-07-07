@@ -16,7 +16,7 @@ class AddInfoInTasksTable extends Migration
         Schema::table('tasks', function (Blueprint $table) {
             $table->string('status')->nullable();
             $table->longText('logins')->nullable();
-            $table->bigIncrements('job_info_id')->nullable();
+            $table->bigInteger('job_info_id')->nullable();
         });
     }
 
