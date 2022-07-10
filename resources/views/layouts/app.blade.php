@@ -33,7 +33,12 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-
+                        <li class="nav-item">
+                            <a href="{{ route('cron.show') }}" class="nav-link">Задача_е</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('job.users-by-cities') }}" class="nav-link">Пользователи по городу</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
