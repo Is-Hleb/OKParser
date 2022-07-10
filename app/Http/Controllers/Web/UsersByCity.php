@@ -75,6 +75,7 @@ class UsersByCity extends Controller
     public function export($table_name, $jobId)
     {
         $jobInfo = JobInfo::find($jobId);
+        DB::connection('parser')->select("UPDATE $table_name SET name = REPLACE(name, '\n', '')");
         $table = DB::connection('parser')->table($table_name)->get();
         DB::connection('parser')->table($table_name)->update(['region' => $jobInfo->name]);
         $keys = ['social_id', 'gender', 'age_range', 'edu', "city", "region", "name", "work"];
