@@ -31,16 +31,16 @@ class UsersByCity extends Controller
             $country = CountryCode::find($country);
             $cities = explode("\r\n", $cities);
 
-            $sig = [
-                'country' => $country->name,
-                'cities' => $cities,
-                'table_name' => 'parser_task_' . $country->code . Str::random(5)
-            ];
-
             $jobInfo = JobInfo::create([
                 'status' => JobInfo::WAITING,
                 'is_node_task' => true
             ]);
+
+            $sig = [
+                'country' => $country->name,
+                'cities' => $cities,
+                'table_name' => 'parser_task_' . $jobInfo->id
+            ];
 
             $task = Task::create([
                 'task_id' => 'node_' . Str::random(5),
