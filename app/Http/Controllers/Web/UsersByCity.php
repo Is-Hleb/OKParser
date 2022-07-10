@@ -42,13 +42,15 @@ class UsersByCity extends Controller
                 'is_node_task' => true
             ]);
 
-            Task::create([
+            $task = Task::create([
                 'task_id' => 'node_' . Str::random(5),
                 'logins' => json_encode($sig),
                 'status' => CoreApiService::WAITING,
                 'job_info_id' => $jobInfo->id,
                 'type' => 8
             ]);
+            $jobInfo->task_id = $task->id;
+            $jobInfo->save();
         }
         return $this->view();
     }
