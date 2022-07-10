@@ -29,8 +29,8 @@ Route::group(['middleware' => 'auth', 'as' => 'cron.', 'prefix' => '/cron'], fun
 
 Route::group(['middleware' => 'auth', 'as' => 'job.', 'prefix' => '/job'], function(){
     Route::get('/users-by-cities', UsersByCity::class)->name('users-by-cities');
-    Route::get('/users-by-cities/export/{table_name}/{job_id}', [UsersByCity::class, 'export'])->name('users-by-cities.export');
     Route::post('/users-by-cities', UsersByCity::class);
+    Route::get('/users-by-cities/export/{table_name}/{job_id}', [UsersByCity::class, 'export'])->name('users-by-cities.export');
     Route::post('/users-by-cities/update-status', [UsersByCity::class, 'updateStatus'])->name('users-by-cities.update-status');
     Route::delete('/users-by-cities/delete/{job_id}', [UsersByCity::class, 'delete'])->name('users-by-cities.delete');
 });
