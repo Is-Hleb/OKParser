@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property array $output
  * @property string $exception
  * @property Task $task
+ * @property boolean $is_node_task
  */
 class JobInfo extends Model
 {

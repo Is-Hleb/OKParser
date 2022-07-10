@@ -23,8 +23,15 @@ Route::post('/task', TasksController::class);
 
 \Illuminate\Support\Facades\Auth::routes();
 Route::group(['middleware' => 'auth', 'as' => 'cron.', 'prefix' => '/cron'], function () {
-    Route::get('/', [\App\Http\Controllers\Web\CronController::class, 'show']);
+    Route::get('/', [\App\Http\Controllers\Web\CronController::class, 'show'])->name('show');
     Route::post('/post/links', [\App\Http\Controllers\Web\CronController::class, 'postLinks'])->name('post.links');
     Route::get('/post/output/{mode}/{tab}', [\App\Http\Controllers\Web\CronController::class, 'postOutput'])->name('post.output');
     Route::put('/cron/stop/{id}', [\App\Http\Controllers\Web\CronController::class, 'stopCron'])->name('stop');
+});
+
+Route::group(['middleware' => 'auth', 'as' => 'job.', 'prefix' => '/job'], function(){
+    Route::get('/users-by-cities', \App\Http\Controllers\Web\UsersByCity::class)->name('users-by-cities');
+    Route::post('/users-by-cities', \App\Http\Controllers\Web\UsersByCity::class);
+
+
 });
