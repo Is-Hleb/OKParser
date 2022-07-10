@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $exception
  * @property Task $task
  * @property boolean $is_node_task
+ * @property string $name
  */
 class JobInfo extends Model
 {
@@ -21,7 +22,7 @@ class JobInfo extends Model
     public const FAILED = "failed";
 
     use HasFactory;
-    protected $fillable = ['status', 'exception', 'output', 'task_id', 'is_node_task'];
+    protected $fillable = ['status', 'exception', 'output', 'task_id', 'is_node_task', 'name'];
     protected $casts = [
         'output' => 'array'
     ];
