@@ -130,6 +130,9 @@ class UsersByCity extends Controller
 
             $country = CountryCode::find($country);
             $cities = explode("\r\n", $cities);
+            $cities = array_map(function($city){
+                return str_replace(" ", '', $city);
+            }, $cities);
 
             $jobInfo = JobInfo::create([
                 'status' => JobInfo::WAITING,
