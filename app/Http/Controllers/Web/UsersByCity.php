@@ -81,6 +81,7 @@ class UsersByCity extends Controller
         DB::connection('parser')->table($table_name)->update(['region' => $jobInfo->name]);
         $table = DB::connection('parser')->table($table_name)->cursor();
 
+        $table_name = str_replace(' ', '_', $jobInfo->name);
         $csv_file_path = storage_path("$table_name.csv");
         file_put_contents($csv_file_path, implode(",", $keys) . "\n");
 
