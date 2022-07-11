@@ -112,7 +112,7 @@ class UsersByCity extends Controller
             Cache::put($table, false);
         }
 
-        return $this->view($tables);
+        return redirect()->back();
     }
 
     public function __invoke(Request $request)
