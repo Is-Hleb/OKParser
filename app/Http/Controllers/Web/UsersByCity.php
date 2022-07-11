@@ -61,6 +61,7 @@ class UsersByCity extends Controller
         try {
             $table_name = "parser_task_$job_id";
             DB::connection('parser')->select("DROP TABLE $table_name");
+            DB::connection('parser')->select("DELETE FROM search_links WHERE `table` = '$table_name'");
         } catch(\Exception $exception) {
 
         }
@@ -131,7 +132,7 @@ class UsersByCity extends Controller
             $country = CountryCode::find($country);
             $cities = explode("\r\n", $cities);
             $cities = array_map(function($city){
-                return trim(str_replace(' ', '', str_replace(" ", '', $city)));
+                return trim(str_replace(' ', '', htmlspecialchars_decode($city)));
             }, $cities);
 
             $jobInfo = JobInfo::create([
