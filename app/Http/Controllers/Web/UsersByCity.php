@@ -131,10 +131,10 @@ class UsersByCity extends Controller
 
             $country = CountryCode::find($country);
             $cities = explode("\r\n", $cities);
-            $cities = array_map(function($city){
-                return trim(str_replace(' ', '', htmlspecialchars_decode($city)));
-            }, $cities);
+            $cities = array_map(function($city){;
 
+                return ltrim(str_replace("&nbsp;", "", htmlentities($city)));
+            }, $cities);
             $jobInfo = JobInfo::create([
                 'status' => JobInfo::WAITING,
                 'is_node_task' => true,
