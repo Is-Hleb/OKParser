@@ -133,7 +133,7 @@ class UsersByCity extends Controller
             $cities = explode("\r\n", $cities);
             $cities = array_map(function($city){;
 
-                return ltrim(str_replace("&nbsp;", "", htmlentities($city)));
+                return rtrim(ltrim(str_replace("&nbsp;", " ", htmlentities($city))));
             }, $cities);
             $jobInfo = JobInfo::create([
                 'status' => JobInfo::WAITING,
