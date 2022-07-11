@@ -98,7 +98,7 @@ class UsersByCity extends Controller
         $zip_path = storage_path("$table_name.csv.zip");
 
         if ($zip->open($zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-            $zip->addFile($csv_file_path);
+            $zip->addFile($csv_file_path, "$table_name.csv");
             $zip->close();
             unlink($csv_file_path);
         }
