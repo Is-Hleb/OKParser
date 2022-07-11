@@ -75,27 +75,32 @@ class UsersByCity extends Controller
     public function export($table_name, $jobId)
     {
         $jobInfo = JobInfo::find($jobId);
-        DB::connection('parser')->select("UPDATE $table_name SET name = REPLACE(name, '\n', '')");
-        $table = DB::connection('parser')->table($table_name)->get();
-        DB::connection('parser')->table($table_name)->update(['region' => $jobInfo->name]);
         $keys = ['social_id', 'gender', 'age_range', 'edu', "city", "region", "name", "work"];
 
-        $output = implode(",", $keys) . "\n";
+        DB::connection('parser')->select("UPDATE $table_name SET name = REPLACE(name, '\n', '')");
+        DB::connection('parser')->table($table_name)->update(['region' => $jobInfo->name]);
+        $table = DB::connection('parser')->table($table_name)->cursor();
+
+        $csv_file_path = storage_path("$table_name.csv");
+        file_put_contents($csv_file_path, implode(",", $keys) . "\n");
+
+        $file = fopen($csv_file_path, 'a');
         foreach ($table as $row) {
             $info = [];
             foreach ($keys as $key) {
                 $info[$key] = $row->$key ?? "";
             }
-            $output .= implode(",", $info) . "\n";
+            fwrite($file, implode(",", $info) . "\n");
         }
+        fclose($file);
 
-        $file_path = "$table_name.csv";
         $zip = new ZipArchive;
         $zip_path = storage_path("$table_name.csv.zip");
 
         if ($zip->open($zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-            $zip->addFromString($file_path, $output);
+            $zip->addFile($csv_file_path);
             $zip->close();
+            unlink($csv_file_path);
         }
 
         return response()->download($zip_path);
