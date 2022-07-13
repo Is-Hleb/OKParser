@@ -116,7 +116,10 @@ class UsersByCity extends Controller
         }, $tables);
 
         foreach ($tables as $table) {
-            Cache::put($table, false);
+            $info = Cache::get($table, false);
+            if(!$info || $info['count']) {
+                Cache::put($table, false);
+            }
         }
 
         return redirect()->back();
