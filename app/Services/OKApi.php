@@ -178,6 +178,8 @@ class OKApi
 
             if (isset($output['error_code']) && $output['error_code'] == 455) {
                 $result[$user] = [];
+            } elseif (isset($output['error_code']) && $output['error_code'] == 300 || $output['error_code'] == 1) {
+                continue;
             } elseif (isset($output['error_code'])) {
                 throw new Exception(json_encode($output));
             } else {
@@ -574,7 +576,7 @@ class OKApi
 
 
             $postInfo = $this->getPostInfoByUrl($url);
-            if(!isset($postInfo[0]['discussion'])) {
+            if (!isset($postInfo[0]['discussion'])) {
                 continue;
             }
             $postId = $postInfo[0]['discussion']['object_id'];
@@ -766,11 +768,19 @@ class OKApi
         $maxArray = [];
         foreach ($ids_array as $ids) {
 
-            foreach ($ids as &$id) {
-                if(is_string($id)) {
-                    $id = $this->getUrlInfo("https://ok.ru/profile/$id")['objectId'];
+            $newIds = [];
+            foreach ($ids as $id) {
+                if (is_string($id)) {
+                    $result = $this->getUrlInfo("https://ok.ru/profile/$id");
+                    if (!$result['objectId']) {
+                        continue;
+                    }
+                    $newIds[] = $result['objectId'];
+                } else {
+                    $newIds[] = $id;
                 }
             }
+            $ids = $newIds;
 
             if (is_array($ids)) {
                 $ids = implode(',', $ids);
@@ -802,7 +812,7 @@ class OKApi
                     } catch (Exception $exception) {
                         $datum['location'] = '';
                     }
-                    if(sizeof($datum) > sizeof($maxArray)) {
+                    if (sizeof($datum) > sizeof($maxArray)) {
                         $maxArray = $datum;
                     }
                     $output[$datum['uid']] = [$datum];
@@ -837,10 +847,10 @@ class OKApi
                 ];
 
                 $result = $this->request($params);
-                if($this->sessionBlocked($result)) {
+                if ($this->sessionBlocked($result)) {
                     $this->setRandomToken();
                 }
-            } while($this->sessionBlocked($result));
+            } while ($this->sessionBlocked($result));
             if (!empty($result)) {
                 $output[] = $result;
             }
@@ -1049,6 +1059,10 @@ class OKApi
     {
         do {
             $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
+            if (!$proxy) {
+                Proxy::query()->update(['blocked', false]);
+                $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
+            }
             try {
                 $auth = base64_encode($proxy->user . ':' . $proxy->password);
                 $proxyUrl = 'tcp://' . $proxy->ip;
