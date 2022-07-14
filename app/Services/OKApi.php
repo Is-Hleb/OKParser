@@ -195,6 +195,10 @@ class OKApi
     {
         do {
             $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
+            if(!$proxy) {
+                Proxy::query()->update(['blocked' => false]);
+                $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
+            }
             try {
                 $auth = base64_encode($proxy->user . ':' . $proxy->password);
                 $proxyUrl = 'tcp://' . $proxy->ip;

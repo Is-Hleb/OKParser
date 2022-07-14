@@ -23,6 +23,7 @@
     "dependencies": {
         "@nesk/puphpeteer": "^2.0.0",
         "puppeteer": "^14.1.1",
+        "puppeteer-autoscroll-down": "^1.1.1",
         "puppeteer-firefox": "^0.5.1"
     }
 }
