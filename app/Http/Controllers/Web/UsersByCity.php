@@ -84,9 +84,8 @@ class UsersByCity extends Controller
 
         $table_name = str_replace(' ', '_', $jobInfo->name);
         $csv_file_path = storage_path("$table_name.csv");
-        file_put_contents($csv_file_path, implode(",", $keys) . "\n");
 
-        $file = fopen($csv_file_path, 'a');
+        $file = fopen($csv_file_path, 'a+');
         foreach ($table as $row) {
             $info = [];
             foreach ($keys as $key) {
