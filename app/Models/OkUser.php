@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $password
  * @property string $cookies
  * @property boolean $blocked
+ * @property int $proxy_id
  */
 class OkUser extends Model
 {
