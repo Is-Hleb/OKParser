@@ -25,12 +25,12 @@
                             <th>{{ $jobInfo->status ?? "не определён" }}</th>
                             <th>{{ $info['name'] ?? "" }}</th>
                             <th>{{ $info['users_count'] ?? "" }}</th>
-                            @php
+                            <?php
                                 $tasks = \App\Models\Task::where('task_id', "node_{$info['task_id']}")->get();
                                 $friendsTsk = $tasks->filter(fn($item, $key) => $item->type == 3)->first();
                                 $subscribersTsk = $tasks->filter(fn($item, $key) => $item->type == 1)->first();
                                 dd($friendsTsk, $subscribersTsk);
-                            @endphp
+                            ?>
                             @if(!$friendsTsk)
                                 <th class="btn-group">
                                     <a href="{{ route('job.users-friends-subscribers.set-task', ['friends', $info['task_id']]) }}"
