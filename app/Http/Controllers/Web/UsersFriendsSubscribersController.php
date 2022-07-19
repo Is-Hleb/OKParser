@@ -52,7 +52,7 @@ class UsersFriendsSubscribersController extends Controller
     {
         return view('web.users-friends-subscribers', [
             'infos' => $this->DBService->getInfos(),
-            'tasks' => JobInfo::where('is_node_task', 'true')->all()->filter(function ($task) {
+            'tasks' => JobInfo::where('is_node_task', 'true')->get()->filter(function ($task) {
                 return str_contains($task->name, 'friends') || str_contains($task->name, 'subscribers');
             })
         ]);
