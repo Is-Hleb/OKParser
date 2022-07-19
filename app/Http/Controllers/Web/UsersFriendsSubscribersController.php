@@ -19,7 +19,7 @@ class UsersFriendsSubscribersController extends Controller
 
     public function setTask($mode, $jobInfoId)
     {
-        $type = match($mode) {
+        $type = match ($mode) {
             'friends' => 3,
             "subscribers" => 1
         };
@@ -37,7 +37,7 @@ class UsersFriendsSubscribersController extends Controller
         ];
 
         $task = Task::create([
-            'task_id' => 'node_type_3',
+            'task_id' => "node_$jobInfo",
             'logins' => json_encode($sig),
             'status' => CoreApiService::WAITING,
             'job_info_id' => $newJobInfo->id,
@@ -52,7 +52,9 @@ class UsersFriendsSubscribersController extends Controller
     {
         return view('web.users-friends-subscribers', [
             'infos' => $this->DBService->getInfos(),
-            'tasks' => Task::where('task_id', 'node_type_3')->get()
+            'tasks' => JobInfo::where('is_node_task', 'true')->all()->filter(function ($task) {
+                return str_contains($task->name, 'friends') || str_contains($task->name, 'subscribers');
+            })
         ]);
     }
 }

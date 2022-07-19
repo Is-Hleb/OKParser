@@ -25,7 +25,7 @@
                             <th>{{ $jobInfo->status ?? "не определён" }}</th>
                             <th>{{ $info['name'] ?? "" }}</th>
                             <th>{{ $info['users_count'] ?? "" }}</th>
-                            @if(! \App\Models\JobInfo::find($info['task_id']))
+                            @if(! \App\Models\Task::where('task_id', "node_{$info['task_id']}")->get())
                                 <th class="btn-group">
                                     <a href="{{ route('job.users-friends-subscribers.set-task', ['friends', $info['task_id']]) }}"
                                        class="btn btn-success border-end me-1">друзей</a>
