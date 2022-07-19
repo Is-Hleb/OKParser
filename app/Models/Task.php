@@ -17,4 +17,8 @@ class Task extends Model
     use HasFactory;
     public $timestamps = false;
     protected $guarded = ['id'];
+
+    public function jobInfo() {
+        return $this->hasOne(JobInfo::class);
+    }
 }

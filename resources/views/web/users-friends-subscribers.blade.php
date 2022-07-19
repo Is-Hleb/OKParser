@@ -56,7 +56,7 @@
                     <tbody>
                     @foreach($tasks as $task)
                         <tr>
-                            @php($jobInfo = $task->jobInfo))
+                            @php($jobInfo = $task->jobInfo)
                             <th>{{ $jobInfo->id }}</th>
                             <th>{{ $jobInfo->status }}</th>
                             <th>{{ $jobInfo->name }}</th>
