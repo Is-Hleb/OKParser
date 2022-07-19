@@ -29,14 +29,13 @@
                                 $tasks = \App\Models\Task::where('task_id', "node_{$info['task_id']}")->get();
                                 $friendsTsk = $tasks->filter(fn($item, $key) => $item->type == 3)->first();
                                 $subscribersTsk = $tasks->filter(fn($item, $key) => $item->type == 1)->first();
-                                dd($friendsTsk, $subscribersTsk);
                             ?>
                             @if(!$friendsTsk)
                                 <th class="btn-group">
                                     <a href="{{ route('job.users-friends-subscribers.set-task', ['friends', $info['task_id']]) }}"
                                        class="btn btn-success border-end me-1">друзей</a>
                                     @endif
-                            @if(!$subscribersTsk)
+                            @if($subscribersTsk == null)
                                     <a href="{{ route('job.users-friends-subscribers.set-task', ['subscribers', $info['task_id']]) }}"
                                        class="btn btn-success">подписчиков</a>
                                 </th>
