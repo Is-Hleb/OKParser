@@ -52,7 +52,6 @@ class UsersByCity extends Controller
             'infos' => $infos,
             'users_count' => OkUser::where('blocked', 0)->count(),
             'proxies_count' => Proxy::where('blocked', 0)->count(),
-            'jobs' => JobInfo::where('is_node_task', 1)->get()
         ]);
     }
 
