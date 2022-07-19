@@ -37,7 +37,7 @@ class UsersFriendsSubscribersController extends Controller
         ];
 
         $task = Task::create([
-            'task_id' => "node_$jobInfo",
+            'task_id' => "node_{$jobInfo->id}",
             'logins' => json_encode($sig),
             'status' => CoreApiService::WAITING,
             'job_info_id' => $newJobInfo->id,
