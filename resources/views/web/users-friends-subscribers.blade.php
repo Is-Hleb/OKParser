@@ -54,12 +54,16 @@
                     </tr>
                     </thead>
                     <tbody>
-{{--                    @foreach($tasks as $task)--}}
-{{--                        <tr>--}}
-{{--                            @php($jobInfo = $task->jobInfo))--}}
-
-{{--                        </tr>--}}
-{{--                    @endforeach--}}
+                    @foreach($tasks as $task)
+                        <tr>
+                            @php($jobInfo = $task->jobInfo))
+                            <th>{{ $jobInfo->id }}</th>
+                            <th>{{ $jobInfo->status }}</th>
+                            <th>{{ $jobInfo->name }}</th>
+                            <th>Скоро будет</th>
+                            <th>Скоро будет</th>
+                        </tr>
+                    @endforeach
                     </tbody>
                 </table>
             </div>
