@@ -29,7 +29,6 @@
                                 $tasks = \App\Models\Task::where('task_id', "node_{$info['task_id']}")->get();
                                 $friendsTsk = $tasks->filter(fn($item, $key) => $item->type == 3)->first();
                                 $subscribersTsk = $tasks->filter(fn($item, $key) => $item->type == 1)->first();
-                                dd($friendsTsk, $subscribersTsk);
                             ?>
                             @if(!$friendsTsk)
                                 <th class="btn-group">
