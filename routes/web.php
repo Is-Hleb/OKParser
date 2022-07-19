@@ -33,9 +33,11 @@ Route::group(['middleware' => 'auth', 'as' => 'job.', 'prefix' => '/job'], funct
     Route::get('/users-by-cities/export/{table_name}/{job_id}', [UsersByCity::class, 'export'])->name('users-by-cities.export');
     Route::post('/users-by-cities/update-status', [UsersByCity::class, 'updateStatus'])->name('users-by-cities.update-status');
     Route::delete('/users-by-cities/delete/{job_id}', [UsersByCity::class, 'delete'])->name('users-by-cities.delete');
+    Route::get('/users-by-cities/parser_again/{job_id}', [UsersByCity::class, 'parseAgain'])->name('users-by-cities.parser_again');
 });
 
 Route::group(['middleware' => 'auth', 'as' => 'tools.', 'prefix' => '/tools'], function(){
    Route::put('/proxy/reset', [ParserToolsController::class, 'resetProxies'])->name('reset.proxies');
     Route::put('/users/reset', [ParserToolsController::class, 'resetUsers'])->name('reset.users');
 });
+
