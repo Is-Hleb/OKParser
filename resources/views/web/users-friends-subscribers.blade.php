@@ -66,7 +66,7 @@
                     <tbody>
                     @foreach($tasks as $task)
                         <tr>
-                            @php($sig = json_decode($tasks->logins))
+                            @php($sig = json_decode($task->logins))
                             @php($jobInfo = $task->jobInfo)
                             <th>{{ $jobInfo->id }}</th>
                             <th>{{ $sig->table_name }}</th>
