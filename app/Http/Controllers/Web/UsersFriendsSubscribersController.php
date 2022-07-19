@@ -61,7 +61,7 @@ class UsersFriendsSubscribersController extends Controller
 
         return view('web.users-friends-subscribers', [
             'infos' => $infos,
-             'tasks' => $tasks
+            'tasks' => $tasks
         ]);
     }
 }
