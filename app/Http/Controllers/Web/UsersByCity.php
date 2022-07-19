@@ -55,6 +55,11 @@ class UsersByCity extends Controller
         ]);
     }
 
+    public function parserAgain(int $jobInfoId) {
+        JobInfo::find($jobInfoId)->update(['status' => 'waiting', 'node_app_key' => null]);
+        return redirect()->back();
+    }
+
     public function delete($job_id)
     {
         try {
