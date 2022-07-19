@@ -50,11 +50,15 @@ class UsersFriendsSubscribersController extends Controller
 
     public function __invoke()
     {
+        $tasks = [];
+        foreach (JobInfo::where('is_node_task', 'true')->cursor() as $item) {
+            if(str_contains($task->name, 'friends') || str_contains($task->name, 'subscribers')) {
+                $tasks[] = $item;
+            }
+        }
         return view('web.users-friends-subscribers', [
             'infos' => $this->DBService->getInfos(),
-            'tasks' => JobInfo::where('is_node_task', 'true')->get()->filter(function ($task) {
-                return str_contains($task->name, 'friends') || str_contains($task->name, 'subscribers');
-            })
+            'tasks' => $tasks
         ]);
     }
 }
