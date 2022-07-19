@@ -31,17 +31,17 @@
                             $subscribersTsk = $tasks->filter(fn($item, $key) => $item->type == 1)->first();
                             ?>
                             <th class="btn-group">
-                                <?php if(!$friendsTsk): ?>
+                                <?php if(!$friendsTsk) { ?>
 
                                 <a href="{{ route('job.users-friends-subscribers.set-task', ['friends', $info['task_id']]) }}"
                                    class="btn btn-success border-end me-1">друзей</a>
-                                <?php endif ?>
-                                <?php if(!$subscribersTsk) ?>
+                                <?php } ?>
+                                <?php if(!$subscribersTsk) { ?>
 
                                 <a href="{{ route('job.users-friends-subscribers.set-task', ['subscribers', $info['task_id']]) }}"
                                    class="btn btn-success">подписчиков</a>
 
-                            <?php endif ?>
+                            <?php } ?>
                             @if($tasks->count() == 2)
                                 Задача уже в очереди
                             @endif
