@@ -103,14 +103,14 @@
                                     <th>{{ $info['name'] ?? "" }}</th>
                                     <th>{{ $info['count'] }}</th>
                                     <th>{{ $info['users_count'] ?? "" }}</th>
-                                    <th>
+                                    <th class="btn-group">
                                         <a class="btn btn-dark p-1"
                                            href="{{ route('job.users-by-cities.export', [$info['table_name'], $info['task_id']]) }}">экспорт
                                         </a>
-                                        <a class="btn btn-dark p-1"
-                                           href="{{ route('job.users-by-cities.parser_again', [$info['task_id']]) }}">допарс
-                                        </a>
                                         @if($jobInfo)
+                                            <a class="btn btn-dark p-1"
+                                               href="{{ route('job.users-by-cities.parser_again', [$info['task_id']]) }}">допарс
+                                            </a>
                                             <form action="{{ route('job.users-by-cities.delete', $info['task_id']) }}"
                                                   method="post">
                                                 @csrf
