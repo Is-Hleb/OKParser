@@ -22,7 +22,7 @@ class JobInfo extends Model
     public const FAILED = "failed";
 
     use HasFactory;
-    protected $fillable = ['status', 'exception', 'output', 'task_id', 'is_node_task', 'name'];
+    protected $fillable = ['status', 'exception', 'output', 'task_id', 'is_node_task', 'name', 'node_app_key'];
     protected $casts = [
         'output' => 'array'
     ];

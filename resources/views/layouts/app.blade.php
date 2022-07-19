@@ -39,6 +39,9 @@
                         <li class="nav-item">
                             <a href="{{ route('job.users-by-cities') }}" class="nav-link">Пользователи по городу</a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('job.users-friends-subscribers.show') }}" class="nav-link">Друзья и подписчики</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
