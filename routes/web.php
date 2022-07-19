@@ -3,6 +3,7 @@
 use App\Http\Controllers\ParserToolsController;
 use App\Http\Controllers\Web\CronController;
 use App\Http\Controllers\Web\UsersByCity;
+use App\Http\Controllers\Web\UsersFriendsSubscribersController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TasksController;
 
@@ -34,6 +35,10 @@ Route::group(['middleware' => 'auth', 'as' => 'job.', 'prefix' => '/job'], funct
     Route::post('/users-by-cities/update-status', [UsersByCity::class, 'updateStatus'])->name('users-by-cities.update-status');
     Route::delete('/users-by-cities/delete/{job_id}', [UsersByCity::class, 'delete'])->name('users-by-cities.delete');
     Route::get('/users-by-cities/parser_again/{job_id}', [UsersByCity::class, 'parseAgain'])->name('users-by-cities.parser_again');
+
+
+    Route::get('/users-subscribers', UsersFriendsSubscribersController::class)->name('users-friends-subscribers.show');
+    Route::get('/users-subscribers/task/{type}/{job_id}', [UsersFriendsSubscribersController::class, 'setTask'])->name('users-friends-subscribers.set-task');
 });
 
 Route::group(['middleware' => 'auth', 'as' => 'tools.', 'prefix' => '/tools'], function(){

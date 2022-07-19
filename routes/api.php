@@ -17,3 +17,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/', ActionController::class);
 Route::post('/cron', CronController::class);
+Route::post('/vk_e', \App\Http\Controllers\Api\VkTaskEController::class);
