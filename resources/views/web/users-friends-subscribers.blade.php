@@ -25,14 +25,22 @@
                             <th>{{ $jobInfo->status ?? "не определён" }}</th>
                             <th>{{ $info['name'] ?? "" }}</th>
                             <th>{{ $info['users_count'] ?? "" }}</th>
-                            @if(! \App\Models\Task::where('task_id', "node_{$info['task_id']}")->get()->count())
+                            @php($tasks = \App\Models\Task::where('task_id', "node_{$info['task_id']}")->get())
+                            @php
+                                $friendsTsk = $tasks->filter(fn($item, $key) => $item['type'] == 3)->first();
+                                $subscribersTsk = $tasks->filter(fn($item, $key) => $item['type'] == 1)->first();
+                            @endphp
+                            @if(!$friendsTsk)
                                 <th class="btn-group">
                                     <a href="{{ route('job.users-friends-subscribers.set-task', ['friends', $info['task_id']]) }}"
                                        class="btn btn-success border-end me-1">друзей</a>
+                                    @endif
+                            @if(!$subscribersTsk)
                                     <a href="{{ route('job.users-friends-subscribers.set-task', ['subscribers', $info['task_id']]) }}"
                                        class="btn btn-success">подписчиков</a>
                                 </th>
-                            @else
+                            @endif
+                            @if($tasks->count() == 2)
                                 <th>Задача уже в очереди</th>
                             @endif
                         </tr>
