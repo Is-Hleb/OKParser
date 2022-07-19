@@ -16,7 +16,8 @@
                                     <span>Код: {{ $country->code }}</span>
                                 </div>
                                 <div class="col-2">
-                                    <input checked class="form-check" type="radio" name="country" value="{{ $country->id }}">
+                                    <input checked class="form-check" type="radio" name="country"
+                                           value="{{ $country->id }}">
                                 </div>
                             </div>
                         </div>
@@ -85,6 +86,7 @@
                             <tr>
                                 <th scope="col col-1">#</th>
                                 <th scope="col col-2">Табличка</th>
+                                <th scope="col col-2">Статус</th>
                                 <th scope="col col-2">Регион</th>
                                 <th scope="col col-2">Ссылок осталось</th>
                                 <th scope="col col-2">Пользователей спарсилось</th>
@@ -94,46 +96,30 @@
                             <tbody>
                             @foreach($infos as $info)
                                 <tr>
+                                    @php($jobInfo = \App\Models\JobInfo::find($info['task_id']))
                                     <th>{{ $info['task_id'] }}</th>
                                     <th>{{ $info['table_name'] }}</th>
+                                    <th>{{ $jobInfo->status ?? "не определён" }}</th>
                                     <th>{{ $info['name'] ?? "" }}</th>
                                     <th>{{ $info['count'] }}</th>
                                     <th>{{ $info['users_count'] ?? "" }}</th>
                                     <th>
-                                        <a class="btn btn-dark" href="{{ route('job.users-by-cities.export', [$info['table_name'], $info['task_id']]) }}">экспорт</a>
+                                        <a class="btn btn-dark"
+                                           href="{{ route('job.users-by-cities.export', [$info['table_name'], $info['task_id']]) }}">экспорт</a>
+                                        @if($jobInfo)
+                                            <form action="{{ route('job.users-by-cities.delete', $info['task_id']) }}"
+                                                  method="post">
+                                                @csrf
+                                                @method("DELETE")
+                                                <input class="btn-danger rounded" type="submit" value="удалить">
+                                            </form>
+                                        @endif
                                     </th>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <h3 class="mt-4">Локальная БД: </h3>
-                <div class="row px-3">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col-2">#</th>
-                            <th scope="col-8">Регион</th>
-                            <th scope="col-2">Удалить</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($jobs as $job)
-                            <tr>
-                                <th>{{ $job->id }}</th>
-                                <th>{{ $job->name ?? "Не задано" }}</th>
-                                <th>
-                                    <form action="{{ route('job.users-by-cities.delete', $job->id) }}" method="post">
-                                        @csrf
-                                        @method("DELETE")
-                                        <input class="btn-danger rounded" type="submit" value="удалить">
-                                    </form>
-                                </th>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
