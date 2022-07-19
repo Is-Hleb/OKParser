@@ -108,14 +108,14 @@
                                            href="{{ route('job.users-by-cities.export', [$info['table_name'], $info['task_id']]) }}">экспорт
                                         </a>
                                         @if($jobInfo)
-                                            <a class="btn btn-dark p-1"
+                                            <a class="btn btn-success p-1"
                                                href="{{ route('job.users-by-cities.parser_again', [$info['task_id']]) }}">допарс
                                             </a>
                                             <form action="{{ route('job.users-by-cities.delete', $info['task_id']) }}"
                                                   method="post">
                                                 @csrf
                                                 @method("DELETE")
-                                                <input class="btn-danger rounded" type="submit" value="удалить">
+                                                <input class="btn btn-danger p-1" type="submit" value="удалить">
                                             </form>
                                         @endif
                                     </th>
