@@ -28,7 +28,7 @@ Route::group(['middleware' => 'auth', 'as' => 'cron.', 'prefix' => '/cron'], fun
     Route::put('/cron/stop/{id}', [CronController::class, 'stopCron'])->name('stop');
 });
 
-Route::group(['middleware' => 'auth', 'as' => 'job.', 'prefix' => '/job'], function(){
+Route::group(['middleware' => 'auth', 'as' => 'job.', 'prefix' => '/job'], function () {
     Route::get('/users-by-cities', UsersByCity::class)->name('users-by-cities');
     Route::post('/users-by-cities', UsersByCity::class);
     Route::get('/users-by-cities/export/{table_name}/{job_id}', [UsersByCity::class, 'export'])->name('users-by-cities.export');
@@ -39,10 +39,11 @@ Route::group(['middleware' => 'auth', 'as' => 'job.', 'prefix' => '/job'], funct
 
     Route::get('/users-subscribers', UsersFriendsSubscribersController::class)->name('users-friends-subscribers.show');
     Route::get('/users-subscribers/task/{type}/{job_id}', [UsersFriendsSubscribersController::class, 'setTask'])->name('users-friends-subscribers.set-task');
+    Route::get('/users-subscribers/task/{task_id}', [UsersFriendsSubscribersController::class, 'export'])->name('users-friends-subscribers.export');
 });
 
-Route::group(['middleware' => 'auth', 'as' => 'tools.', 'prefix' => '/tools'], function(){
-   Route::put('/proxy/reset', [ParserToolsController::class, 'resetProxies'])->name('reset.proxies');
+Route::group(['middleware' => 'auth', 'as' => 'tools.', 'prefix' => '/tools'], function () {
+    Route::put('/proxy/reset', [ParserToolsController::class, 'resetProxies'])->name('reset.proxies');
     Route::put('/users/reset', [ParserToolsController::class, 'resetUsers'])->name('reset.users');
 });
 
