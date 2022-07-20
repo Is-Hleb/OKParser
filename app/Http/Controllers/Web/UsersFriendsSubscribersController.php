@@ -48,20 +48,50 @@ class UsersFriendsSubscribersController extends Controller
         return redirect()->back();
     }
 
+    public function export($task_id)
+    {
+        ini_set('max_execution_time', 0);
+        $task = Task::find($task_id);
+        $sig = json_decode($task->logins);
+
+        return response()->download($this->DBService->export(
+            $sig->table_name,
+            ['owner_id', 'user_id'],
+            $task->jobInfo->name
+        ));
+    }
+
     public function __invoke()
     {
         $infos = $this->DBService->getInfos();
         $tasks = [];
-        foreach ($infos as $info) {
-            $task = Task::where('task_id', "node_{$info['task_id']}")->first();
-            if($task) {
-                $tasks[] = $task;
+        foreach ($infos as &$info) {
+            $task = Task::where('task_id', "node_{$info['task_id']}")->get();
+            $info['jobInfo'] = JobInfo::find($info['task_id']);
+            if ($task->count()) {
+                $tasks[$info['task_id']] = $task;
+                $info['jobInfo'] = JobInfo::find($info['task_id']);
+                $info['friendsIsset'] = $task->filter(fn($item, $key) => $item->type == 3)->first();
+                $info['subscribersIsset'] = $task->filter(fn($item, $key) => $item->type == 1)->first();
+            } else {
+                $info['subscribersIsset'] = false;
+                $info['friendsIsset'] = false;
+            }
+        }
+
+        $outputTasks = [];
+        foreach ($tasks as $taskl2) {
+            foreach ($taskl2 as $task) {
+                $task->sig = json_decode($task->logins);
+                $task->users_count = $this->DBService->getAllRowsCount($task->sig->table_name);
+                $task->users_not_parsed = $this->DBService->getRowsCount($task->sig->users_table, 'friends', null);
+                $outputTasks[] = $task;
             }
         }
 
         return view('web.users-friends-subscribers', [
             'infos' => $infos,
-            'tasks' => $tasks
+            'tasks' => $outputTasks
         ]);
     }
 }
