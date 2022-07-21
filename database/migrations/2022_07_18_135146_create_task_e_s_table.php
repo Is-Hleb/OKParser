@@ -21,7 +21,6 @@ class CreateTaskESTable extends Migration
             $table->string('postUrl')->nullable();
             $table->string('gender')->nullable();
             $table->integer('age')->nullable();
-            $table->string('name');
             $table->string("postId");
             $table->string('location')->nullable();
             $table->string("education")->nullable();
