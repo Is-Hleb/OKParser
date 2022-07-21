@@ -16,7 +16,20 @@ class CreateTaskESTable extends Migration
         Schema::create('task_e_s', function (Blueprint $table) {
             $table->id();
             $table->string('ibd');
-            $table->string('');
+            $table->boolean('is_vk')->default(false);
+            $table->string('name')->nullable();
+            $table->string('postUrl')->nullable();
+            $table->string('gender')->nullable();
+            $table->integer('age')->nullable();
+            $table->string('name');
+            $table->string("postId");
+            $table->string('location')->nullable();
+            $table->string("education")->nullable();
+            $table->string("profileId");
+            $table->string("profileUrl")->nullable();
+            $table->string("commentText")->nullable();
+            $table->string("activityType"); // like/comment
+            $table->timestamps();
         });
     }
 

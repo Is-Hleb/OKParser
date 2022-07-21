@@ -19,6 +19,7 @@ use App\Http\Controllers\TasksController;
 */
 
 Route::post('/task', TasksController::class);
+Route::post('/vk/task/3/data', \App\Http\Controllers\Api\VkTaskEController::class);
 
 \Illuminate\Support\Facades\Auth::routes();
 Route::group(['middleware' => 'auth', 'as' => 'cron.', 'prefix' => '/cron'], function () {

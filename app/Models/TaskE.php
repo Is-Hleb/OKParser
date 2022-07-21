@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class TaskE extends Model
 {
     use HasFactory;
+    protected $guarded = ['id'];
+
 }
