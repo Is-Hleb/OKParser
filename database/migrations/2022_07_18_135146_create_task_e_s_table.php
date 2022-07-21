@@ -26,7 +26,7 @@ class CreateTaskESTable extends Migration
             $table->string("education")->nullable();
             $table->string("profileId");
             $table->string("profileUrl")->nullable();
-            $table->string("commentText")->nullable();
+            $table->text("commentText")->nullable();
             $table->string("activityType"); // like/comment
             $table->timestamps();
         });
