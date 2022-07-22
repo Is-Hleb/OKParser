@@ -50,8 +50,8 @@ class Kernel extends ConsoleKernel
             }
         })->hourly();
 
-        $schedule->command("php artisan task:e")->everyFifteenMinutes();
-        $schedule->command("php artisan task:e:export")->everyFourHours();
+        $schedule->command("task:e")->everyFifteenMinutes();
+        $schedule->command("task:e:export")->everyFourHours();
 
         $schedule->call(function () {
             $cronTasks = CronTaskinfo::where('status', JobInfo::WAITING)->get();
