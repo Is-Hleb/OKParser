@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "ext-simplexml": "*",
+        "ext-zip": "*",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.75",
@@ -14,9 +16,7 @@
         "laravel/ui": "^3.4",
         "nesk/puphpeteer": "^2.0",
         "paquettg/php-html-parser": "^3.1",
-        "roach-php/laravel": "^0.3.1",
-      "ext-zip": "*",
-      "ext-simplexml": "*"
+        "roach-php/laravel": "^0.3.1"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
