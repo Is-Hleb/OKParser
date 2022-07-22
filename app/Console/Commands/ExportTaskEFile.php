@@ -87,7 +87,6 @@ class ExportTaskEFile extends Command
 
             $content .= implode(',', $this->format($datum)) . "\n";
         }
-        file_put_contents("output.csv", $content);
         TelegramMessage::create([
            "type" => "file",
            "content" => $content,
