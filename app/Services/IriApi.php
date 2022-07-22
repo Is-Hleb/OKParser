@@ -25,4 +25,11 @@ class IriApi {
 
         return array_filter($input, fn($url) => !isset($issetUrls[$url]));
     }
+
+    public function getAllLinks() : array
+    {
+        $url = "https://ctr-new.tw1.ru/api/posts/unloading?token=obcbT6FXWZi1w5lJH9ZXuFAC3NMjySjdFvDWVoxJKJaY0zn0SG";
+        $r = \Illuminate\Support\Facades\Http::withBasicAuth('ibd', 'oIQ4W5FbqB1goKrrp7Gl')->get($url);
+        return json_decode($r->body()) ?? [];
+    }
 }

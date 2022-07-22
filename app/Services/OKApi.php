@@ -575,9 +575,12 @@ class OKApi
                 $ibd = $data[0];
                 $url = explode('?', $data[1])[0];
             } catch (Exception $exception) {
-                continue;
+                // dump($exception->getMessage());
             }
-
+            if(str_contains($url, '?')) {
+                $url = explode('?', $url)[0];
+            }
+            $ibd = 1;
 
             $postInfo = $this->getPostInfoByUrl($url);
             if (!isset($postInfo[0]['discussion'])) {
@@ -628,7 +631,7 @@ class OKApi
             if (sizeof($userIds) > 0) {
                 $userAddictionsInfo = array_merge($userAddictionsInfo, $this->getUserInfo($userIds));
             }
-
+            // dd($userAddictionsInfo);
             foreach ($userAddictionsInfo as $userId => $userInfo) {
                 $userInfo = $userInfo[0];
                 $userId = $userInfo['uid'];
@@ -644,7 +647,8 @@ class OKApi
                         'age' => $userInfo['age'] ?? '',
                         'location' => $userInfo['location'],
                         'name' => $userInfo['name'],
-                        'postUrl' => $url
+                        'postUrl' => $url,
+                        'created_at' => now()
                     ]);
                 }
                 if (isset($users[$userId . 'comment' . $postId])) {
@@ -654,7 +658,8 @@ class OKApi
                         'age' => $userInfo['age'] ?? '',
                         'location' => $userInfo['location'],
                         'name' => $userInfo['name'],
-                        'postUrl' => $url
+                        'postUrl' => $url,
+                        'created_at' => now()
                     ]);
                 }
             }

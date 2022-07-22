@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "184ed053c9f34c282e17ba350655278c",
+    "content-hash": "483d986084777cda5d82833ebad35374",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -190,6 +190,96 @@
                 }
             ],
             "time": "2022-04-14T14:58:06+00:00"
+        },
+        {
+            "name": "defstudio/telegraph",
+            "version": "v1.14.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/def-studio/telegraph.git",
+                "reference": "18324ac99d2df0d92f64f099003e11590b122df7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/def-studio/telegraph/zipball/18324ac99d2df0d92f64f099003e11590b122df7",
+                "reference": "18324ac99d2df0d92f64f099003e11590b122df7",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^8.37 || ^9.0",
+                "illuminate/http": "^8.37 || ^9.0",
+                "php": "^8.0",
+                "spatie/laravel-package-tools": "^1.9.2"
+            },
+            "require-dev": {
+                "defstudio/pest-plugin-laravel-expectations": "^1.6",
+                "ext-sqlite3": "*",
+                "friendsofphp/php-cs-fixer": "^v3.1",
+                "guzzlehttp/guzzle": "^7.4",
+                "nunomaduro/collision": "^5.10|^v6.1",
+                "nunomaduro/larastan": "^1.0",
+                "orchestra/testbench": "^6.22|^v7.1",
+                "pestphp/pest": "^1.21",
+                "pestphp/pest-plugin-laravel": "^1.1",
+                "pestphp/pest-plugin-mock": "^1.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^9.4",
+                "spatie/laravel-ray": "^1.26",
+                "spatie/pest-plugin-snapshots": "^1.1",
+                "spatie/x-ray": "dev-main"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "DefStudio\\Telegraph\\TelegraphServiceProvider"
+                    ],
+                    "aliases": {
+                        "Telegraph": "DefStudio\\Telegraph\\Facades\\Telegraph"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DefStudio\\Telegraph\\": "src",
+                    "DefStudio\\Telegraph\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabio Ivona",
+                    "email": "fabio.ivona@defstudio.it",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A laravel facade to interact with Telegram Bots",
+            "homepage": "https://github.com/defstudio/telegraph",
+            "keywords": [
+                "defstudio",
+                "laravel",
+                "telegraph"
+            ],
+            "support": {
+                "issues": "https://github.com/def-studio/telegraph/issues",
+                "source": "https://github.com/def-studio/telegraph/tree/v1.14.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/def-studio",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/fabio-ivona",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-06-18T10:09:11+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -9440,7 +9530,9 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": "^8.0",
+        "ext-simplexml": "*",
+        "ext-zip": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
