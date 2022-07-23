@@ -21,7 +21,8 @@ class UsersFriendsSubscribersController extends Controller
     {
         $type = match ($mode) {
             'friends' => 3,
-            "subscribers" => 1
+            "subscribers" => 1,
+            "avatars" => "4-avatars"
         };
 
         $jobInfo = JobInfo::find($jobInfoId);
@@ -73,9 +74,11 @@ class UsersFriendsSubscribersController extends Controller
                 $info['jobInfo'] = JobInfo::find($info['task_id']);
                 $info['friendsIsset'] = $task->filter(fn($item, $key) => $item->type == 3)->first();
                 $info['subscribersIsset'] = $task->filter(fn($item, $key) => $item->type == 1)->first();
+                $info['avatarsIsset'] = $task->filter(fn($item, $key) => $item->type == "4-avatars")->first();
             } else {
                 $info['subscribersIsset'] = false;
                 $info['friendsIsset'] = false;
+                $info['avatarsIsset'] = false;
             }
         }
 
@@ -84,7 +87,11 @@ class UsersFriendsSubscribersController extends Controller
             foreach ($taskl2 as $task) {
                 $task->sig = json_decode($task->logins);
                 $task->users_count = $this->DBService->getAllRowsCount($task->sig->table_name);
-                $task->users_not_parsed = $this->DBService->getRowsCount($task->sig->users_table, 'friends', null);
+                if(str_contains($task->sig->table_name, '3')) {
+                    $task->users_not_parsed = $this->DBService->getRowsCount($task->sig->users_table, 'friends', null);
+                } else {
+                    $task->users_not_parsed = $this->DBService->getRowsCount($task->sig->users_table, 'subscribers_checked', null);
+                }
                 $outputTasks[] = $task;
             }
         }

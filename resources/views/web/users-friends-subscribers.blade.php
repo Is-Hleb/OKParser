@@ -31,8 +31,12 @@
                                 @if(!$info['subscribersIsset'])
 
                                     <a href="{{ route('job.users-friends-subscribers.set-task', ['subscribers', $info['task_id']]) }}"
-                                       class="btn btn-success">подписчиков</a>
+                                       class="btn btn-success me-1">подписчиков</a>
 
+                                @endif
+                                @if(!$info['avatarsIsset'])
+                                        <a href="{{ route('job.users-friends-subscribers.set-task', ['avatars', $info['task_id']]) }}"
+                                           class="btn btn-success">Аватарки</a>
                                 @endif
                                 @if($info['friendsIsset'] && $info['subscribersIsset'])
                                     Задача уже в очереди
