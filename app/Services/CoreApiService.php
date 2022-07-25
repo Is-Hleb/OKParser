@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Http;
 
 class CoreApiService
 {
+
     const RUNNING = 'performing';
-    const WAITING = 'in_queue';
+    const WAITING = 'queue';
     const OK = 'completed';
     const ERROR = 'error';
-    const VALIDATION_ERR = 'not_enough_data';
+    const VALIDATION_ERR = 'warning';
 
     private string $baseUrl;
 
@@ -79,11 +80,10 @@ class CoreApiService
 
     public function data($output, $type): void
     {
-        Http::post("{$this->baseUrl}/data", [
-            "task_id" => $this->task->task_id,
+        Http::post("{$this->baseUrl}/data/{$this->task->task_id}", [
             "data" => ["data" => $output],
             "type" => $type
         ]);
-        $this->ok();
+        // $this->ok();
     }
 }
