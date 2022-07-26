@@ -56,7 +56,7 @@ class ParserController extends Controller
     public function finishTask($id) {
         $task = ParserTask::find($id);
         $task->status = JobInfo::FINISHED;
-
+        $task->save();
         return true;
     }
 }
