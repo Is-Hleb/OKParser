@@ -55,8 +55,8 @@ Route::group(['middleware' => 'auth', 'as' => 'parser.ui.', 'prefix' => '/parser
 });
 
 Route::group(['as' => 'parser.', 'prefix' => '/parser'], function () {
-    Route::get('/task', [\App\Http\Controllers\Api\ParserController::class, 'getTask']);
-    Route::put('/task', [\App\Http\Controllers\Api\ParserController::class, 'taskRunning']);
-    Route::delete('/task', [\App\Http\Controllers\Api\ParserController::class, 'finishTask']);
-    Route::get('/task/all', [\App\Http\Controllers\Api\ParserController::class, 'allParserTasks']);
+    Route::get('/task/{token}', [\App\Http\Controllers\Api\ParserController::class, 'getTask']);
+    Route::put('/task/', [\App\Http\Controllers\Api\ParserController::class, 'taskRunning']);
+    Route::delete('/task/{id}', [\App\Http\Controllers\Api\ParserController::class, 'finishTask']);
+    Route::get('/task/all/{token}', [\App\Http\Controllers\Api\ParserController::class, 'allParserTasks']);
 });

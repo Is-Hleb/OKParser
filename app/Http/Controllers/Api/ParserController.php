@@ -12,13 +12,8 @@ use Illuminate\Http\Request;
 
 class ParserController extends Controller
 {
-    public function getTask(Request $request)
+    public function getTask($token)
     {
-        $valid = $request->validate([
-            'token' => 'required|exists:parsers'
-        ]);
-
-        $token = $valid['token'];
         $parser = Parser::findByToken($token);
         $types = $parser->types()->pluck('parser_type_id');
 
@@ -52,22 +47,13 @@ class ParserController extends Controller
         }
     }
 
-    public function allParserTasks(Request $request) {
-        $valid = $request->validate([
-            'token' => 'required|exists:parsers'
-        ]);
-
-        $token = $valid['token'];
+    public function allParserTasks($token) {
         $parser = Parser::findByToken($token);
 
         return ParserTaskResource::collection($parser->tasks()->whereIn('status', [JobInfo::WAITING, JobInfo::RUNNING])->get());
     }
 
-    public function finishTask(Request $request) {
-        $valid = $request->validate([
-            'id' => 'required|exists:parser_tasks',
-        ]);
-
+    public function finishTask($id) {
         $task = ParserTask::find($valid['id']);
         $task->status = JobInfo::FINISHED;
 
