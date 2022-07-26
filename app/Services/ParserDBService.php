@@ -39,6 +39,13 @@ class ParserDBService
         return $infos;
     }
 
+    public function getTables() : array{
+        $tables = DB::connection('parser')->select('SHOW TABLES');
+        return array_map(function ($table) {
+            return $table->Tables_in_parser;
+        }, $tables);
+    }
+
     public function getAllRowsCount(string $table, bool $fromCache = false) : int
     {
         if($fromCache) {

@@ -42,6 +42,9 @@
                         <li class="nav-item">
                             <a href="{{ route('job.users-friends-subscribers.show') }}" class="nav-link">Друзья и подписчики</a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('parser.ui.show') }}" class="nav-link">Подставить задачу</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
