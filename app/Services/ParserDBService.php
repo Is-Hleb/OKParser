@@ -54,10 +54,14 @@ class ParserDBService
                 return $count;
             }
         }
-        $info = DB::connection('parser')->select("SELECT COUNT(*) FROM `$table`");
-        $count = array_values(get_object_vars($info[0]))[0];
-        Cache::set("$table=count", $count);
-        return $count;
+        try {
+            $info = DB::connection('parser')->select("SELECT COUNT(*) FROM `$table`");
+            $count = array_values(get_object_vars($info[0]))[0];
+            Cache::set("$table=count", $count);
+            return $count;
+        } catch (\Exception $exception) {
+            return 0;
+        }
     }
 
     public function getRowsCount(string $table, string $row, mixed $equal, bool $fromCache = false) : int
