@@ -9,13 +9,13 @@
                 <form action="{{ route('parser.ui.parser.create') }}" method="POST">
                     @csrf
                     <div class="form-group">
-                        <label for="">Token</label>
-                        <input type="text" name="token" id="" placeholder="Должен быть сгенерирован вами"
+                        <label for="">Название</label>
+                        <input placeholder="Будет выводиться вместо Id (Если задано)" type="text" name="name" id=""
                                class="form-control bg-white">
                     </div>
                     <div class="form-group">
-                        <label for="">Название</label>
-                        <input placeholder="Будет выводиться вместо Id (Если задано)" type="text" name="token" id=""
+                        <label for="">Token</label>
+                        <input type="text" name="token" id="" placeholder="Должен быть сгенерирован вами"
                                class="form-control bg-white">
                     </div>
                     <div class="form-group border" style="overflow: scroll; height: 200px">
