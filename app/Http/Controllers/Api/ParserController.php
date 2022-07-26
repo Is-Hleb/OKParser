@@ -54,7 +54,7 @@ class ParserController extends Controller
     }
 
     public function finishTask($id) {
-        $task = ParserTask::find($valid['id']);
+        $task = ParserTask::find($id);
         $task->status = JobInfo::FINISHED;
 
         return true;
