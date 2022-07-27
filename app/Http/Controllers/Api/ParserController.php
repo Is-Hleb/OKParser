@@ -31,8 +31,8 @@ class ParserController extends Controller
     public function updateCount(int $taskId, Request $request)
     {
         $task = ParserTask::find($taskId);
-        $countBefore = $task->count_before;
-        Cache::put("task-count-$task->id", $task->rowd_count);
+        $countBefore = $task->rows_count;
+        Cache::put("task-count-$task->id", $task->rows_count);
         $task->rows_count = $request->input("count");
         $task->save();
 
