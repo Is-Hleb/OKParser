@@ -27,6 +27,14 @@ class ParserController extends Controller
         return null;
     }
 
+    public function updateCount(int $taskId, Request $request)
+    {
+        $task = ParserTask::find($taskId);
+        $task->rows_count = $request->input("count");
+        $task->save();
+        return "ok";
+    }
+
     public function taskRunning(Request $request)
     {
         $valid = $request->validate([
