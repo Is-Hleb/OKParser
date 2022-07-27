@@ -40,7 +40,7 @@ class TaskController extends Controller
         $type = $request->input('task_type');
         switch ($type) {
             case ParserTaskService::USER_SUBSCRIBERS:
-                ParserTaskService::userSubscribers($request->input('table_name'), $request->input('name'));
+                ParserTaskService::userSubscribers($request->input('selected_table'), $request->input('name'));
                 break;
             case ParserTaskService::USERS_BY_CITIES:
                 $logins = $request->input('logins');
@@ -54,10 +54,10 @@ class TaskController extends Controller
                 ParserTaskService::usersByCities($country, $cities, $request->input('name'));
                 break;
             case ParserTaskService::USER_FRIENDS:
-                ParserTaskService::userFriends($request->input('table_name'), $request->input('name'));
+                ParserTaskService::userFriends($request->input('selected_table'), $request->input('name'));
                 break;
             case ParserTaskService::USERS_AVATARS:
-                ParserTaskService::userAvatars($request->input('table_name'), $request->input('name'));
+                ParserTaskService::userAvatars($request->input('selected_table'), $request->input('name'));
                 break;
 
         }
