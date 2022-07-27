@@ -19,7 +19,7 @@ class ParserController extends Controller
 
         $task = ParserTask::whereIn("type_id", $types)->where('parser_id', null)->first();
 
-        if($task) {
+        if ($task) {
             $task->parser_id = $parser->id;
             $task->save();
             return new ParserTaskResource($task);
@@ -27,7 +27,8 @@ class ParserController extends Controller
         return null;
     }
 
-    public function taskRunning(Request $request) {
+    public function taskRunning(Request $request)
+    {
         $valid = $request->validate([
             'id' => 'required|exists:parser_tasks',
             'table_name' => 'required|string',
@@ -36,24 +37,24 @@ class ParserController extends Controller
 
         $task = ParserTask::find($valid['id']);
 
-        if($task->status == JobInfo::WAITING) {
-            $task->table_name = $valid['table_name'];
-            $task->columns = $valid['columns'];
-            $task->status = "running";
-            $task->save();
-            return "ok";
-        } else {
-            return "Task already updated";
-        }
+
+        $task->table_name = $valid['table_name'];
+        $task->columns = $valid['columns'];
+        $task->status = "running";
+        $task->save();
+        return "ok";
+
     }
 
-    public function allParserTasks($token) {
+    public function allParserTasks($token)
+    {
         $parser = Parser::findByToken($token);
 
         return ParserTaskResource::collection($parser->tasks()->whereIn('status', [JobInfo::WAITING, JobInfo::RUNNING])->get());
     }
 
-    public function finishTask($id) {
+    public function finishTask($id)
+    {
         $task = ParserTask::find($id);
         $task->status = JobInfo::FINISHED;
         $task->save();
