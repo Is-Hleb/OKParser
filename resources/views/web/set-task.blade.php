@@ -52,7 +52,8 @@
                         <label>Присоединить таблицу (Для последовательных задач на сбор)</label>
                         <select name="selected_table" id="" class="form-control bg-white">
                             @foreach($tables as $table)
-                                <option value="{{ $table }}">{{ $table }}</option>
+                                @php($task = \App\Models\ParserTask::where('table_name', $table)->orWhere('selected_table', $table)->first())
+                                <option value="{{ $table }}">{{ $table }} - {{ $task->name ?? "Без имени" }}</option>
                             @endforeach
                         </select>
                     </div>
