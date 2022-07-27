@@ -178,7 +178,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'index' => '7',
-                'name' => '"Рейтинг(К примеру podcasts.apple.com) (на входе урлы или id)"'
+                'name' => 'Рейтинг'
             ],
             [
                 'index' => '8',
@@ -195,6 +195,10 @@ class DatabaseSeeder extends Seeder
             [
                 'index' => '12',
                 'name' => 'Посты со страницы группы'
+            ],
+            [
+                'index' => '4-avatars',
+                'name' => "Аватарки пользователей"
             ]
         ]);
 

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\CountryCode;
 use App\Models\Parser;
 use App\Models\ParserTask;
 use App\Models\ParserType;
 use App\Models\Task;
 use App\Services\ParserDBService;
 use Illuminate\Http\Request;
+use App\Services\ParserTaskService;
 
 class TaskController extends Controller
 {
@@ -35,11 +37,31 @@ class TaskController extends Controller
 
     public function create(Request $request)
     {
-        ParserTask::create(
-            array_merge($request->input(), [
-                'type_id' => ParserType::where('index', $request->input('task_type'))->first()->id
-            ])
-        );
+        $type = $request->input('task_type');
+        switch ($type) {
+            case ParserTaskService::USER_SUBSCRIBERS:
+                ParserTaskService::userSubscribers($request->input('table_name'), $request->input('name'));
+                break;
+            case ParserTaskService::USERS_BY_CITIES:
+                $logins = $request->input('logins');
+                $logins = explode("\r\n", $logins);
+                $country = CountryCode::find($logins[0])->name;
+                unset($logins[0]);
+                $cities = array_map(function ($city) {
+                    return rtrim(ltrim(str_replace("&nbsp;", " ", htmlentities($city))));
+                }, $logins);
+
+                ParserTaskService::usersByCities($country, $cities, $request->input('name'));
+                break;
+            case ParserTaskService::USER_FRIENDS:
+                ParserTaskService::userFriends($request->input('table_name'), $request->input('name'));
+                break;
+            case ParserTaskService::USERS_AVATARS:
+                ParserTaskService::userAvatars($request->input('table_name'), $request->input('name'));
+                break;
+
+        }
+
         return redirect()->back();
     }
 

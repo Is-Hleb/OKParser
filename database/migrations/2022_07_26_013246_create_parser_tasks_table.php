@@ -26,7 +26,7 @@ class CreateParserTasksTable extends Migration
             $table->bigInteger('parser_id')->nullable();
             $table->string('selected_table')->nullable();
             $table->boolean('is_asup_task')->default(false);
-            $table->string("logins")->nullable();
+            $table->longText("logins")->nullable();
             $table->timestamps();
         });
     }
