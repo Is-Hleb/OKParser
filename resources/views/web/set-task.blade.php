@@ -57,7 +57,8 @@
                         </select>
                     </div>
                     <div class="form-group mt-2 mb-2">
-                        <textarea class="form-control bg-white" name="logins" id="" placeholder="logins" rows="8"></textarea>
+                        <textarea class="form-control bg-white" name="logins" id="" placeholder="logins"
+                                  rows="8"></textarea>
                     </div>
                     <input class="btn btn-primary w-100 rounded-0" type="submit" value="Создать">
                 </form>
@@ -66,29 +67,37 @@
         <div class="row">
             <h2>Задачи</h2>
             <table class="table">
-            <thead>
-            <tr>
-                <th scope="col col-1">#</th>
-                <th scope="col col-2">Табличка</th>
-                <th scope="col col-2">Статус</th>
-                <th scope="col col-2">Парсер</th>
-                <th scope="col col-2">Экспорт</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($tasks as $task)
+                <thead>
                 <tr>
-                    <th>{{ $task->id }}</th>
-                    <th>{{ $task->table_name ?? "Пока не задано"}}</th>
-                    <th>{{ $task->status }}</th>
-                    <th>{{ $task->parser ? ($task->parser->name ?? $task->parser->token) : "Пока не задан" }}</th>
-                    <th>
-                        <a class="link-primary" href="#">скачать</a>
-                    </th>
+                    <th scope="col col-1">#</th>
+                    <th scope="col col-2">Название</th>
+                    <th scope="col col-2">Табличка</th>
+                    <th scope="col col-2">Статус</th>
+                    <th scope="col col-2">Парсер</th>
+                    <th scope="col col-2">Спаршено</th>
+                    <th scope="col col-2">Экспорт</th>
                 </tr>
-            @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach($tasks as $task)
+                    <tr>
+                        <th>{{ $task->id }}</th>
+                        <th>{{ $task->name ?? "Не задано"}}</th>
+                        <th>{{ $task->table_name ?? "Пока не задано"}}</th>
+                        <th>{{ $task->status }}</th>
+                        <th>{{ $task->parser ? ($task->parser->name ?? $task->parser->token) : "Пока не задан" }}</th>
+                        <th>{{ $task->rows_count }}</th>
+                        <th>
+                            @if($task->columns)
+                                <a class="link-primary" href="#">скачать</a>
+                            @else
+                                <span>Парсер ещё не отдал данные</span>
+                            @endif
+                        </th>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
             {{ $tasks->links() }}
         </div>
         <div class="row">
