@@ -9,6 +9,7 @@ use App\Models\Parser;
 use App\Models\ParserTask;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ParserController extends Controller
 {
@@ -30,8 +31,23 @@ class ParserController extends Controller
     public function updateCount(int $taskId, Request $request)
     {
         $task = ParserTask::find($taskId);
+        $countBefore = $task->count_before;
+        Cache::put("task-count-$task->id", $task->rowd_count);
         $task->rows_count = $request->input("count");
         $task->save();
+
+        $timeDiff = now()->diffInSeconds(Cache::get("count_time-$taskId", now()));
+        $iterationCount = $request->input("count") - $countBefore;
+
+        if($timeDiff !== 0) {
+            $speed = $iterationCount / $timeDiff;
+        } else {
+            $speed = 0;
+        }
+
+        Cache::put("count_time-$taskId", now());
+        Cache::put("speed-$taskId", $speed);
+
         return "ok";
     }
 

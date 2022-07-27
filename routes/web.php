@@ -4,6 +4,7 @@ use App\Http\Controllers\ParserToolsController;
 use App\Http\Controllers\Web\CronController;
 use App\Http\Controllers\Web\UsersByCity;
 use App\Http\Controllers\Web\UsersFriendsSubscribersController;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TasksController;
 

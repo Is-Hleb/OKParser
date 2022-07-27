@@ -74,6 +74,7 @@
                     <th scope="col col-2">Название</th>
                     <th scope="col col-2">Табличка</th>
                     <th scope="col col-2">Статус</th>
+                    <th scope="col col-2">Скорость парсинга</th>
                     <th scope="col col-2">Парсер</th>
                     <th scope="col col-2">Спаршено</th>
                     <th scope="col col-2">Экспорт</th>
@@ -86,6 +87,7 @@
                         <th>{{ $task->name ?? "Не задано"}}</th>
                         <th>{{ $task->table_name ?? "Пока не задано"}}</th>
                         <th>{{ $task->status }}</th>
+                        <th>{{ $task->speed * 60 * 60 }} в час</th>
                         <th>{{ $task->parser ? ($task->parser->name ?? $task->parser->token) : "Пока не задан" }}</th>
                         <th>{{ $task->rows_count }}</th>
                         <th>
