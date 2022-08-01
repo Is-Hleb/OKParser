@@ -79,10 +79,15 @@ class parsePostsInCron extends Command
                             TaskE::insert(array_slice($activities, $lastActivities->count - 1));
                         }
                         foreach ($activities as $activity) {
+                            $trig = false;
                             foreach ($lastActivities as $lastActivity) {
                                 if($activity['profileId'] != $lastActivity->profileId || $activity['commentText'] != $lastActivity->commentText) {
-                                    $newActivities[] = $activity;
+                                    $trig = true;
+                                    break;
                                 }
+                            }
+                            if($trig) {
+                                $newActivities[] = $activity;
                             }
                         }
                         TaskE::insert($newActivities);
