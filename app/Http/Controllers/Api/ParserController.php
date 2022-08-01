@@ -7,7 +7,6 @@ use App\Http\Resources\ParserTaskResource;
 use App\Models\JobInfo;
 use App\Models\Parser;
 use App\Models\ParserTask;
-use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
