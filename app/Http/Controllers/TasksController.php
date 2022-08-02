@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Jobs\OkParserApi;
 use App\Models\JobInfo;
+use App\Models\ParserTask;
+use App\Models\ParserType;
 use App\Services\CoreApiService;
 use App\Services\OKApi;
 use Illuminate\Http\Request;
@@ -51,10 +53,28 @@ class TasksController extends Controller
         $id = $request->input('id');
 
         if($type == 8) {
-            Task::create([
+            $logins = json_encode([
+                'country' => $request->input('country_code'),
+                'cities' => $request->input('logins')
+            ]);
+
+            $task =Task::create([
                 'task_id' => $id,
                 'type' => $type,
-                'logins' => json_encode($request->input('logins'))
+                'logins' => $logins
+            ]);
+
+            ParserTask::create([
+                'table_name' => $id,
+                'logins' => $task->logins,
+                'type_id' => ParserType::where('index', $type)->first()->id,
+                'is_asup_task' => 1,
+                'name' => "Парсинг по городам _ " . $id,
+                'task_id' => $task->id
+            ]);
+
+            return response()->json([
+                "task_id" => $task->task_id
             ]);
         }
 
