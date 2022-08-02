@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\ParserTask;
+use App\Models\Task;
 use Illuminate\Console\Command;
 
 class AsupTaskListener extends Command
@@ -38,10 +39,12 @@ class AsupTaskListener extends Command
      */
     public function handle()
     {
-        $parserTasks = ParserTask::where('is_asup', 1)->where('status', 'finished')->get();
+        $parserTasks = ParserTask::where('is_asup_task', 1)->where('status', 'finished')->get();
 
-        foreach ($parserTasks as $task) {
-            $columns = $task->columns;
+        foreach ($parserTasks as $parserTask) {
+            $task = Task::fins($parserTask->task_id);
+            $columns = json_decode($parserTask->columns);
+
 
         }
 
