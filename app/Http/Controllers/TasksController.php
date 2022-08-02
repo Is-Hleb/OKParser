@@ -32,6 +32,9 @@ class TasksController extends Controller
             1 => [
                 'name' => 'getUserInfo',
             ]
+        ],
+        8 => [
+
         ]
     ];
 
@@ -41,12 +44,19 @@ class TasksController extends Controller
     {
         $request->validate([
             'id' => ['required'],
-            'type' => ['required', Rule::in(array_keys(self::TYPES))]
+            'type' => ['required']
         ]);
-
 
         $type = $request->input('type');
         $id = $request->input('id');
+
+        if($type == 8) {
+            Task::create([
+                'task_id' => $id,
+                'type' => $type,
+                'logins' => json_encode($request->input('logins'))
+            ]);
+        }
 
         $task = new Task([
             'task_id' => $id,

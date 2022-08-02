@@ -7,6 +7,7 @@ use App\Models\TaskE;
 use App\Services\CoreApiService;
 use App\Services\IriApi;
 use App\Services\OKApi;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class parsePostsInCron extends Command
@@ -67,7 +68,7 @@ class parsePostsInCron extends Command
                         continue;
                     }
                     $lastActivities = TaskE::where('is_vk', false)
-                        ->where('created_at', '<', now()->timestamp)
+                        ->whereDate('created_at', '<', Carbon::today())
                         ->where("postId", $activities[0]['postId'])
                         ->get();
 
