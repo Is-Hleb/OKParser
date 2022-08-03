@@ -90,11 +90,11 @@ class CoreApiService
 
     public function data($output, $type): void
     {
-        Http::post("{$this->baseUrl}/data", [
+        Http::post("{$this->baseUrl}/task/data", [
             "taskId" => $this->task->task_id,
             "data" => ["data" => $output],
             "type" => $type
         ]);
-        // $this->ok();
+        $this->ok();
     }
 }
