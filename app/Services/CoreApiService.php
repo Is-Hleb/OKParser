@@ -79,7 +79,7 @@ class CoreApiService
     private function ok(): void
     {
         $status = self::OK;
-        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}?status=$status");
+        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$status");
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::OK
