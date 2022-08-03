@@ -68,7 +68,7 @@ class parsePostsInCron extends Command
                         continue;
                     }
                     $lastActivities = TaskE::where('is_vk', false)
-                        ->whereDate('created_at', '<', Carbon::today())
+                        ->whereDate('created_at', '<=', Carbon::today())
                         ->where("postId", $activities[0]['postId'])
                         ->get();
 
