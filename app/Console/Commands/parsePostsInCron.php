@@ -66,6 +66,7 @@ class parsePostsInCron extends Command
                         dump("Activities is empty");
                         continue;
                     }
+
                     $lastActivities = TaskE::where('is_vk', false)
                         ->where('created_at', '<', now()->timestamp)
                         ->where("postId", $activities[0]['postId'])

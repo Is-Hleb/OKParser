@@ -30,57 +30,68 @@ class CoreApiService
 
     public function waiting(): void
     {
-        Http::patch("{$this->baseUrl}/task/status", [
-            "id" => $this->task->task_id,
-            "status" => self::WAITING
-        ]);
+        $status = self::WAITING;
+        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}?status=$status");
+//        Http::patch("{$this->baseUrl}/task/status", [
+//            "id" => $this->task->task_id,
+//            "status" => self::WAITING
+//        ]);
         $this->task->status = self::WAITING;
         $this->task->save();
     }
 
     public function validationErr(): void
     {
-        Http::patch("{$this->baseUrl}/task/status", [
-            "id" => $this->task->task_id,
-            "status" => self::VALIDATION_ERR
-        ]);
+        $err = self::VALIDATION_ERR;
+        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}?status=$err");
+//        Http::patch("{$this->baseUrl}/task/status", [
+//            "id" => $this->task->task_id,
+//            "status" => self::VALIDATION_ERR
+//        ]);
         $this->task->status = self::VALIDATION_ERR;
         $this->task->save();
     }
 
     public function error(): void
     {
-        Http::patch("{$this->baseUrl}/task/status", [
-            "id" => $this->task->task_id,
-            "status" => self::ERROR
-        ]);
+        $err = self::ERROR;
+        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$err");
+//        Http::patch("{$this->baseUrl}/task/status", [
+//            "id" => $this->task->task_id,
+//            "status" => self::ERROR
+//        ]);
         $this->task->status = self::ERROR;
         $this->task->save();
     }
 
     public function running(): void
     {
-        Http::patch("{$this->baseUrl}/task/status", [
-            "id" => $this->task->task_id,
-            "status" => self::RUNNING
-        ]);
+        $running = self::RUNNING;
+        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$running");
+//        Http::patch("{$this->baseUrl}/task/status", [
+//            "id" => $this->task->task_id,
+//            "status" => self::RUNNING
+//        ]);
         $this->task->status = self::RUNNING;
         $this->task->save();
     }
 
     private function ok(): void
     {
-        Http::patch("{$this->baseUrl}/task/status", [
-            "id" => $this->task->task_id,
-            "status" => self::OK
-        ]);
+        $status = self::OK;
+        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}?status=$status");
+//        Http::patch("{$this->baseUrl}/task/status", [
+//            "id" => $this->task->task_id,
+//            "status" => self::OK
+//        ]);
         $this->task->status = self::OK;
         $this->task->save();
     }
 
     public function data($output, $type): void
     {
-        Http::post("{$this->baseUrl}/data/{$this->task->task_id}", [
+        Http::post("{$this->baseUrl}/data", [
+            "taskId" => $this->task->task_id,
             "data" => ["data" => $output],
             "type" => $type
         ]);
