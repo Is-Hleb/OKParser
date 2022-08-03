@@ -103,7 +103,7 @@ class CoreApiService
             "data" => ["data" => $output],
             "type" => $type
         ]);
-        dump($response->body(), $response->status());
+        dump($response->body(), $response->status(), $type);
         $this->ok();
     }
 }
