@@ -52,7 +52,7 @@ class CoreApiService
         $this->task->save();
     }
 
-    public function error(\Exception $exception): void
+    public function error(\Throwable $exception): void
     {
         $err = self::ERROR;
         $data = [

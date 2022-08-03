@@ -43,7 +43,7 @@ class OkParserApi implements ShouldQueue
 
     public function failed(Throwable $e)
     {
-        $this->coreApiService?->error();
+        $this->coreApiService?->error($e);
         $this->jobInfo->status = JobInfo::FAILED;
         $this->jobInfo->exception = $e->getTrace();
         $this->jobInfo->output = $e->getMessage();
