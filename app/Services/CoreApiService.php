@@ -52,10 +52,18 @@ class CoreApiService
         $this->task->save();
     }
 
-    public function error(): void
+    public function error(\Exception $exception): void
     {
         $err = self::ERROR;
-        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$err");
+        $data = [
+            "status" => $exception->getCode(),
+            "message" => $exception->getMessage(),
+            "error" => $exception->getFile() . "_" . $exception->getLine()
+        ];
+        $data = json_encode($data);
+        $data = urlencode($data);
+
+        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$err&errorReason=$data");
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::ERROR
