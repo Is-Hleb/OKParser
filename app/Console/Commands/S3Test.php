@@ -41,7 +41,7 @@ class S3Test extends Command
      */
     public function handle()
     {
-        // Storage::disk('s3-iri')->put('test2.csv', 'content');
+         Storage::disk('s3-iri')->put('test2.csv', 'content');
         return 0;
     }
 }
