@@ -63,15 +63,15 @@ class ExportTaskEFile extends Command
                 $task->postUrl ?? '""',
                 $task->profileUrl ?? '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                $task->commentText ?? '""',
+                trim($task->commentText) ?? '""',
                 $name[0] ?? '""',
                 $name[1] ?? '""',
                 $task->gender ?? '""',
                 $task->age ?? '""',
-                $location[0] ?? '""',
-                $location[1] ?? '""',
-                $location[2] ?? '""',
-                $location[3] ?? '""',
+                trim($location[0]) ?? '""',
+                trim($location[1]) ?? '""',
+                trim($location[2]) ?? '""',
+                trim($location[3]) ?? '""',
             ];
         }
     }
