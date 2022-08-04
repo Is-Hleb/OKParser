@@ -57,7 +57,7 @@ class ExportTaskEFile extends Command
                 $location[3] ?? '""',
             ];
         } else {
-            dump(sizeof($task->commentText), sizeof($location[0]), sizeof($location[1]), sizeof($location[2]), sizeof($location[3]));
+            dump($task->commentText, sizeof($location[0]), sizeof($location[1]), sizeof($location[2]), sizeof($location[3]));
             return [
                 $task->ibd,
                 '""',
@@ -65,7 +65,7 @@ class ExportTaskEFile extends Command
                 $task->postUrl ?? '""',
                 $task->profileUrl ?? '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                sizeof($task->commentText) ? ltrim(trim($task->commentText)) : '""',
+                $task->commentText == "" ? ltrim(trim($task->commentText)) : '""',
                 $name[0] ?? '""',
                 $name[1] ?? '""',
                 $task->gender ?? '""',
