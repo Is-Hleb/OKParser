@@ -73,6 +73,9 @@ class parsePostsInCron extends Command
                         ->get();
 
                     if(!$lastActivities->count()) {
+                        $activities = array_map(function($item) use ($link) {
+                            return array_merge($item, ['ibd' => $link['data']['ibd']]);
+                        }, $activities);
                         TaskE::insert($activities);
                     } else {
                         $newActivities = [];
@@ -91,6 +94,9 @@ class parsePostsInCron extends Command
                                 $newActivities[] = $activity;
                             }
                         }
+                        $newActivities = array_map(function($item) use ($link) {
+                            return array_merge($item, ['ibd' => $link['data']['ibd']]);
+                        }, $newActivities);
                         TaskE::insert($newActivities);
                     }
                 }

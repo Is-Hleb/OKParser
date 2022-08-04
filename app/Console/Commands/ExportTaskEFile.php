@@ -39,7 +39,7 @@ class ExportTaskEFile extends Command
         $name = explode(" ", $task->name);
         if($task->is_vk) {
             return [
-                $task->idb,
+                $task->ibd,
                 $task->postUrl,
                 $task->profileUrl,
                 "",
@@ -57,7 +57,7 @@ class ExportTaskEFile extends Command
             ];
         } else {
             return [
-                $task->idb,
+                $task->ibd,
                 "",
                 "",
                 $task->postUrl,
