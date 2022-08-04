@@ -6,6 +6,7 @@ use App\Models\TaskE;
 use App\Models\TelegramMessage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class ExportTaskEFile extends Command
 {
@@ -83,15 +84,16 @@ class ExportTaskEFile extends Command
     public function handle()
     {
         $content = "";
+        $fileName = now()->format('Y-m-d') . ' .csv';
         foreach (TaskE::whereDate("created_at", Carbon::today())->cursor() as $datum) {
-
             $content .= implode(',', $this->format($datum)) . "\n";
         }
         TelegramMessage::create([
            "type" => "file",
            "content" => $content,
-           "file_name" => "output.csv"
+           "file_name" => $fileName
         ]);
+        Storage::disk('s3-iri')->put($fileName, $content);
         return 0;
     }
 }

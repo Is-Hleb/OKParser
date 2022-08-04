@@ -44,7 +44,7 @@ return [
             'throw' => false,
         ],
 
-        'asup-s3' => [
+        's3-asup' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID', '103784_asup_media'),
             'secret' => env('AWS_SECRET_ACCESS_KEY', '5t=BUw{S%X'),
@@ -55,15 +55,15 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
-        'iri-s3' => [
+        's3-iri' => [
             'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID', '103784_asup_media'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY', '5t=BUw{S%X'),
-            'region' => env('AWS_DEFAULT_REGION', 'ru-1'),
-            'bucket' => env('AWS_BUCKET', 'Asup_media'),
+            'key' => env('AWS_ACCESS_KEY_ID', 'client-izhevsk'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY', 'hfU6f93HSuVzdEnAWutyKTC'),
+            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'bucket' => env('AWS_BUCKET', 'izhevsk-inbox-to-cdp-inline'),
             'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT', 'https://s3.storage.selcloud.ru'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'endpoint' => env('AWS_ENDPOINT', 'https://s3.inline-dmp.ru'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', true),
             'throw' => false,
         ],
     ],
