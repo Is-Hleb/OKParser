@@ -57,7 +57,7 @@ class ExportTaskEFile extends Command
                 $location[3] ?? '""',
             ];
         } else {
-            dump($task->commentText, sizeof($location[0]), sizeof($location[1]), sizeof($location[2]), sizeof($location[3]));
+            dump($task->commentText, $location[0], $location[1], $location[2], $location[3]);
             return [
                 $task->ibd,
                 '""',
@@ -70,10 +70,10 @@ class ExportTaskEFile extends Command
                 $name[1] ?? '""',
                 $task->gender ?? '""',
                 $task->age ?? '""',
-                sizeof($location[0]) ? ltrim(trim($location[0])) : '""',
-                sizeof($location[1]) ? ltrim(trim($location[1])) : '""',
-                sizeof($location[2]) ? ltrim(trim($location[2])) : '""',
-                sizeof($location[3]) ? ltrim(trim($location[3])) : '""',
+                htmlspecialchars_decode($location[0]) ? ltrim(trim($location[0])) : '""',
+                htmlspecialchars_decode($location[1]) ? ltrim(trim($location[1])) : '""',
+                htmlspecialchars_decode($location[2]) ? ltrim(trim($location[2])) : '""',
+                htmlspecialchars_decode($location[3]) ? ltrim(trim($location[3])) : '""',
             ];
         }
 
