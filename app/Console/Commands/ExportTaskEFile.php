@@ -63,15 +63,15 @@ class ExportTaskEFile extends Command
                 $task->postUrl ?? '""',
                 $task->profileUrl ?? '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                trim($task->commentText) ?? '""',
+                ltrim(trim($task->commentText)) ?? '""',
                 $name[0] ?? '""',
                 $name[1] ?? '""',
                 $task->gender ?? '""',
                 $task->age ?? '""',
-                trim($location[0]) ?? '""',
-                trim($location[1]) ?? '""',
-                trim($location[2]) ?? '""',
-                trim($location[3]) ?? '""',
+                ltrim(trim($location[0])) ?? '""',
+                ltrim(trim($location[1])) ?? '""',
+                ltrim(trim($location[2])) ?? '""',
+                ltrim(trim($location[3])) ?? '""',
             ];
         }
     }
@@ -87,6 +87,7 @@ class ExportTaskEFile extends Command
         $fileName = now()->format('d-m-Y') . '.csv';
         foreach (TaskE::whereDate("created_at", Carbon::today())->cursor() as $datum) {
             $content .= implode(',', $this->format($datum)) . "\n";
+            dump($this->format($datum));
         }
         Storage::disk('s3-iri')->put($fileName, $content);
         TelegramMessage::create([
