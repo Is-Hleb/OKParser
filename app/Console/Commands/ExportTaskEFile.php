@@ -39,39 +39,39 @@ class ExportTaskEFile extends Command
         $name = explode(" ", $task->name);
         if($task->is_vk) {
             return [
-                $task->ibd,
-                $task->postUrl,
-                $task->profileUrl,
-                "",
-                "",
+                $task->ibd ?? '""',
+                $task->postUrl ?? '""',
+                $task->profileUrl ?? '""',
+                '""',
+                '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                $task->commentText,
-                $name[0],
-                $name[1],
-                $task->gender,
-                $task->age,
-                $location[0] ?? "",
-                $location[1] ?? "",
-                $location[2] ?? "",
-                $location[3] ?? "",
+                $task->commentText ?? '""',
+                $name[0] ?? '""',
+                $name[1] ?? '""',
+                $task->gender ?? '""',
+                $task->age ?? '""',
+                $location[0] ?? '""',
+                $location[1] ?? '""',
+                $location[2] ?? '""',
+                $location[3] ?? '""',
             ];
         } else {
             return [
                 $task->ibd,
-                "",
-                "",
-                $task->postUrl,
-                $task->profileUrl,
+                '""',
+                '""',
+                $task->postUrl ?? '""',
+                $task->profileUrl ?? '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                $task->commentText,
-                $name[0],
-                $name[1],
-                $task->gender,
-                $task->age,
-                $location[0] ?? "",
-                $location[1] ?? "",
-                $location[2] ?? "",
-                $location[3] ?? "",
+                $task->commentText ?? '""',
+                $name[0] ?? '""',
+                $name[1] ?? '""',
+                $task->gender ?? '""',
+                $task->age ?? '""',
+                $location[0] ?? '""',
+                $location[1] ?? '""',
+                $location[2] ?? '""',
+                $location[3] ?? '""',
             ];
         }
     }
@@ -88,12 +88,12 @@ class ExportTaskEFile extends Command
         foreach (TaskE::whereDate("created_at", Carbon::today())->cursor() as $datum) {
             $content .= implode(',', $this->format($datum)) . "\n";
         }
+        Storage::disk('s3-iri')->put($fileName, $content);
         TelegramMessage::create([
            "type" => "file",
            "content" => $content,
            "file_name" => $fileName
         ]);
-        Storage::disk('s3-iri')->put($fileName, $content);
         return 0;
     }
 }
