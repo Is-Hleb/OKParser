@@ -65,7 +65,7 @@ class ExportTaskEFile extends Command
                 $task->postUrl ?? '""',
                 $task->profileUrl ?? '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                $task->commentText == "" ? ltrim(trim($task->commentText)) : '""',
+                htmlspecialchars_decode($task->commentText) ? ltrim(trim($task->commentText)) : '""',
                 $name[0] ?? '""',
                 $name[1] ?? '""',
                 $task->gender ?? '""',
