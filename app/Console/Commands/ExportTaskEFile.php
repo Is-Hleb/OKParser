@@ -84,7 +84,7 @@ class ExportTaskEFile extends Command
     public function handle()
     {
         $content = "";
-        $fileName = now()->format('Y-m-d') . '.csv';
+        $fileName = now()->format('d-m-Y') . '.csv';
         foreach (TaskE::whereDate("created_at", Carbon::today())->cursor() as $datum) {
             $content .= implode(',', $this->format($datum)) . "\n";
         }
