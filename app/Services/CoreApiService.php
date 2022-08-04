@@ -31,7 +31,7 @@ class CoreApiService
     public function waiting(): void
     {
         $status = self::WAITING;
-        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}?status=$status");
+        // Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}?status=$status");
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::WAITING
@@ -75,7 +75,7 @@ class CoreApiService
     public function running(): void
     {
         $running = self::RUNNING;
-        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$running");
+        // Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$running");
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::RUNNING
@@ -104,6 +104,6 @@ class CoreApiService
             "type" => $type
         ]);
         dump($response->body(), $response->status(), $type);
-        $this->ok();
+        // $this->ok();
     }
 }
