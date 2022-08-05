@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth', 'as' => 'parser.ui.', 'prefix' => '/parser
     Route::get('/task', \App\Http\Controllers\Web\TaskController::class)->name('show');
     Route::post('/parser', [\App\Http\Controllers\Web\ParserController::class, 'create'])->name('parser.create');
     Route::post('/task', [\App\Http\Controllers\Web\TaskController::class, 'create'])->name('task.create');
+    Route::get('/task/export/{task_id}', [\App\Http\Controllers\Web\TaskController::class, 'export'])->name('task.export');
 });
 
 Route::group(['as' => 'parser.', 'prefix' => '/parser'], function () {

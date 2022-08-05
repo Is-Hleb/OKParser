@@ -65,4 +65,11 @@ class TaskController extends Controller
         return redirect()->back();
     }
 
+    public function export($task_id, ParserDBService $parserDBService)
+    {
+        $task = ParserTask::find($task_id);
+        $file = $parserDBService->export($task->table_nme, $task->columns, $task->name ?? "Без_имени");
+        return response()->file($file);
+    }
+
 }

@@ -92,7 +92,7 @@
                         <th>{{ $task->rows_count }}</th>
                         <th>
                             @if($task->columns)
-                                <a class="link-primary" href="#">скачать</a>
+                                <a class="link-primary" href="{{ route('parser.ui.task.export', $task->id) }}">скачать</a>
                             @else
                                 <span>Парсер ещё не отдал данные</span>
                             @endif

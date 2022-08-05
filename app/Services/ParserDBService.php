@@ -39,18 +39,19 @@ class ParserDBService
         return $infos;
     }
 
-    public function getTables() : array{
+    public function getTables(): array
+    {
         $tables = DB::connection('parser')->select('SHOW TABLES');
         return array_map(function ($table) {
             return $table->Tables_in_parser;
         }, $tables);
     }
 
-    public function getAllRowsCount(string $table, bool $fromCache = false) : int
+    public function getAllRowsCount(string $table, bool $fromCache = false): int
     {
-        if($fromCache) {
+        if ($fromCache) {
             $count = Cache::get("$table=count", false);
-            if($count) {
+            if ($count) {
                 return $count;
             }
         }
@@ -64,11 +65,11 @@ class ParserDBService
         }
     }
 
-    public function getRowsCount(string $table, string $row, mixed $equal, bool $fromCache = false) : int
+    public function getRowsCount(string $table, string $row, mixed $equal, bool $fromCache = false): int
     {
-        if($fromCache) {
+        if ($fromCache) {
             $count = Cache::get("$table=$row=count", false);
-            if($count) {
+            if ($count) {
                 return $count;
             }
         }
@@ -103,5 +104,10 @@ class ParserDBService
             unlink($csv_file_path);
         }
         return $zip_path;
+    }
+
+    public static function cursorExport(string $table_name, array $columns)
+    {
+        return DB::connection('parser')->table($table_name)->select($columns)->cursor();
     }
 }
