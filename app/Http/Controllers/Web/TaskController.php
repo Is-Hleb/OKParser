@@ -68,7 +68,7 @@ class TaskController extends Controller
     public function export($task_id, ParserDBService $parserDBService)
     {
         $task = ParserTask::find($task_id);
-        $file = $parserDBService->export($task->table_name, $task->columns, $task->name ?? "Без_имени");
+        $file = $parserDBService->export($task->table_name, json_decode($task->columns, true), $task->name ?? "Без_имени");
         return response()->file($file);
     }
 
