@@ -178,7 +178,7 @@ class OKApi
 
             if (isset($output['error_code']) && $output['error_code'] == 455) {
                 $result[$user] = [];
-            } elseif (isset($output['error_code']) && $output['error_code'] == 300 || $output['error_code'] == 1) {
+            } elseif (isset($output['error_code']) && ($output['error_code'] == 300 || $output['error_code'] == 1 )) {
                 continue;
             } elseif (isset($output['error_code'])) {
                 throw new Exception(json_encode($output));
