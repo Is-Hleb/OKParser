@@ -7,7 +7,6 @@ use App\Models\CountryCode;
 use App\Models\Parser;
 use App\Models\ParserTask;
 use App\Models\ParserType;
-use App\Models\Task;
 use App\Services\ParserDBService;
 use Illuminate\Http\Request;
 use App\Services\ParserTaskService;

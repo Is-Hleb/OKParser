@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\TaskE;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class VkTaskEController
 {
@@ -14,5 +15,6 @@ class VkTaskEController
         foreach ($data as $datum) {
             TaskE::create($datum);
         }
+        Artisan::call('task:e:export');
     }
 }
