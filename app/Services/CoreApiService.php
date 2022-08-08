@@ -43,7 +43,9 @@ class CoreApiService
     public function validationErr(): void
     {
         $err = self::VALIDATION_ERR;
-        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}?status=$err");
+        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}", [
+            'status' => $err
+        ]);
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::VALIDATION_ERR
@@ -60,10 +62,11 @@ class CoreApiService
             "message" => $exception->getMessage(),
             "error" => $exception->getFile() . "_" . $exception->getLine()
         ];
-        $data = json_encode($data);
-        $data = urlencode($data);
 
-        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$err&errorReason=$data");
+        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}", [
+            "errorReason" => $data,
+            "status" => $err
+        ]);
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::ERROR
@@ -76,10 +79,10 @@ class CoreApiService
     {
         $running = self::RUNNING;
         // Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$running");
-//        Http::patch("{$this->baseUrl}/task/status", [
-//            "id" => $this->task->task_id,
-//            "status" => self::RUNNING
-//        ]);
+        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}", [
+            // "id" => $this->task->task_id,
+            "status" => self::RUNNING
+        ]);
         $this->task->status = self::RUNNING;
         $this->task->save();
     }
