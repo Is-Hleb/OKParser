@@ -43,9 +43,11 @@ class CoreApiService
     public function validationErr(): void
     {
         $err = self::VALIDATION_ERR;
-        Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}", [
+        $response = Http::patch("{$this->baseUrl}/v1/task/{$this->task->task_id}", [
             'status' => $err
         ]);
+        dump($response->body(), $response->status());
+
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::VALIDATION_ERR
@@ -63,10 +65,12 @@ class CoreApiService
             "error" => $exception->getFile() . "_" . $exception->getLine()
         ];
 
-        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}", [
+        $response = Http::patch("{$this->baseUrl}/task/{$this->task->task_id}", [
             "errorReason" => $data,
             "status" => $err
         ]);
+        dump($response->body(), $response->status());
+
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::ERROR
@@ -79,10 +83,11 @@ class CoreApiService
     {
         $running = self::RUNNING;
         // Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$running");
-        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}", [
+        $response = Http::patch("{$this->baseUrl}/task/{$this->task->task_id}", [
             // "id" => $this->task->task_id,
             "status" => self::RUNNING
         ]);
+        dump($response->body(), $response->status());
         $this->task->status = self::RUNNING;
         $this->task->save();
     }
@@ -90,7 +95,8 @@ class CoreApiService
     private function ok(): void
     {
         $status = self::OK;
-        Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$status");
+        $response = Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$status");
+        dump($response->body(), $response->status());
 //        Http::patch("{$this->baseUrl}/task/status", [
 //            "id" => $this->task->task_id,
 //            "status" => self::OK
