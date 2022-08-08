@@ -70,14 +70,15 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th scope="col col-1">#</th>
-                    <th scope="col col-2">Название</th>
-                    <th scope="col col-2">Табличка</th>
-                    <th scope="col col-2">Статус</th>
-                    <th scope="col col-2">Скорость парсинга</th>
-                    <th scope="col col-2">Парсер</th>
-                    <th scope="col col-2">Спаршено</th>
-                    <th scope="col col-2">Экспорт</th>
+                    <th scope="col">#</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Табличка</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Скорость парсинга</th>
+                    <th scope="col">Парсер</th>
+                    <th scope="col">Спаршено</th>
+                    <th scope="col">Экспорт</th>
+                    <th scope="col">Посчитать</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -89,7 +90,7 @@
                         <th>{{ $task->status }}</th>
                         <th>{{ $task->speed * 60 * 60 }} в час</th>
                         <th>{{ $task->parser ? ($task->parser->name ?? $task->parser->token) : "Пока не задан" }}</th>
-                        <th>{{ $task->rows_count }}</th>
+                        <th id="count-{{ $task->id }}">{{ $task->rows_count }}</th>
                         <th>
                             @if($task->columns)
                                 <a class="link-primary" href="{{ route('parser.ui.task.export', $task->id) }}">скачать</a>
@@ -97,11 +98,14 @@
                                 <span>Парсер ещё не отдал данные</span>
                             @endif
                         </th>
+                        <th>
+                            <input type="checkbox" class="form-check-input check-count" id="check-{{ $task->id }}">
+                        </th>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
-            {{ $tasks->links() }}
+            <button id="show-count" class="btn btn-primary">Показать полличество</button>
         </div>
         <div class="row">
             <h2>Парсеры</h2>
@@ -130,3 +134,7 @@
         </div>
     </div>
 @endsection
+
+@push('before-closed-body')
+    <script type="text/javascript" src="{{ asset('js/check-count.js') }}" defer></script>
+@endpush

@@ -29,8 +29,8 @@ class TaskController extends Controller
         return view('web.set-task', [
             'tables' => $tablesToShow,
             'parserTypes' => ParserType::all(),
-            'parsers' => Parser::paginate(5),
-            'tasks' => ParserTask::orderBy('id', 'desc')->paginate(5)
+            'parsers' => Parser::all(),
+            'tasks' => ParserTask::orderBy('id', 'desc')->get()
         ]);
     }
 

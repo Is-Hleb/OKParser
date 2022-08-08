@@ -15,3 +15,4 @@ mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .sourceMaps();
 mix.js('resources/js/update-view.js', 'public/js');
+mix.js('resources/js/check-count.js', 'public/js');
