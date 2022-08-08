@@ -105,7 +105,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <p class="btn btn-primary"><span>Сумма:</span> <span id="show-count"></span></p>
+            <button id="copy-count" class="btn btn-primary"><span>Сумма:</span> <span id="show-count"></span></button>
         </div>
         <div class="row">
             <h2>Парсеры</h2>

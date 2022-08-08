@@ -22,6 +22,19 @@ document.onreadystatechange = () => {
                     summ -= count;
                 }
                 document.querySelector('#show-count').textContent = summ
+                document.querySelector('#copy-count').onclick = () => {
+                    navigator.clipboard.writeText(summ.toString()).then(() => {
+                        document.querySelector('#copy-count').classList.remove('btn-primary');
+                        document.querySelector('#copy-count').classList.add('btn-success');
+                        document.querySelector('#show-count').textContent = "Скопировано";
+
+                        setTimeout(() => {
+                            document.querySelector('#copy-count').classList.remove('btn-success');
+                            document.querySelector('#copy-count').classList.add('btn-primary');
+                            document.querySelector('#show-count').textContent = summ
+                        }, 2000);
+                    });
+                }
             }
         })
     }
