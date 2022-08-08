@@ -23,7 +23,7 @@ document.onreadystatechange = () => {
                 }
                 document.querySelector('#show-count').textContent = summ
                 document.querySelector('#copy-count').onclick = () => {
-                    navigator.clipboard.writeText(summ.toString()).then(() => {
+                    window.navigator.clipboard.writeText(summ.toString()).then(() => {
                         document.querySelector('#copy-count').classList.remove('btn-primary');
                         document.querySelector('#copy-count').classList.add('btn-success');
                         document.querySelector('#show-count').textContent = "Скопировано";
