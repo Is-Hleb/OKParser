@@ -105,7 +105,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <button id="show-count" class="btn btn-primary">Показать полличество</button>
+            <p class="btn btn-primary"><span>Сумма:</span> <span id="show-count"></span></p>
         </div>
         <div class="row">
             <h2>Парсеры</h2>

@@ -16,16 +16,17 @@ document.onreadystatechange = () => {
                 count = 0;
             } finally {
                 console.log(count);
-                if(this.checked) {
+                if(ev.target.checked) {
                     summ += count;
                 } else {
                     summ -= count;
                 }
+                document.querySelector('#show-count').textContent = summ
             }
         })
     }
 
-    document.querySelector('#show-count').addEventListener('click', () => {
-        alert("Колличество: " + summ);
-    })
+    // document.querySelector('#show-count').addEventListener('click', () => {
+    //     alert("Колличество: " + summ);
+    // })
 }
