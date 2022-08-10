@@ -119,6 +119,7 @@
                     <th scope="col col-2">Токен</th>
                     <th scope="col col-2">Колличество задач</th>
                     <th scope="col col-2">Выбранные типы</th>
+                    <th scope="col col-2">ip</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -129,6 +130,7 @@
                         <th>{{ $parser->token }}</th>
                         <th>{{ \App\Models\ParserTask::where('parser_id', $parser->id)->count() }}</th>
                         <th>{{ implode(',', $parser->types()->pluck('index')->toArray()) }}</th>
+                        <th>{{ $parser->ip }}</th>
                     </tr>
                 @endforeach
                 </tbody>

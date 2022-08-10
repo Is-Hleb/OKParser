@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $token
  * @property ParserType $types
  * @property array $tasks
+ * @property string $ip
  */
 class Parser extends Model
 {
