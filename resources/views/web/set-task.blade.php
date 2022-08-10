@@ -87,7 +87,9 @@
                         <th>{{ $task->id }}</th>
                         <th>{{ $task->name ?? "Не задано"}}</th>
                         <th>{{ $task->table_name ?? "Пока не задано"}}</th>
-                        <th>{{ $task->status }}</th>
+                        <th>
+                            <span class="rounded-3 p-1 {{ $task->status == 'running' ? 'bg-primary text-white' : ($task->status == 'finished' ? 'bg-success' : 'bg-warning') }}">{{ $task->status }}</span>
+                        </th>
                         <th>{{ $task->speed * 60 * 60 }} в час</th>
                         <th>{{ $task->parser ? ($task->parser->name ?? $task->parser->token) : "Пока не задан" }}</th>
                         <th id="count-{{ $task->id }}">{{ $task->rows_count }}</th>
