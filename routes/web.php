@@ -50,3 +50,17 @@ Route::group(['middleware' => 'auth', 'as' => 'tools.', 'prefix' => '/tools'], f
     Route::put('/users/reset', [ParserToolsController::class, 'resetUsers'])->name('reset.users');
 });
 
+Route::group(['middleware' => 'auth', 'as' => 'parser.ui.', 'prefix' => '/parser/ui'], function () {
+    Route::get('/task', \App\Http\Controllers\Web\TaskController::class)->name('show');
+    Route::post('/parser', [\App\Http\Controllers\Web\ParserController::class, 'create'])->name('parser.create');
+    Route::post('/task', [\App\Http\Controllers\Web\TaskController::class, 'create'])->name('task.create');
+    Route::get('/task/export/{task_id}', [\App\Http\Controllers\Web\TaskController::class, 'export'])->name('task.export');
+});
+
+Route::group(['as' => 'parser.', 'prefix' => '/parser'], function () {
+    Route::get('/task/{token}', [\App\Http\Controllers\Api\ParserController::class, 'getTask']);
+    Route::put('/task/', [\App\Http\Controllers\Api\ParserController::class, 'taskRunning']);
+    Route::put('/task/{id}', [\App\Http\Controllers\Api\ParserController::class, 'updateCount']);
+    Route::delete('/task/{id}', [\App\Http\Controllers\Api\ParserController::class, 'finishTask']);
+    Route::get('/task/all/{token}', [\App\Http\Controllers\Api\ParserController::class, 'allParserTasks']);
+});
