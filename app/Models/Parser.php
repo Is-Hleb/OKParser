@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property ParserType $types
  * @property array $tasks
  * @property string $ip
+ * @property bool $is_asup_parser
  */
 class Parser extends Model
 {
