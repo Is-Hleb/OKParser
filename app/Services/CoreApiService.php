@@ -68,7 +68,7 @@ class CoreApiService
         $this->task->save();
     }
 
-    private function ok(): void
+    public function ok(): void
     {
         Http::patch("{$this->baseUrl}/task/status", [
             "id" => $this->task->task_id,
@@ -86,4 +86,13 @@ class CoreApiService
         ]);
          $this->ok();
     }
+
+    public static function updateStatus(string $id, string $status) : void {
+        $baseUrl = config('core_api_service.base_url');
+        Http::patch("{$baseUrl}/task/status", [
+            "id" => $id,
+            "status" => $status
+        ]);
+    }
+
 }

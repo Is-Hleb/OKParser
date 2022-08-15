@@ -10,6 +10,33 @@ use ZipArchive;
 class ParserDBService
 {
 
+    const TABLES = [
+        3 => "create table table_name
+            (
+                id                  int auto_increment
+                    primary key,
+                social_id           bigint       null,
+                avatar              varchar(255) null,
+                friends             tinyint      null,
+                subscribers_checked tinyint      null,
+                constraint social_id
+                    unique (social_id)
+            )
+            collate = utf8mb4_general_ci;",
+        1 => "create table table_name
+            (
+                id                  int auto_increment
+                    primary key,
+                social_id           bigint       null,
+                friends             tinyint      null,
+                avatar              varchar(255) null,
+                subscribers_checked tinyint      null,
+                constraint social_id
+                    unique (social_id)
+            )
+            collate = utf8mb4_general_ci;",
+    ];
+
     public function getInfos()
     {
         $tables = DB::connection('parser')->select('SHOW TABLES');
@@ -109,5 +136,25 @@ class ParserDBService
     public static function cursorExport(string $table_name, array $columns)
     {
         return DB::connection('parser')->table($table_name)->select($columns)->cursor();
+    }
+
+    public static function createTableToASUPType(int $typeIndex, string $table_name)
+    {
+        echo $typeIndex;
+        $sqlString = self::TABLES[$typeIndex];
+        $sqlString = str_replace("table_name", $table_name, $sqlString);
+        try {
+            DB::connection('parser')->statement($sqlString);
+        } catch (\Exception $exception) {
+
+        } finally {
+            return $table_name;
+        }
+    }
+
+    public static function insertIntoTable($table_name, $data): void
+    {
+        echo json_encode($data);
+        DB::connection('parser')->table($table_name)->insert($data);
     }
 }

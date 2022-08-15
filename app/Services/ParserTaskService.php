@@ -18,6 +18,35 @@ class ParserTaskService
     const USERS_BY_CITIES = 8;
     const USERS_AVATARS = "4-avatars";
 
+    public static function dispachTask(int $type, string $id, array $logins): bool
+    {
+        $table_name = $id;
+        $type = ParserType::where('index', $type)->get()->first();
+        $inputLogins = $logins;
+        if ($type) {
+            if($type->index == 3 || $type->index == 1) {
+                $users_table_name = ParserDBService::createTableToASUPType($type->index, $table_name . '_users');
+                $logins = array_map(function($item) {
+                    return ['social_id' => $item];
+                }, $logins);
+                ParserDBService::insertIntoTable($users_table_name, $logins);
+
+                ParserTaskModel::create([
+                    'selected_table' => $users_table_name,
+                    'table_name' => $table_name,
+                    'type' => $type->index,
+                    'is_asup_task' => true,
+                    'type_id' => $type->id,
+                    'name' => $id,
+                    'logins' => json_encode($inputLogins)
+                ]);
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public static function usersByCities(string $country, array $cities, string|null $taskName = null, bool $isAsupTask = false): void
     {
         $table_name = Str::random(5);

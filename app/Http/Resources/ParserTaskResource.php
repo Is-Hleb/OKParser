@@ -23,6 +23,7 @@ class ParserTaskResource extends JsonResource
             'table_name' => $this->table_name,
             'selected_table' => $this->selected_table,
             'logins' => $this->logins,
+            'is_asup_task' => $this->is_asup_task
         ];
     }
 }
