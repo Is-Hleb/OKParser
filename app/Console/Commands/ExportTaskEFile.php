@@ -6,6 +6,7 @@ use App\Models\TaskE;
 use App\Models\TelegramMessage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class ExportTaskEFile extends Command
 {
@@ -33,46 +34,49 @@ class ExportTaskEFile extends Command
         parent::__construct();
     }
 
-    private function format(TaskE $task) {
+    private function format(TaskE $task)
+    {
         $location = explode("-", $task->location);
         $name = explode(" ", $task->name);
-        if($task->is_vk) {
+        if ($task->is_vk) {
             return [
-                $task->idb,
-                $task->postUrl,
-                $task->profileUrl,
-                "",
-                "",
+                $task->ibd ?? '""',
+                $task->postUrl ?? '""',
+                $task->profileUrl ?? '""',
+                '""',
+                '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                $task->commentText,
-                $name[0],
-                $name[1],
-                $task->gender,
-                $task->age,
-                $location[0] ?? "",
-                $location[1] ?? "",
-                $location[2] ?? "",
-                $location[3] ?? "",
+                $task->commentText ?? '""',
+                $name[0] ?? '""',
+                $name[1] ?? '""',
+                $task->gender ?? '""',
+                $task->age ?? '""',
+                $location[0] ?? '""',
+                $location[1] ?? '""',
+                $location[2] ?? '""',
+                $location[3] ?? '""',
             ];
         } else {
+            dump($task->commentText, $location[0], $location[1], $location[2], $location[3]);
             return [
-                $task->idb,
-                "",
-                "",
-                $task->postUrl,
-                $task->profileUrl,
+                $task->ibd,
+                '""',
+                '""',
+                $task->postUrl ?? '""',
+                $task->profileUrl ?? '""',
                 $task->activityType == 'like' ? "ЛАЙК" : "КОММЕНТАРИЙ",
-                $task->commentText,
-                $name[0],
-                $name[1],
-                $task->gender,
-                $task->age,
-                $location[0] ?? "",
-                $location[1] ?? "",
-                $location[2] ?? "",
-                $location[3] ?? "",
+                htmlspecialchars_decode($task->commentText) ? ltrim(trim($task->commentText)) : '""',
+                $name[0] ?? '""',
+                $name[1] ?? '""',
+                $task->gender ?? '""',
+                $task->age ?? '""',
+                htmlspecialchars_decode($location[0]) ? ltrim(trim($location[0])) : '""',
+                htmlspecialchars_decode($location[1]) ? ltrim(trim($location[1])) : '""',
+                htmlspecialchars_decode($location[2]) ? ltrim(trim($location[2])) : '""',
+                htmlspecialchars_decode($location[3]) ? ltrim(trim($location[3])) : '""',
             ];
         }
+
     }
 
     /**
@@ -83,14 +87,16 @@ class ExportTaskEFile extends Command
     public function handle()
     {
         $content = "";
+        $fileName = now()->format('d-m-Y') . '.csv';
         foreach (TaskE::whereDate("created_at", Carbon::today())->cursor() as $datum) {
-
             $content .= implode(',', $this->format($datum)) . "\n";
+            dump($this->format($datum));
         }
+        Storage::disk('s3-iri')->put($fileName, $content);
         TelegramMessage::create([
-           "type" => "file",
-           "content" => $content,
-           "file_name" => "output.csv"
+            "type" => "file",
+            "content" => $content,
+            "file_name" => $fileName
         ]);
         return 0;
     }
