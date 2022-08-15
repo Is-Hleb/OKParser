@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\UsersByCity;
 use App\Http\Controllers\Web\UsersFriendsSubscribersController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TasksController;
+use App\Http\Controllers\Api\SetTaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,7 @@ use App\Http\Controllers\TasksController;
 */
 
 Route::post('/task', TasksController::class);
+Route::post('/v2/task', SetTaskController::class);
 Route::post('/vk/task/3/data', \App\Http\Controllers\Api\VkTaskEController::class);
 
 \Illuminate\Support\Facades\Auth::routes();
