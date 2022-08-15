@@ -67,7 +67,7 @@ class ParserController extends Controller
         $task->columns = $valid['columns'];
         $task->status = "running";
         $task->save();
-        CoreApiService::updateStatus($valid['id'], CoreApiService::RUNNING);
+        CoreApiService::updateStatus($valid['table_name'], CoreApiService::RUNNING);
         return "ok";
 
     }
@@ -85,7 +85,7 @@ class ParserController extends Controller
         $task->status = JobInfo::FINISHED;
         $task->save();
 
-        CoreApiService::updateStatus($id, CoreApiService::OK);
+        CoreApiService::updateStatus($task->table_name, CoreApiService::OK);
         return true;
     }
 }
