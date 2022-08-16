@@ -83,9 +83,10 @@ class ParserController extends Controller
     {
         $task = ParserTask::find($id);
         $task->status = JobInfo::FINISHED;
+        if($task->status != JobInfo::FINISHED) {
+            CoreApiService::updateStatus($task->table_name, CoreApiService::OK);
+        }
         $task->save();
-
-        CoreApiService::updateStatus($task->table_name, CoreApiService::OK);
         return true;
     }
 }
