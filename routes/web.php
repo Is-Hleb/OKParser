@@ -64,3 +64,19 @@ Route::group(['as' => 'parser.', 'prefix' => '/parser'], function () {
     Route::delete('/task/{id}', [\App\Http\Controllers\Api\ParserController::class, 'finishTask']);
     Route::get('/task/all/{token}', [\App\Http\Controllers\Api\ParserController::class, 'allParserTasks']);
 });
+
+Route::redirect('/', '/cron');
+
+//Route::get('/', function () {
+//    $logins = [
+//        "https://ok.ru/rsvru",
+//        "https://ok.ru/lideryross",
+//        "https://ok.ru/group/61588141768797",
+//        "https://ok.ru/group/56657148969112",
+//        "https://ok.ru/group/57083141488839",
+//        "https://ok.ru/worldskills",
+//    ];
+//    $okApi = new \App\Services\OKApi();
+//    $okApi->getGroupFollowers($logins);
+//    // members_count
+//});
