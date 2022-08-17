@@ -178,7 +178,7 @@ class OKApi
 
             if (isset($output['error_code']) && $output['error_code'] == 455) {
                 $result[$user] = [];
-            } elseif (isset($output['error_code']) && $output['error_code'] == 300 || $output['error_code'] == 1) {
+            } elseif (isset($output['error_code']) && ($output['error_code'] == 300 || $output['error_code'] == 1)) {
                 continue;
             } elseif (isset($output['error_code'])) {
                 throw new Exception(json_encode($output));
@@ -195,7 +195,7 @@ class OKApi
     {
         do {
             $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
-            if(!$proxy) {
+            if (!$proxy) {
                 Proxy::query()->update(['blocked' => false]);
                 $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
             }
@@ -577,7 +577,7 @@ class OKApi
             } catch (Exception $exception) {
                 // dump($exception->getMessage());
             }
-            if(str_contains($url, '?')) {
+            if (str_contains($url, '?')) {
                 $url = explode('?', $url)[0];
             }
             $ibd = 1;
@@ -695,18 +695,68 @@ class OKApi
         return $response;
     }
 
+    public function getGroupInfo(array|string $logins): array
+    {
+        $method = "group.getInfo";
+        $groupsIds = [];
+        if(is_string($logins)) {
+            $uids = $this->getUrlInfo($logins)['objectId'];
+            $groupsIds = [$uids];
+        } else {
+            $uids = [];
+            foreach ($logins as $login) {
+                $uids[] = $this->getUrlInfo($login)['objectId'];
+            }
+            $groupsIds = $uids;
+            $uids = implode(',', $uids);
+        }
+
+        do {
+
+            $md5 = md5("application_key=" . $this->appKey . "fields=members_countformat=jsonmethod=" . $method . "uids=" . $uids . $this->secret);
+
+            $params = [
+                'application_key' => $this->appKey,
+                'fields' => 'members_count',
+                'format' => 'json',
+                'method' => $method,
+                'uids' => $uids,
+                'sig' => $md5,
+                'access_token' => $this->key
+            ];
+
+            $response = $this->request($params);
+            if($this->sessionBlocked($response)) {
+                $this->setRandomToken();
+            }
+
+        } while ($this->sessionBlocked($response));
+
+        $output = [];
+        for($index = 0; $index < sizeof($response); $index += 1) {
+            $output[$groupsIds[$index]] = array_merge($response[$index], [
+                'link' => $logins[$index],
+                'groupId' => $groupsIds[$index]
+            ]);
+        }
+
+        return $output;
+    }
+
     public function getGroupFollowers($logins): bool|array
     {
+        $groupsInfo = $this->getGroupInfo($logins);
+        dump($groupsInfo);
         $output = [];
         foreach ($logins as $link) {
             $anchor = "";
             $anpr = "";
-
             $id = $link;
             $hasMore = false;
             if (is_string($link)) {
                 $id = $this->getUrlInfo($link)['objectId'];
             }
+            dump($groupsInfo[$link] ?? "Group info not exits for link: " . $link);
             do {
 
                 if ($anchor != "") {
@@ -744,7 +794,12 @@ class OKApi
                     $users = $response['members'] ?? [];
                     foreach ($users as &$user) {
                         // change object on userId only
-                        $user = ['user_id' => $user['userId']];
+                        $user = [
+                            'user_id' => $user['userId'],
+                            'members_count' => $groupsInfo[$id]['members_count'] ?? 'Не задано',
+                            'group_id' => $id,
+                            'group_url' => $groupsInfo[$id]['link'] ?? "Не задано"
+                        ];
                     }
                     $output[$id] = array_merge($users, $output[$id] ?? []);
                 }
