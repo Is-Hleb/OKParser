@@ -1125,7 +1125,7 @@ class OKApi
         do {
             $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
             if (!$proxy) {
-                Proxy::query()->update(['blocked', false]);
+                Proxy::query()->update(['blocked' => false]);
                 $proxy = Proxy::where('blocked', false)->inRandomOrder()->first();
             }
             try {
