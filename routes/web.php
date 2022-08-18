@@ -64,3 +64,11 @@ Route::group(['as' => 'parser.', 'prefix' => '/parser'], function () {
     Route::delete('/task/{id}', [\App\Http\Controllers\Api\ParserController::class, 'finishTask']);
     Route::get('/task/all/{token}', [\App\Http\Controllers\Api\ParserController::class, 'allParserTasks']);
 });
+
+Route::get('/', function () {
+   $api = new \App\Services\OKApi();
+   $res = $api->getPostUserActivity([
+       "https://ok.ru/group/56657148969112/topic/154727466479000"
+   ]);
+   dump($res);
+});

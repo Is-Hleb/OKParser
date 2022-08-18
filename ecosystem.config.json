@@ -1,0 +1,14 @@
+{
+    "apps": [{
+        "name": "laravel-app",
+        "script": "artisan",
+        "args": ["posts:extra"],
+        "instances": "1",
+        "wait_ready": true,
+        "autorestart": false,
+        "max_restarts": 1,
+        "interpreter" : "php",
+        "watch": true,
+        "time": true
+    }]
+}
