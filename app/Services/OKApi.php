@@ -830,13 +830,14 @@ class OKApi
         dump($ids_array);
         $output = [];
         $maxArray = [];
+        ;
         foreach ($ids_array as $ids) {
 
             $newIds = [];
             foreach ($ids as $id) {
                 if (is_string($id)) {
                     $result = $this->getUrlInfo("https://ok.ru/profile/$id");
-                    if (!$result['objectId']) {
+                    if (!isset($result['objectId'])) {
                         continue;
                     }
                     $newIds[] = $result['objectId'];
