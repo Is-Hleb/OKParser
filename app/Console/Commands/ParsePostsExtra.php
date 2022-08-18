@@ -41,7 +41,7 @@ class ParsePostsExtra extends Command
         $json = file_get_contents(__DIR__ . '/posts.json');
         $json = json_decode($json, true);
         $urls = file_get_contents(__DIR__ . '/posts.txt');
-        $urls = explode("\r\n", $urls);
+        $urls = explode("\n", $urls);
         $api = new OKApi();
 
         $count = 0;
