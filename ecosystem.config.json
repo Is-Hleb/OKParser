@@ -8,6 +8,9 @@
         "autorestart": false,
         "max_restarts": 1,
         "interpreter" : "php",
+        "error_file": "log/err.log",
+        "out_file": "log/out.log",
+        "log_file": "log/combined.log",
         "watch": true,
         "time": true
     }]
