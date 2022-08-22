@@ -117,7 +117,8 @@
                     <th scope="col col-1">#</th>
                     <th scope="col col-2">Имя</th>
                     <th scope="col col-2">Токен</th>
-                    <th scope="col col-2">Колличество задач</th>
+                    <th scope="col col-2">Колличество задач (работают)</th>
+                    <th scope="col col-2">Колличество задач (остановлены)</th>
                     <th scope="col col-2">Выбранные типы</th>
                     <th scope="col col-2">ip</th>
                 </tr>
@@ -128,7 +129,8 @@
                         <th>{{ $parser->id }}</th>
                         <th>{{ $parser->name ?? "не задано"}}</th>
                         <th>{{ $parser->token }}</th>
-                        <th>{{ \App\Models\ParserTask::where('parser_id', $parser->id)->count() }}</th>
+                        <th>{{ \App\Models\ParserTask::where('parser_id', $parser->id)->where('status', \App\Models\JobInfo::RUNNING)->count() }}</th>
+                        <th>{{ \App\Models\ParserTask::where('parser_id', $parser->id)->where('status', 'stopped')->count() }}</th>
                         <th>{{ implode(',', $parser->types()->pluck('index')->toArray()) }}</th>
                         <th>{{ $parser->ip }}</th>
                     </tr>
