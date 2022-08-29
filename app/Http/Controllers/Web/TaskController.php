@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ExportDataJob;
 use App\Models\CountryCode;
 use App\Models\Parser;
 use App\Models\ParserTask;
@@ -10,6 +11,7 @@ use App\Models\ParserType;
 use App\Services\ParserDBService;
 use Illuminate\Http\Request;
 use App\Services\ParserTaskService;
+use Illuminate\Support\Facades\Cache;
 
 class TaskController extends Controller
 {
@@ -66,9 +68,22 @@ class TaskController extends Controller
 
     public function export($task_id, ParserDBService $parserDBService)
     {
+        ExportDataJob::dispatch(ParserTask::find($task_id));
+        return redirect()->back();
+//        $task = ParserTask::find($task_id);
+//        $file = $parserDBService->export($task->table_name, json_decode($task->columns, true), $task->name ?? "Без_имени");
+//        return response()->file($file);
+    }
+
+    public function exportStats($task_id)
+    {
         $task = ParserTask::find($task_id);
-        $file = $parserDBService->export($task->table_name, json_decode($task->columns, true), $task->name ?? "Без_имени");
-        return response()->file($file);
+        return Cache::get($task->id . '_stats', 0);
+    }
+
+    public function download($task_id) {
+        $task = ParserTask::find($task_id);
+        return response()->file(storage_path($task->output_path));
     }
 
 }

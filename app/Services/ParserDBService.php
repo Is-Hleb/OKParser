@@ -66,6 +66,14 @@ class ParserDBService
         return $infos;
     }
 
+    public function update($table, $column, $value) {
+        DB::connection('parser')->table($table)->update([$column => $value]);
+    }
+
+    public function getConnection() {
+        return DB::connection('parser');
+    }
+
     public function getTables(): array
     {
         $tables = DB::connection('parser')->select('SHOW TABLES');
@@ -105,20 +113,31 @@ class ParserDBService
         return $count;
     }
 
-    public function export(string $table_name, array $keys, string $export_name)
+    // Can save progress
+    public function export(string $table_name, array $keys, string $export_name, bool|string $cacheId = false)
     {
-        $table = DB::connection('parser')->table($table_name)->cursor();
+        $allCount = $this->getAllRowsCount($table_name);
+        $count = 0;
 
         $table_name = str_replace(' ', '_', $export_name);
         $csv_file_path = storage_path("$table_name.csv");
 
         $file = fopen($csv_file_path, 'a+');
-        foreach ($table as $row) {
+        foreach (DB::connection('parser')->table($table_name)->cursor() as $row) {
             $info = [];
             foreach ($keys as $key) {
-                $info[$key] = $row->$key ?? "";
+                $info[$key] = rtrim(ltrim(str_replace("\n", '', $row->$key ?? ""))) ?? "";
             }
-            fwrite($file, implode(",", $info) . "\n");
+
+            if(implode('', $info)) {
+                fputcsv($file, $info);
+                // fwrite($file, implode(",", $info) . "\n");
+                if ($cacheId) {
+                    dump($count);
+                    Cache::put($cacheId, round(($count++ / $allCount) * 100));
+                }
+            }
+
         }
         fclose($file);
 

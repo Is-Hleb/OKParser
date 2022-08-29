@@ -13,19 +13,29 @@ use Illuminate\Support\Facades\Cache;
  * @property int $parser_id
  * @property int $rows_count
  * @property string $output_path
+ * @property string $columns
+ * @property ParserType $type
+ * @property string $name
  */
 class ParserTask extends Model
 {
     use HasFactory;
+
     protected $guarded = ['id'];
 
-    public function parser() {
+    public function parser()
+    {
         return $this->belongsTo(Parser::class);
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(ParserType::class);
     }
 
     public function __get($key)
     {
-        if($key == 'count_before') {
+        if ($key == 'count_before') {
             return Cache::get("task-count-$this->id", 0);
         } elseif ($key == 'speed') {
             return Cache::get("speed-$this->id", 0);

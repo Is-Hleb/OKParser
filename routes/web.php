@@ -55,6 +55,8 @@ Route::group(['middleware' => 'auth', 'as' => 'parser.ui.', 'prefix' => '/parser
     Route::post('/parser', [\App\Http\Controllers\Web\ParserController::class, 'create'])->name('parser.create');
     Route::post('/task', [\App\Http\Controllers\Web\TaskController::class, 'create'])->name('task.create');
     Route::get('/task/export/{task_id}', [\App\Http\Controllers\Web\TaskController::class, 'export'])->name('task.export');
+    Route::get('/task/download/{task_id}', [\App\Http\Controllers\Web\TaskController::class, 'download'])->name('task.download');
+    Route::get('/task/export/stats/{task_id}', [\App\Http\Controllers\Web\TaskController::class, 'exportStats']);
 });
 
 Route::group(['as' => 'parser.', 'prefix' => '/parser'], function () {
@@ -65,10 +67,4 @@ Route::group(['as' => 'parser.', 'prefix' => '/parser'], function () {
     Route::get('/task/all/{token}', [\App\Http\Controllers\Api\ParserController::class, 'allParserTasks']);
 });
 
-Route::get('/', function () {
-   $api = new \App\Services\OKApi();
-   $res = $api->getPostUserActivity([
-       "https://ok.ru/group/56657148969112/topic/154727466479000"
-   ]);
-   dump($res);
-});
+Route::redirect('/', '/parser/ui/task');

@@ -13,6 +13,5 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
-    .sourceMaps();
-mix.js('resources/js/update-view.js', 'public/js');
-mix.js('resources/js/check-count.js', 'public/js');
+    .css('resources/css/app.css', 'public/css/styles.css')
+    .js('resources/js/export-task-stats.js', 'public/js/export_task.js')

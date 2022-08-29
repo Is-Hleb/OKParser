@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@push('styles')
+
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+
+@endpush
+
 @section('content')
     <div class="container">
         <div class="row">
@@ -70,6 +76,7 @@
             <table class="table">
                 <thead>
                 <tr>
+                    <th></th>
                     <th scope="col">#</th>
                     <th scope="col">Название</th>
                     <th scope="col">Табличка</th>
@@ -79,29 +86,40 @@
                     <th scope="col">Спаршено</th>
                     <th scope="col">Экспорт</th>
                     <th scope="col">Посчитать</th>
+                    <th scope="col">Скачать</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($tasks as $task)
-                    <tr>
+                    <tr class="task-wrap">
+                        <th class="task-mask" id="task-mask-{{ $task->id }}"></th>
                         <th>{{ $task->id }}</th>
                         <th>{{ $task->name ?? "Не задано"}}</th>
                         <th>{{ $task->table_name ?? "Пока не задано"}}</th>
                         <th>
-                            <span class="rounded-3 p-1 {{ $task->status == 'running' ? 'bg-primary text-white' : ($task->status == 'finished' ? 'bg-success text-white' : 'bg-warning') }}">{{ $task->status }}</span>
+                            <span
+                                class="rounded-3 p-1 {{ $task->status == 'running' ? 'bg-primary text-white' : ($task->status == 'finished' ? 'bg-success text-white' : 'bg-warning') }}">{{ $task->status }}</span>
                         </th>
                         <th>{{ $task->speed * 60 * 60 }} в час</th>
                         <th>{{ $task->parser ? ($task->parser->name ?? $task->parser->token) : "Пока не задан" }}</th>
                         <th id="count-{{ $task->id }}">{{ $task->rows_count }}</th>
                         <th>
                             @if($task->columns)
-                                <a class="link-primary" href="{{ route('parser.ui.task.export', $task->id) }}">скачать</a>
+                                <a class="link-primary"
+                                   href="{{ route('parser.ui.task.export', $task->id) }}">подготовить</a>
                             @else
                                 <span>Парсер ещё не отдал данные</span>
                             @endif
                         </th>
                         <th>
                             <input type="checkbox" class="form-check-input check-count" id="check-{{ $task->id }}">
+                        </th>
+                        <th>
+                            @if($task->output_path)
+                                <a href="{{ route('parser.ui.task.download', $task->id) }}">скачать</a>
+                            @else
+                                Сначала подготовь файл
+                            @endif
                         </th>
                     </tr>
                 @endforeach
@@ -142,5 +160,9 @@
 @endsection
 
 @push('before-closed-body')
+    <script>
+        var TASKS = {{ \Illuminate\Support\Js::from($tasks) }}
+    </script>
+    <script type="text/javascript" src="{{ asset('js/export_task.js') }}" defer></script>
     <script type="text/javascript" src="{{ asset('js/check-count.js') }}" defer></script>
 @endpush
