@@ -82,7 +82,8 @@ class CoreApiService
     {
         Http::post("{$this->baseUrl}/data", [
             "data" => ["data" => $output],
-            "type" => $type
+            "type" => $type,
+            "task_id" => $this->task->task_id
         ]);
          $this->ok();
     }
