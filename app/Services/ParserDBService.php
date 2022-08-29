@@ -93,7 +93,7 @@ class ParserDBService
         try {
             $info = DB::connection('parser')->select("SELECT COUNT(*) FROM `$table`");
             $count = array_values(get_object_vars($info[0]))[0];
-            Cache::set("$table=count", $count);
+            Cache::put("$table=count", $count);
             return $count;
         } catch (\Exception $exception) {
             return 0;
