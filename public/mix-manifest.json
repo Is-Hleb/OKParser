@@ -1,6 +1,6 @@
 {
     "/js/app.js": "/js/app.js",
-    "/js/update-view.js": "/js/update-view.js",
-    "/js/check-count.js": "/js/check-count.js",
-    "/css/app.css": "/css/app.css"
+    "/js/export_task.js": "/js/export_task.js",
+    "/css/app.css": "/css/app.css",
+    "/css/styles.css": "/css/styles.css"
 }
