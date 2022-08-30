@@ -117,8 +117,6 @@ class ParserDBService
     public function export(string $table_name, array $keys, string $export_name, bool|string $cacheId = false, $allCount = 0)
     {
         $count = 0;
-
-        $table_name = str_replace(' ', '_', $export_name);
         $csv_file_path = storage_path("$table_name.csv");
 
         $file = fopen($csv_file_path, 'a+');
