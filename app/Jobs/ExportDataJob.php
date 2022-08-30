@@ -58,7 +58,8 @@ class ExportDataJob implements ShouldQueue
             $this->parserTask->table_name,
             (array)json_decode($this->parserTask->columns, true),
             $this->parserTask->table_name,
-            $this->parserTask->id . '_stats'
+            $this->parserTask->id . '_stats',
+            $this->parserTask->rows_count
         );
 
         $this->parserTask->output_path = $this->parserTask->table_name . '.csv.zip';

@@ -114,9 +114,8 @@ class ParserDBService
     }
 
     // Can save progress
-    public function export(string $table_name, array $keys, string $export_name, bool|string $cacheId = false)
+    public function export(string $table_name, array $keys, string $export_name, bool|string $cacheId = false, $allCount = 0)
     {
-        $allCount = $this->getAllRowsCount($table_name);
         $count = 0;
 
         $table_name = str_replace(' ', '_', $export_name);
