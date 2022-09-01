@@ -20,7 +20,7 @@ class ParserTaskService
 
     public static function dispachTask(int $type, string $id, array $logins): bool
     {
-        $table_name = $id . '_' . $type;
+        $table_name = $id;
         $type = ParserType::where('index', $type)->get()->first();
         $inputLogins = $logins;
         if ($type) {
