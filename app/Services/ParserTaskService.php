@@ -20,7 +20,7 @@ class ParserTaskService
 
     public static function dispachTask(int $type, string $id, array $logins): bool
     {
-        $table_name = $id;
+        $table_name = $id . '_' . $type;
         $type = ParserType::where('index', $type)->get()->first();
         $inputLogins = $logins;
         if ($type) {
@@ -45,8 +45,6 @@ class ParserTaskService
                     'logins' => json_encode($inputLogins)
                 ]);
                 return true;
-            } elseif ($type->index == ParserType::GROUPS) {
-
             }
         } else {
             return false;
