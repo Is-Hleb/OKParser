@@ -24,8 +24,12 @@ class ParserTaskService
         $type = ParserType::where('index', $type)->get()->first();
         $inputLogins = $logins;
         if ($type) {
-            if($type->index == ParserType::FRIENDS || $type->index == ParserType::SUBSCRIBERS) {
-                $users_table_name = ParserDBService::createTableToASUPType($type->index, $table_name . '_users');
+            if(
+                $type->index == ParserType::FRIENDS
+                || $type->index == ParserType::SUBSCRIBERS
+                || $type->index == ParserType::GROUPS
+            ) {
+                $users_table_name = ParserDBService::createTableToASUPType($type->index, $table_name . '_users_' . $type->index);
                 $logins = array_map(function($item) {
                     return ['social_id' => $item];
                 }, $logins);

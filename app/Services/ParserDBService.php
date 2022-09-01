@@ -10,31 +10,38 @@ use ZipArchive;
 class ParserDBService
 {
 
+    private const USERS_TABLE = "create table if not exists `table_name`
+(
+    id                  int auto_increment
+        primary key,
+    name                varchar(255) null,
+    city                varchar(255) null,
+    region              varchar(255) null,
+    age                 int          null,
+    gender              varchar(255) null,
+    social_id           bigint       not null,
+    avatar              varchar(255) null,
+    age_range           varchar(255) null,
+    edu                 varchar(255) null,
+    work                varchar(255) null,
+    friends             tinyint      null,
+    edu_checked         tinyint      null,
+    subscribers_checked tinyint      null,
+    posts_checked       tinyint      null,
+    groups_checked      tinyint      null,
+    constraint social_id
+        unique (social_id)
+)
+    collate = utf8mb4_general_ci;
+
+";
+
     const TABLES = [
-        3 => "create table table_name
-            (
-                id                  int auto_increment
-                    primary key,
-                social_id           bigint       null,
-                avatar              varchar(255) null,
-                friends             tinyint      null,
-                subscribers_checked tinyint      null,
-                constraint social_id
-                    unique (social_id)
-            )
-            collate = utf8mb4_general_ci;",
-        1 => "create table table_name
-            (
-                id                  int auto_increment
-                    primary key,
-                social_id           bigint       null,
-                friends             tinyint      null,
-                avatar              varchar(255) null,
-                subscribers_checked tinyint      null,
-                constraint social_id
-                    unique (social_id)
-            )
-            collate = utf8mb4_general_ci;",
+        3 => self::USERS_TABLE,
+        1 => self::USERS_TABLE,
+        16 => self::USERS_TABLE,
+        8 => self::USERS_TABLE,
+
     ];
 
     public function getInfos()
