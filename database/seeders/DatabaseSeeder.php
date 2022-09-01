@@ -199,6 +199,10 @@ class DatabaseSeeder extends Seeder
             [
                 'index' => '4-avatars',
                 'name' => "Аватарки пользователей"
+            ],
+            [
+                'index' => '16',
+                'name' => 'Группы пользователя'
             ]
         ]);
 
