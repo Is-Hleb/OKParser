@@ -14,6 +14,10 @@ class ParserType extends Model
 {
     use HasFactory;
 
+    const SUBSCRIBERS = 1;
+    const FRIENDS = 3;
+    const GROUPS = 16;
+
     public $timestamps = false;
     protected $guarded = ['id'];
 }
