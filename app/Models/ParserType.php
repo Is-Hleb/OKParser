@@ -17,6 +17,7 @@ class ParserType extends Model
     const SUBSCRIBERS = 1;
     const FRIENDS = 3;
     const GROUPS = 16;
+    const DETAIL = 4;
 
     public $timestamps = false;
     protected $guarded = ['id'];

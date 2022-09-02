@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Parser;
 use App\Models\ParserTask as ParserTaskModel;
 use App\Models\ParserType;
 use Illuminate\Support\Str;
@@ -28,6 +29,7 @@ class ParserTaskService
                 $type->index == ParserType::FRIENDS
                 || $type->index == ParserType::SUBSCRIBERS
                 || $type->index == ParserType::GROUPS
+                || $type->index == ParserType::DETAIL
             ) {
                 $users_table_name = ParserDBService::createTableToASUPType($type->index, $table_name . '_users_' . $type->index);
                 $logins = array_map(function($item) {
