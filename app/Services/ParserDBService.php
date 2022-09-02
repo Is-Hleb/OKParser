@@ -21,6 +21,7 @@ class ParserDBService
     gender              varchar(255) null,
     social_id           bigint       not null,
     avatar              varchar(255) null,
+    country             varchar(255) null,
     age_range           varchar(255) null,
     edu                 varchar(255) null,
     work                varchar(255) null,
