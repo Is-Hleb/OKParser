@@ -31,26 +31,48 @@ class ParserTaskService
                 || $type->index == ParserType::GROUPS
                 || $type->index == ParserType::DETAIL
             ) {
-                $users_table_name = ParserDBService::createTableToASUPType($type->index, $table_name . '_users_' . $type->index);
                 $logins = array_map(function($item) {
                     return ['social_id' => $item];
                 }, $logins);
+
+                $users_table_name = $table_name . '_users_' . $type->index;
+                if($type->index == ParserType::DETAIL) {
+                    $users_table_name = $id;
+                }
+                ParserDBService::createTableToASUPType(
+                    $type->index,
+                    $users_table_name
+                );
+
                 ParserDBService::insertIntoTable($users_table_name, $logins);
 
-                ParserTaskModel::create([
-                    'selected_table' => $users_table_name,
-                    'table_name' => $table_name,
-                    'type' => $type->index,
-                    'is_asup_task' => true,
-                    'type_id' => $type->id,
-                    'name' => $id,
-                    'logins' => json_encode($inputLogins)
-                ]);
+                if($type->index == ParserType::DETAIL) {
+                    ParserTaskModel::create([
+                        'selected_table' => "",
+                        'table_name' => $users_table_name,
+                        'type' => $type->index,
+                        'is_asup_task' => true,
+                        'type_id' => $type->id,
+                        'name' => $id,
+                        'logins' => json_encode($inputLogins)
+                    ]);
+                } else {
+                    ParserTaskModel::create([
+                        'selected_table' => $users_table_name,
+                        'table_name' => $table_name,
+                        'type' => $type->index,
+                        'is_asup_task' => true,
+                        'type_id' => $type->id,
+                        'name' => $id,
+                        'logins' => json_encode($inputLogins)
+                    ]);
+                }
                 return true;
             }
         } else {
             return false;
         }
+        return false;
     }
 
     public static function usersByCities(string $country, array $cities, string|null $taskName = null, bool $isAsupTask = false): void
