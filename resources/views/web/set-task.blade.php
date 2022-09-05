@@ -76,6 +76,7 @@
                     <th scope="col">Статус</th>
                     <th scope="col">Скорость парсинга</th>
                     <th scope="col">Парсер</th>
+                    <th scope="col">Тип задачи</th>
                     <th scope="col">Спаршено</th>
                     <th scope="col">Экспорт</th>
                     <th scope="col">Посчитать</th>
@@ -92,6 +93,7 @@
                         </th>
                         <th>{{ $task->speed * 60 * 60 }} в час</th>
                         <th>{{ $task->parser ? ($task->parser->name ?? $task->parser->token) : "Пока не задан" }}</th>
+                        <th>{{ $task->type->name }}</th>
                         <th id="count-{{ $task->id }}">{{ $task->rows_count }}</th>
                         <th>
                             @if($task->columns)
