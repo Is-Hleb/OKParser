@@ -11,7 +11,7 @@ class CoreApiService
 
     const RUNNING = 'performing';
     const WAITING = 'queue';
-    const OK = 'complite';
+    const OK = 'completed';
     const ERROR = 'error';
     const VALIDATION_ERR = 'warning';
 
