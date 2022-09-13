@@ -84,7 +84,6 @@ class CoreApiService
         $running = self::RUNNING;
         // Http::patch("{$this->baseUrl}/task/{$this->task->task_id}?status=$running");
         $response = Http::patch("{$this->baseUrl}/task/{$this->task->task_id}", [
-            // "id" => $this->task->task_id,
             "status" => self::RUNNING
         ]);
         dump($response->body(), $response->status());
@@ -118,7 +117,9 @@ class CoreApiService
 
     public static function updateStatus(string $id, string $status) : void {
         $baseUrl = config('core_api_service.base_url');
-        Http::patch("{$baseUrl}/task/{$id}?status=$status");
+        Http::patch("{$baseUrl}/task/{$id}", [
+            "status" => $status
+        ]);
     }
 
 }
