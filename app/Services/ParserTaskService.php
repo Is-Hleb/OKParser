@@ -30,6 +30,7 @@ class ParserTaskService
                 || $type->index == ParserType::SUBSCRIBERS
                 || $type->index == ParserType::GROUPS
                 || $type->index == ParserType::DETAIL
+                || $type->index == ParserType::POSTS
             ) {
                 $logins = array_map(function($item) {
                     return ['social_id' => $item];

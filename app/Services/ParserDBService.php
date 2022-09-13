@@ -42,7 +42,8 @@ class ParserDBService
         1 => self::USERS_TABLE,
         16 => self::USERS_TABLE,
         8 => self::USERS_TABLE,
-        4 => self::USERS_TABLE
+        4 => self::USERS_TABLE,
+        2 => self::USERS_TABLE
     ];
 
     public function getInfos()
