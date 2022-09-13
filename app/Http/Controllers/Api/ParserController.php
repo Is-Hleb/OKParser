@@ -82,11 +82,13 @@ class ParserController extends Controller
     public function finishTask($id)
     {
         $task = ParserTask::find($id);
-        $task->status = JobInfo::FINISHED;
         if($task->status != JobInfo::FINISHED) {
+
+            $task->status = JobInfo::FINISHED;
+            $task->save();
+
             CoreApiService::updateStatus($task->table_name, CoreApiService::OK);
         }
-        $task->save();
         return true;
     }
 }
