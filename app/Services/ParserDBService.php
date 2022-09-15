@@ -14,7 +14,7 @@ class ParserDBService
     id       bigint auto_increment,
     source   varchar(255) null,
     name     varchar(255) null,
-    liteners bigint       null,
+    listeners bigint       null,
     image    varchar(255) null,
     constraint table_name_pk
         primary key (id)
