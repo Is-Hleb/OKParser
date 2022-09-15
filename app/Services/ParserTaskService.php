@@ -25,21 +25,33 @@ class ParserTaskService
         $type = ParserType::where('index', $type)->get()->first();
         $inputLogins = $logins;
         if ($type) {
-            if(
+            if (
                 $type->index == ParserType::FRIENDS
                 || $type->index == ParserType::SUBSCRIBERS
                 || $type->index == ParserType::GROUPS
                 || $type->index == ParserType::DETAIL
                 || $type->index == ParserType::POSTS
+                || $type->index == ParserType::MUSIC_ALBUMS
             ) {
-                $logins = array_map(function($item) {
-                    return ['social_id' => $item];
-                }, $logins);
+
+                if ($type->index == ParserType::MUSIC_ALBUMS) {
+                    $logins = array_map(function ($item) {
+                        return ['source' => $item];
+                    }, $logins);
+                } else {
+                    $logins = array_map(function ($item) {
+                        return ['social_id' => $item];
+                    }, $logins);
+                }
 
                 $users_table_name = $table_name . '_users_' . $type->index;
-                if($type->index == ParserType::DETAIL) {
+                if (
+                    $type->index == ParserType::DETAIL
+                    || $type->index == ParserType::MUSIC_ALBUMS
+                ) {
                     $users_table_name = $id;
                 }
+
                 ParserDBService::createTableToASUPType(
                     $type->index,
                     $users_table_name
@@ -47,7 +59,10 @@ class ParserTaskService
 
                 ParserDBService::insertIntoTable($users_table_name, $logins);
 
-                if($type->index == ParserType::DETAIL) {
+                if (
+                    $type->index == ParserType::DETAIL
+                    || $type->index == ParserType::MUSIC_ALBUMS
+                ) {
                     ParserTaskModel::create([
                         'selected_table' => "",
                         'table_name' => $users_table_name,

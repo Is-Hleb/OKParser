@@ -19,6 +19,7 @@ class ParserType extends Model
     const GROUPS = 16;
     const DETAIL = 4;
     const POSTS = 2;
+    const MUSIC_ALBUMS = 17;
 
     public $timestamps = false;
     protected $guarded = ['id'];

@@ -9,6 +9,16 @@ use ZipArchive;
 
 class ParserDBService
 {
+    private const MUSIC_COLLECTION_TABLE = "create table `table_name`
+(
+    id       bigint auto_increment,
+    source   varchar(255) null,
+    name     varchar(255) null,
+    liteners bigint       null,
+    image    varchar(255) null,
+    constraint table_name_pk
+        primary key (id)
+);";
 
     private const USERS_TABLE = "create table if not exists `table_name`
 (
