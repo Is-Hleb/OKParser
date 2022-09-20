@@ -47,6 +47,21 @@ class ParserDBService
 
 ";
 
+    private const POST_DETAIL_TABLE = "create table `table_nae`
+(
+    id          bigint auto_increment,
+    source      varchar(255) null,
+    text        longtext     null,
+    images      json         null,
+    likes       int          null,
+    comments    int          null,
+    reposts     int          null,
+    source_link varchar(255) null,
+    owner_link  varchar(255) null,
+    constraint table_name_pk
+        primary key (id)
+);";
+
     const TABLES = [
         3 => self::USERS_TABLE,
         1 => self::USERS_TABLE,
@@ -54,7 +69,8 @@ class ParserDBService
         8 => self::USERS_TABLE,
         4 => self::USERS_TABLE,
         2 => self::USERS_TABLE,
-        17 => self::MUSIC_COLLECTION_TABLE
+        17 => self::MUSIC_COLLECTION_TABLE,
+        19 => self::POST_DETAIL_TABLE
     ];
 
     public function getInfos()

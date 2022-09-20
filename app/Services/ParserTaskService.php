@@ -32,9 +32,10 @@ class ParserTaskService
                 || $type->index == ParserType::DETAIL
                 || $type->index == ParserType::POSTS
                 || $type->index == ParserType::MUSIC_ALBUMS
+                || $type->index == ParserType::POST_DETAIL
             ) {
 
-                if ($type->index == ParserType::MUSIC_ALBUMS) {
+                if ($type->index == ParserType::MUSIC_ALBUMS || $type->index == ParserType::POST_DETAIL) {
                     $logins = array_map(function ($item) {
                         return ['source' => $item];
                     }, $logins);
@@ -48,6 +49,7 @@ class ParserTaskService
                 if (
                     $type->index == ParserType::DETAIL
                     || $type->index == ParserType::MUSIC_ALBUMS
+                    || $type->index == ParserType::POST_DETAIL
                 ) {
                     $users_table_name = $id;
                 }
@@ -62,6 +64,7 @@ class ParserTaskService
                 if (
                     $type->index == ParserType::DETAIL
                     || $type->index == ParserType::MUSIC_ALBUMS
+                    || $type->index == ParserType::POST_DETAIL
                 ) {
                     ParserTaskModel::create([
                         'selected_table' => "",
