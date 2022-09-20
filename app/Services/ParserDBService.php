@@ -47,7 +47,7 @@ class ParserDBService
 
 ";
 
-    private const POST_DETAIL_TABLE = "create table `table_nae`
+    private const POST_DETAIL_TABLE = "create table `table_name`
 (
     id          bigint auto_increment,
     source      varchar(255) null,
