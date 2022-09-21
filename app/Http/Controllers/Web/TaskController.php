@@ -39,6 +39,7 @@ class TaskController extends Controller
     public function create(Request $request)
     {
         $type = $request->input('task_type');
+        $type = ParserType::find($type)->index;
         switch ($type) {
             case ParserTaskService::USER_SUBSCRIBERS:
                 ParserTaskService::userSubscribers($request->input('selected_table'), $request->input('name'));
