@@ -177,7 +177,6 @@ class ParserDBService
 
     public static function createTableToASUPType(int $typeIndex, string $table_name)
     {
-        echo $typeIndex;
         $sqlString = self::TABLES[$typeIndex];
         $sqlString = str_replace("table_name", $table_name, $sqlString);
         try {
