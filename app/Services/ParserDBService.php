@@ -68,9 +68,10 @@ class ParserDBService
         16 => self::USERS_TABLE,
         8 => self::USERS_TABLE,
         4 => self::USERS_TABLE,
-        2 => self::USERS_TABLE,
+        11 => self::USERS_TABLE,
         17 => self::MUSIC_COLLECTION_TABLE,
-        19 => self::POST_DETAIL_TABLE
+        2 => self::POST_DETAIL_TABLE,
+        6 => self::POST_DETAIL_TABLE,
     ];
 
     public function getInfos()

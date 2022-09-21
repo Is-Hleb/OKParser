@@ -30,12 +30,17 @@ class ParserTaskService
                 || $type->index == ParserType::SUBSCRIBERS
                 || $type->index == ParserType::GROUPS
                 || $type->index == ParserType::DETAIL
-                || $type->index == ParserType::POSTS
+                || $type->index == ParserType::USER_POSTS
                 || $type->index == ParserType::MUSIC_ALBUMS
-                || $type->index == ParserType::POST_DETAIL
+                || $type->index == ParserType::USER_POST_DETAIL
+                || $type->index == ParserType::GROUP_POST_DETAIL
             ) {
 
-                if ($type->index == ParserType::MUSIC_ALBUMS || $type->index == ParserType::POST_DETAIL) {
+                if (
+                    $type->index == ParserType::MUSIC_ALBUMS
+                    || $type->index == ParserType::USER_POST_DETAIL
+                    || $type->index == ParserType::GROUP_POST_DETAIL
+                ) {
                     $logins = array_map(function ($item) {
                         return ['source' => $item];
                     }, $logins);
@@ -49,7 +54,8 @@ class ParserTaskService
                 if (
                     $type->index == ParserType::DETAIL
                     || $type->index == ParserType::MUSIC_ALBUMS
-                    || $type->index == ParserType::POST_DETAIL
+                    || $type->index == ParserType::USER_POST_DETAIL
+                    || $type->index == ParserType::GROUP_POST_DETAIL
                 ) {
                     $users_table_name = $id;
                 }
@@ -64,7 +70,8 @@ class ParserTaskService
                 if (
                     $type->index == ParserType::DETAIL
                     || $type->index == ParserType::MUSIC_ALBUMS
-                    || $type->index == ParserType::POST_DETAIL
+                    || $type->index == ParserType::USER_POST_DETAIL
+                    || $type->index == ParserType::GROUP_POST_DETAIL
                 ) {
                     ParserTaskModel::create([
                         'selected_table' => "",
