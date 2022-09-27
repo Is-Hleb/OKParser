@@ -94,6 +94,16 @@ class ParserTaskService
                     ]);
                 }
                 return true;
+            } else if($type->index == ParserType::USERS_BY_CITIES) {
+                ParserTaskModel::create([
+                    'selected_table' => $table_name . '_8',
+                    'table_name' => $table_name,
+                    'type' => $type->index,
+                    'is_asup_task' => true,
+                    'type_id' => $type->id,
+                    'name' => $id,
+                    'logins' => json_encode($inputLogins)
+                ]);
             }
         } else {
             return false;
