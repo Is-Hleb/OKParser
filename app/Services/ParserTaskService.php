@@ -20,7 +20,7 @@ class ParserTaskService
     const USERS_BY_CITIES = 8;
     const USERS_AVATARS = "4-avatars";
 
-    public static function dispachTask(ParserType $type, string $id, array $logins): bool
+    public static function dispachTask(int $type, string $id, array $logins): bool
     {
         $table_name = $id;
         $type = ParserType::where('index', $type)->get()->first();
