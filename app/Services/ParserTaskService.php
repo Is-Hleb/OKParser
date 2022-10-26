@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Parser;
 use App\Models\ParserTask;
 use App\Models\ParserTask as ParserTaskModel;
-use App\Models\ParserTask as ParserTaskModel;
 use App\Models\ParserType;
 use Illuminate\Support\Str;
 
