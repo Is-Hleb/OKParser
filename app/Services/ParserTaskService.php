@@ -26,8 +26,9 @@ class ParserTaskService
         $type = ParserType::where('index', $type)->get()->first();
         $inputLogins = $logins;
 
-        if($type === ParserType::GROUP_DETAIL) {
+        if($type == ParserType::GROUP_DETAIL) {
             self::setGroupsDetail($logins);
+            return true;
         }
 
         if ($type) {

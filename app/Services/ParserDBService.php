@@ -198,7 +198,6 @@ class ParserDBService
 
     public static function insertIntoTable($table_name, $data): void
     {
-        echo json_encode($data);
         DB::connection('parser')->table($table_name)->insert($data);
     }
 }
