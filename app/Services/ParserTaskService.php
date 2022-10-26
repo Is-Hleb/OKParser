@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Parser;
+use App\Models\ParserTask;
+use App\Models\ParserTask as ParserTaskModel;
 use App\Models\ParserTask as ParserTaskModel;
 use App\Models\ParserType;
 use Illuminate\Support\Str;
@@ -94,7 +96,7 @@ class ParserTaskService
                     ]);
                 }
                 return true;
-            } else if($type->index == ParserType::USERS_BY_CITIES) {
+            } else if ($type->index == ParserType::USERS_BY_CITIES) {
                 ParserTaskModel::create([
                     'selected_table' => $table_name . '_8',
                     'table_name' => $table_name,
@@ -109,6 +111,25 @@ class ParserTaskService
             return false;
         }
         return false;
+    }
+
+    private static function setGroupsDetail(array $logins, bool $isAsup = true)
+    {
+        $table_name = Str::random(5) . '_' . 'group_detail';
+
+        ParserDBService::createTableToASUPType(ParserType::GROUP_DETAIL, $table_name);
+        ParserDBService::insertIntoTable($table_name, array_map(function ($item) {
+            return ['source' => $item];
+        }, $logins));
+
+        ParserTaskModel::create([
+            'table_name' => $table_name,
+            'type' => ParserType::GROUP_DETAIL,
+            'is_asup_task' => $isAsup,
+            'type_id' => ParserType::where('index', ParserType::GROUP_DETAIL)->first()->id,
+            'name' => 'group_detail',
+            'logins' => json_encode($logins)
+        ]);
     }
 
     public static function usersByCities(string $country, array $cities, string|null $taskName = null, bool $isAsupTask = false): void

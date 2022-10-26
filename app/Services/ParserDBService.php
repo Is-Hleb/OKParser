@@ -62,6 +62,13 @@ class ParserDBService
         primary key (id)
 );";
 
+    private const SourceOutputTable = "create table table_name
+(
+    source varchar(255) null,
+    output json         null
+);
+";
+
     const TABLES = [
         3 => self::USERS_TABLE,
         1 => self::USERS_TABLE,
@@ -72,6 +79,7 @@ class ParserDBService
         17 => self::MUSIC_COLLECTION_TABLE,
         2 => self::POST_DETAIL_TABLE,
         6 => self::POST_DETAIL_TABLE,
+        18 => self::SourceOutputTable
     ];
 
     public function getInfos()
