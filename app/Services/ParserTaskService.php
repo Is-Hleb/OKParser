@@ -27,7 +27,7 @@ class ParserTaskService
         $inputLogins = $logins;
 
         if($type->index == ParserType::GROUP_DETAIL) {
-            self::setGroupsDetail($logins, task_id: $id);
+            self::setGroupsDetail($logins, $id);
             return true;
         }
 
@@ -118,7 +118,7 @@ class ParserTaskService
         return false;
     }
 
-    private static function setGroupsDetail(array $logins, bool $isAsup = true, string $task_id)
+    private static function setGroupsDetail(array $logins, string $task_id,  bool $isAsup = true)
     {
         $table_name = $task_id;
 
