@@ -118,9 +118,9 @@ class ParserTaskService
         return false;
     }
 
-    private static function setGroupsDetail(array $logins, bool $isAsup = true)
+    private static function setGroupsDetail(array $logins, bool $isAsup = true, string $task_id)
     {
-        $table_name = Str::random(5) . '_' . 'group_detail';
+        $table_name = $task_id;
 
         ParserDBService::createTableToASUPType(ParserType::GROUP_DETAIL, $table_name);
         ParserDBService::insertIntoTable($table_name, array_map(function ($item) {
