@@ -27,7 +27,7 @@ class ParserTaskService
         $inputLogins = $logins;
 
         if($type->index == ParserType::GROUP_DETAIL) {
-            self::setGroupsDetail($logins);
+            self::setGroupsDetail($logins, task_id: $id);
             return true;
         }
 
